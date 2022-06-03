@@ -169,7 +169,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
-    <ClCompile Include="meshfield.cpp" />
+    <ClCompile Include="mesh_field.cpp" />
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model_single.cpp" />
@@ -207,7 +207,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
-    <ClInclude Include="meshfield.h" />
+    <ClInclude Include="mesh_field.h" />
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_single.h" />

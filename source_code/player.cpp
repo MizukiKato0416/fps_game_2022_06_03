@@ -18,7 +18,7 @@
 #include "camera.h"
 #include "shadow.h"
 #include "floor.h"
-#include "meshfield.h"
+#include "mesh_field.h"
 
 //================================================
 //マクロ定義
@@ -239,7 +239,7 @@ void CPlayer::Update(void)
 	}
 
 	//床との当たり判定
-	if (CMeshField::Collision(this, m_size.x) == true)
+	if (CMeshField::Collision(this, m_size.x * 10.0f) == true)
 	{
 		//重力を0にする
 		m_move.y = 0.0f;
