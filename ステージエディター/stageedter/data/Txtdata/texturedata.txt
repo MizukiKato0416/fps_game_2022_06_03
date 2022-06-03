@@ -1,9 +1,9 @@
-TEX_NUM = 4
+TEX_NUM = 5
 
 TEXTURE_PAS
 data/Texture/concrete.jpg
 data/Texture/concrete2.jpg
 data/Texture/grass.jpg
 data/Texture/soil.jpg
-
+data/Texture/effect000.jpg
 END

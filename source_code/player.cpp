@@ -241,6 +241,15 @@ void CPlayer::Update(void)
 	//è∞Ç∆ÇÃìñÇΩÇËîªíË
 	if (CMeshField::Collision(this, m_size.x * 10.0f) == true)
 	{
+		//à íuéÊìæ
+		m_pos = GetPos();
+		if (m_pos.y > m_posOld.y + 5.0f)
+		{
+			m_pos = m_posOld;
+			//à íuîΩâf
+			SetPos(m_pos);
+		}
+
 		//èdóÕÇ0Ç…Ç∑ÇÈ
 		m_move.y = 0.0f;
 

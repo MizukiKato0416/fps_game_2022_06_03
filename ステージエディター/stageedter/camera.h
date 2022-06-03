@@ -36,6 +36,8 @@ public:
 	D3DXVECTOR3 *CalcScreenToWorld(D3DXVECTOR3* pout, int Sx, int Sy, float fZ, int Screen_w, int Screen_h, D3DXMATRIX* View, D3DXMATRIX* Prj);	// スクリーン座標をワールド座標に変換
 	D3DXVECTOR3 *GetMousePos(void) { return &m_MouseWorldPos; }
 private:
+	void Move(void);			//動き
+
 	D3DXVECTOR3 m_PosV;			//視点
 	D3DXVECTOR3 m_PosR;			//注視点
 	D3DXVECTOR3 m_Rot;			//カメラの向き
@@ -44,5 +46,6 @@ private:
 	D3DXMATRIX m_mtxProjection;	//プロジェクションマトリックス
 	D3DXMATRIX m_mtxView;		//ビューマトリックス
 	float Long;					//幅
+	float m_fDifferVR;
 };
 #endif

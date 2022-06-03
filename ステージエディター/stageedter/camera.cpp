@@ -18,7 +18,7 @@
 //=============================================================================
 CCamera::CCamera()
 {
-
+	m_fDifferVR = 0.0f;
 }
 
 //=============================================================================
@@ -38,6 +38,7 @@ HRESULT CCamera::Init(D3DXVECTOR3 PosV, D3DXVECTOR3 PosR, D3DXVECTOR3 Rot)
 	m_PosR = PosR;
 	m_Rot = Rot;
 	m_VecU = (D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	m_fDifferVR = 1000.0f;
 
 	return S_OK;
 }
@@ -62,29 +63,8 @@ void CCamera::Update(void)
 	pKeyboard = CManager::GetInputKeyboard();
 	GetCursorPos(&Mouse);
 
-	m_Rot.x += pMouse->GetMousePos().lX * 0.01f;
-	m_Rot.y += pMouse->GetMousePos().lY * 0.01f;
+	D3DXVECTOR2 mouseVelocity = D3DXVECTOR2(pMouse->GetMousePos().lX, pMouse->GetMousePos().lY);
 
-	if(pKeyboard->GetPress(pKeyboard->W) == true)
-	{
-		m_PosV.x = m_PosV.x + sinf(m_Rot.x) * 10.0f;
-		m_PosV.z = m_PosV.z + cosf(m_Rot.x) * 10.0f;
-	}
-	else if (pKeyboard->GetPress(pKeyboard->S) == true)
-	{
-		m_PosV.x = m_PosV.x - sinf(m_Rot.x) * 10.0f;
-		m_PosV.z = m_PosV.z - cosf(m_Rot.x) * 10.0f;
-	}
-	if (pKeyboard->GetPress(pKeyboard->A) == true)
-	{
-		m_PosV.x = m_PosV.x - cosf(m_Rot.x) * 10.0f;
-		m_PosV.z = m_PosV.z + sinf(m_Rot.x) * 10.0f;
-	}
-	else if (pKeyboard->GetPress(pKeyboard->D) == true)
-	{
-		m_PosV.x =m_PosV.x + cosf(m_Rot.x) * 10.0f;
-		m_PosV.z =m_PosV.z - sinf(m_Rot.x) * 10.0f;
-	}
 	if (pKeyboard->GetPress(pKeyboard->SPACE) == true)
 	{
 		m_PosV.y += 10.0f;
@@ -94,18 +74,59 @@ void CCamera::Update(void)
 		m_PosV.y -= 10.0f;
 	}
 
-	if (m_Rot.y >= D3DX_PI - 0.1f)
+	//================================================
+	//マウスによる視点移動処理
+	//================================================
+	if (pMouse->GetPress(CInputMouse::RIGHT_BOTTON))
 	{
-		m_Rot.y = D3DX_PI - 0.1f;
-	}
-	else if (m_Rot.y <= -0.0f + 0.1f)
-	{
-		m_Rot.y = -0.0f + 0.1f;
+
+
+		if (mouseVelocity.x != 0.0f)
+		{
+			m_Rot.y += mouseVelocity.x * 0.003f;
+		}
+		if (mouseVelocity.y != 0.0f)
+		{
+			m_Rot.x += mouseVelocity.y * -0.001;
+		}
+
+		//移動処理
+		Move();
 	}
 
-	m_PosR.x = m_PosV.x + (sinf(m_Rot.y) * sinf(m_Rot.x)) * 50.0f;
-	m_PosR.y = m_PosV.y + cosf(m_Rot.y)				  * 50.0f;
-	m_PosR.z = m_PosV.z + (sinf(m_Rot.y) * cosf(m_Rot.x)) * 50.0f;
+
+
+	//ホイールによる注視点から支店までの距離を伸ばす処理
+	if (pMouse->GetMousePos().lZ >= 120)
+	{
+		m_fDifferVR -= 50.0f;
+	}
+	else if (pMouse->GetMousePos().lZ <= -120)
+	{
+		m_fDifferVR += 50.0f;
+	}
+
+	if (m_Rot.y >= D3DX_PI)
+	{
+		m_Rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_Rot.y <= -D3DX_PI)
+	{
+		m_Rot.y += D3DX_PI * 2.0f;
+	}
+	if (m_Rot.x >= D3DX_PI / 8.0f * 7.0f)
+	{
+		m_Rot.x = D3DX_PI / 8.0f * 7.0f;
+	}
+	else if (m_Rot.x <= D3DX_PI / 8.0f)
+	{
+		m_Rot.x = D3DX_PI / 8.0f;
+	}
+
+	//視点の場所を注視点を元に移動
+	m_PosV.x = m_PosR.x + m_fDifferVR * sinf(m_Rot.x) * sinf(m_Rot.y);
+	m_PosV.z = m_PosR.z + m_fDifferVR * sinf(m_Rot.x) * cosf(m_Rot.y);
+	m_PosV.y = m_PosR.y + m_fDifferVR * cosf(m_Rot.x);
 
 	CalcScreenToWorld(&m_MouseWorldPos, Mouse.x, Mouse.y, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, &m_mtxView, &m_mtxProjection);
 }
@@ -181,4 +202,73 @@ CCamera *CCamera::Create(D3DXVECTOR3 PosV, D3DXVECTOR3 PosR, D3DXVECTOR3 Rot)
 		pCamera->Init(PosV, PosR, Rot);
 	}
 	return pCamera;
+}
+
+
+//================================================
+//動き処理
+//================================================
+void CCamera::Move(void)
+{
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInputKeyboard();
+
+	//WASDを押したら
+	if (pInputKeyboard->GetPress(pInputKeyboard->W) == true || pInputKeyboard->GetPress(pInputKeyboard->A) == true ||
+		pInputKeyboard->GetPress(pInputKeyboard->S) == true || pInputKeyboard->GetPress(pInputKeyboard->D) == true)
+	{
+		float fObjectiveRot = 0.0f;
+
+		if (pInputKeyboard->GetPress(pInputKeyboard->W) == true)
+		{
+			if (pInputKeyboard->GetPress(pInputKeyboard->A) == true)
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y - D3DX_PI / 4.0f;
+			}
+			else if (pInputKeyboard->GetPress(pInputKeyboard->D) == true)
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y + D3DX_PI / 4.0f;
+			}
+			else
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y;
+			}
+		}
+		else if (pInputKeyboard->GetPress(pInputKeyboard->S) == true)
+		{
+			if (pInputKeyboard->GetPress(pInputKeyboard->A) == true)
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y - D3DX_PI / 4.0f * 3.0f;
+			}
+			else if (pInputKeyboard->GetPress(pInputKeyboard->D) == true)
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y + D3DX_PI / 4.0f * 3.0f;
+			}
+			else
+			{
+				//目的の向きを設定
+				fObjectiveRot = m_Rot.y + D3DX_PI;
+			}
+		}
+		else if (pInputKeyboard->GetPress(pInputKeyboard->A) == true)
+		{
+			//目的の向きを設定
+			fObjectiveRot = m_Rot.y - D3DX_PI / 2.0f;
+		}
+		else if (pInputKeyboard->GetPress(pInputKeyboard->D) == true)
+		{
+			//目的の向きを設定
+			fObjectiveRot = m_Rot.y + D3DX_PI / 2.0f;
+		}
+
+		//移動量加算
+		m_PosR.x += sinf(fObjectiveRot + D3DX_PI) * 20.0f;
+		m_PosR.z += cosf(fObjectiveRot + D3DX_PI) * 20.0f;
+	}
 }
