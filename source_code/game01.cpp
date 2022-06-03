@@ -9,6 +9,7 @@
 #include "fade.h"
 #include "floor.h"
 #include "mesh_field.h"
+#include "xanimmodel.h"
 
 //================================================
 //マクロ定義
@@ -50,7 +51,7 @@ HRESULT CGame01::Init(void)
 	//メッシュフィールド生成
 	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
 	pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
-	
+	CXanimModel::Create();
 
 	return S_OK;
 }

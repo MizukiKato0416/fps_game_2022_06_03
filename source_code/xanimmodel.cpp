@@ -17,7 +17,7 @@ bool g_bAnimUse = false;
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
-CXanimModel::CXanimModel()
+CXanimModel::CXanimModel(CObject::PRIORITY Priority) : CObject(Priority)
 {
 
 }

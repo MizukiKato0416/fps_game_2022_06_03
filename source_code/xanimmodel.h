@@ -17,10 +17,10 @@
 //*****************************************************************************
 // クラス定義
 //*****************************************************************************
-class CXanimModel
+class CXanimModel : CObject
 {
 public:
-	CXanimModel();	// デフォルトコンストラクタ
+	CXanimModel(CObject::PRIORITY Priority = CObject::PRIORITY::MODEL);	// デフォルトコンストラクタ
 	~CXanimModel();	// デフォルトデストラクタ
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
