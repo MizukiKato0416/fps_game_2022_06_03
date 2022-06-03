@@ -10,7 +10,7 @@
 #include "xanimmodel.h"
 #include "renderer.h"
 #include "manager.h"
-#include "keyinput.h"
+#include "input_keyboard.h"
 
 bool g_bAnimUse = false;
 
@@ -52,9 +52,9 @@ void CXanimModel::Uninit(void)
 //=============================================================================
 void CXanimModel::Update(void)
 {
-	CKeyboard *pKey = CManager::GetKeyboard();
+	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
 
-	if (pKey->GetTrigger(pKey->SPACE) == true)
+	if (pKey->GetTrigger(DIK_SPACE) == true)
 	{
 		if (g_bAnimUse == false)
 		{
@@ -65,11 +65,11 @@ void CXanimModel::Update(void)
 			g_bAnimUse = false;
 		}
 	}
-	if (pKey->GetTrigger(pKey->NUM_1) == true)
+	if (pKey->GetTrigger(DIK_1) == true)
 	{
 		SetAnimation(0, 144.0f / (4800 * 10));
 	}
-	if (pKey->GetTrigger(pKey->NUM_2) == true)
+	if (pKey->GetTrigger(DIK_2) == true)
 	{
 		SetAnimation(1, 144.0f / (4800 * 1));
 	}
@@ -201,7 +201,6 @@ void CXanimModel::DrawFrame(LPD3DXFRAME frame)
 void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER container)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
-	FrameData *frame_data = (FrameData*)frame;
 	MeshContainer *mesh_container = (MeshContainer*)container;
 	pDevice = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
 

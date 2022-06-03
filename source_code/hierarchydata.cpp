@@ -3,6 +3,7 @@
 //---------------------------
 #include "hierarchydata.h"
 #include "texture.h"
+#include "manager.h"
 
 HRESULT HierarchyData::CreateFrame(THIS_ LPCSTR name, LPD3DXFRAME *new_frame)
 {
@@ -92,7 +93,7 @@ HRESULT HierarchyData::CreateMeshContainer(THIS_ LPCSTR name, CONST D3DXMESHDATA
 
 			if (container->pMaterials[nCntMat].pTextureFilename != NULL)
 			{
-				string *Pas = CTexture::GetPasName();
+				/*string *Pas = CManager::GetInstance()->GetTexture()->GetPas();
 				string TexPas = "data/Texture/Model/";
 				int nTexNum = CTexture::GetTexNum();
 				TexPas += container->pMaterials[nCntMat].pTextureFilename;
@@ -105,7 +106,8 @@ HRESULT HierarchyData::CreateMeshContainer(THIS_ LPCSTR name, CONST D3DXMESHDATA
 						container->m_TextureList.push_back(m_TextureList[TexPas.c_str()]);
 						break;
 					}
-				}
+				}*/
+				container->m_TextureList.push_back(NULL);
 			}
 			else 
 			{
