@@ -1,0 +1,11 @@
+PASNUM = 6
+
+MODEL_FILENAME
+data/Model/stage_concrete.x		# è∞
+data/Model/stage_concrete2.x	# è∞
+data/Model/stage_concrete3.x	# è∞
+data/Model/stage_grass.x		# è∞
+data/Model/stage_grass2.x		# è∞
+data/Model/stage_grass3.x		# è∞
+
+END
