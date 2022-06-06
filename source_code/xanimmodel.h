@@ -36,7 +36,7 @@ public:
 	void Load(void);	// モデルのロード
 	void ChangeAnimation(int anim_num, float speed);	// アニメーション変更
 	void PlayAnimation(float speed);	// アニメーション再生
-	void CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name);
+	void CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name);	// コンテナの名前のチェック
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター

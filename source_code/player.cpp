@@ -182,6 +182,8 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	pXanim = CXanimModel::Create("data/test.x");
+
 	return S_OK;
 }
 
@@ -257,6 +259,9 @@ void CPlayer::Update(void)
 	//位置取得
 	pos = GetPos();
 	m_pos = pos;
+
+	pXanim->Update();
+	pXanim->PlayAnimation((160.0f * 1) / 4800);
 }
 
 //================================================
@@ -306,6 +311,11 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
+	pXanim->Draw();
+
+	D3DXMATRIX test = pXanim->GetMatrix("Cube_002");
+
+	pDevice->SetTransform(D3DTS_WORLD, &test);
 
 	//モデルの描画
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
