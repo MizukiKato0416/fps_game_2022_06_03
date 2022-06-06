@@ -12,8 +12,6 @@
 #include "manager.h"
 #include "input_keyboard.h"
 
-bool g_bAnimUse = false;
-
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
@@ -36,7 +34,6 @@ CXanimModel::~CXanimModel()
 HRESULT CXanimModel::Init(void)
 {
 	int nMaxAnim;
-	float AdjustSpeed = 160.0f / 4800.0f;
 
 	if (m_anim_controller != NULL)
 	{
@@ -48,7 +45,6 @@ HRESULT CXanimModel::Init(void)
 			m_anim_controller->GetAnimationSet(nCntAnim, &m_anim_set[nCntAnim]);
 		}
 		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[0]);
-		m_anim_controller->SetTrackSpeed(0, AdjustSpeed);
 		m_now_anim = 0;
 	}
 
@@ -69,35 +65,7 @@ void CXanimModel::Uninit(void)
 //=============================================================================
 void CXanimModel::Update(void)
 {
-	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
 
-	if (pKey->GetTrigger(DIK_SPACE) == true)
-	{
-		if (g_bAnimUse == false)
-		{
-			g_bAnimUse = true;
-		}
-		else if (g_bAnimUse == true)
-		{
-			g_bAnimUse = false;
-		}
-	}
-	if (pKey->GetTrigger(DIK_1) == true)
-	{
-		SetAnimation(0, 144.0f / (4800 * 10));
-	}
-	if (pKey->GetTrigger(DIK_2) == true)
-	{
-		SetAnimation(1, 144.0f / (4800 * 1));
-	}
-
-	if (g_bAnimUse == true)
-	{
-		if (m_anim_controller != NULL)
-		{
-			m_anim_controller->AdvanceTime(1.0f, NULL);
-		}
-	}
 }
 
 //=============================================================================
@@ -370,14 +338,27 @@ void CXanimModel::Load(void)
 //=============================================================================
 // アニメーション変更
 //=============================================================================
-void CXanimModel::SetAnimation(int nAnim, float AdjustSpeed)
+void CXanimModel::ChangeAnimation(int anim_num, float speed)
 {
 	if (m_anim_controller != NULL)
 	{
-		m_anim_controller->SetTrackSpeed(0, AdjustSpeed);
-		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[nAnim]);
+		m_anim_controller->SetTrackSpeed(0, speed);
+		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[anim_num]);
 		m_anim_controller->SetTrackAnimationSet(1, m_anim_set[m_now_anim]);
 		m_anim_controller->SetTrackPosition(0, 0);
-		m_now_anim = nAnim;
+		m_anim_controller->AdvanceTime(1.0f, NULL);
+		m_now_anim = anim_num;
+	}
+}
+
+//=============================================================================
+// アニメーション再生
+//=============================================================================
+void CXanimModel::PlayAnimation(float speed)
+{
+	if (m_anim_controller != NULL)
+	{
+		m_anim_controller->SetTrackSpeed(0, speed);
+		m_anim_controller->AdvanceTime(1.0f, NULL);
 	}
 }

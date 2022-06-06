@@ -91,6 +91,10 @@ void CGame01::Update(void)
 	}
 #endif // !_DEBUG
 	pXanim->Update();
+	if (pInputKeyboard->GetTrigger(DIK_SPACE) == true)
+	{
+		pXanim->PlayAnimation(160.0f / 4800);
+	}
 }
 
 //================================================
