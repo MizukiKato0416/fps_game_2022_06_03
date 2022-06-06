@@ -17,10 +17,10 @@
 //*****************************************************************************
 // クラス定義
 //*****************************************************************************
-class CXanimModel : CObject
+class CXanimModel
 {
 public:
-	CXanimModel(CObject::PRIORITY Priority = CObject::PRIORITY::MODEL);	// デフォルトコンストラクタ
+	CXanimModel();	// デフォルトコンストラクタ
 	~CXanimModel();	// デフォルトデストラクタ
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -32,21 +32,23 @@ public:
 	void DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER container);	// メッシュコンテナの描画(再帰処理)
 	HRESULT AllocateAllBoneMatrix(LPD3DXFRAME frame);	// 全ボーンの描画用マトリックスの保存(再帰処理)
 	HRESULT AllocateBoneMatrix(LPD3DXMESHCONTAINER vontainer);	// 全ボーンの描画用マトリックスの保存(再帰処理)
-	void Create(string type);	// 生成
+	static CXanimModel *Create(string type);	// 生成
+	void Load(void);	// モデルのロード
 	void SetAnimation(int nAnim, float AdjustSpeed);	// アニメーション変更
-	void SetPos(D3DXVECTOR3 pos) { m_Pos = pos; }	// セッター
-	void SetRot(D3DXVECTOR3 rot) { m_Rot = rot; }	// セッター
-	D3DXVECTOR3 GetPos(void) { return m_Pos; }	// ゲッター
-	D3DXVECTOR3 GetRot(void) { return m_Rot; }	// ゲッター
+	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
+	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
+	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
+	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
 private:
-	HierarchyData m_HierarchyData;	// 階層データ
-	LPD3DXFRAME m_RootFrame;	// ルートフレーム
-	LPD3DXANIMATIONCONTROLLER m_AnimController;	// アニメーション管理
-	vector<LPD3DXANIMATIONSET> m_AnimSet;	// アニメーション取得
-	D3DXMATRIX m_MtxWold;	// ワールドマトリックス
-	D3DXVECTOR3 m_Pos;	// 位置
-	D3DXVECTOR3 m_Rot;	// 回転
-	int m_nNowAnim;	// 現在のアニメーション
+	HierarchyData m_hierarchy_data;	// 階層データ
+	LPD3DXFRAME m_root_frame;	// ルートフレーム
+	LPD3DXANIMATIONCONTROLLER m_anim_controller;	// アニメーション管理
+	vector<LPD3DXANIMATIONSET> m_anim_set;	// アニメーション取得
+	string m_load_pas; // モデルのパス
+	D3DXMATRIX m_mtx_wold;	// ワールドマトリックス
+	D3DXVECTOR3 m_pos;	// 位置
+	D3DXVECTOR3 m_rot;	// 回転
+	int m_now_anim;	// 現在のアニメーション
 };
 
 #endif

@@ -20,6 +20,7 @@ class CLetter;
 class CNextDialogUI;
 class CDialog;
 class CPause;
+class CXanimModel;
 
 //================================================
 //マクロ定義
@@ -97,6 +98,7 @@ private:
 	int m_nClick;						//クリックした回数
 	bool m_bDialog;						//セリフを出しているかどうか	
 	CPause *m_pPause;					//のポインタ
+	CXanimModel *pXanim;
 };	
 
 #endif // !_GAME01_H_

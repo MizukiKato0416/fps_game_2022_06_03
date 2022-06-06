@@ -45,8 +45,7 @@ CGame01::~CGame01()
 //================================================
 HRESULT CGame01::Init(void)
 {
-	CXanimModel *pXanim = new CXanimModel;
-	pXanim->Create("data/test.x");
+	pXanim = CXanimModel::Create("data/test.x");
 
 	//プレイヤーの生成
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
@@ -65,6 +64,7 @@ void CGame01::Uninit(void)
 {
 	//オブジェクトの破棄
 	Release();
+	pXanim->Uninit();
 }
 
 //================================================
@@ -90,6 +90,7 @@ void CGame01::Update(void)
 		}
 	}
 #endif // !_DEBUG
+	pXanim->Update();
 }
 
 //================================================
@@ -97,5 +98,5 @@ void CGame01::Update(void)
 //================================================
 void CGame01::Draw(void)
 {
-
+	pXanim->Draw();
 }

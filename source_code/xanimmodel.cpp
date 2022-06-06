@@ -17,7 +17,7 @@ bool g_bAnimUse = false;
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
-CXanimModel::CXanimModel(CObject::PRIORITY Priority) : CObject(Priority)
+CXanimModel::CXanimModel()
 {
 
 }
@@ -38,18 +38,18 @@ HRESULT CXanimModel::Init(void)
 	int nMaxAnim;
 	float AdjustSpeed = 160.0f / 4800.0f;
 
-	if (m_AnimController != NULL)
+	if (m_anim_controller != NULL)
 	{
-		nMaxAnim = m_AnimController->GetMaxNumAnimationSets();
+		nMaxAnim = m_anim_controller->GetMaxNumAnimationSets();
 		for (int nCntAnim = 0; nCntAnim < nMaxAnim; nCntAnim++)
 		{
 			LPD3DXANIMATIONSET Anim;
-			m_AnimSet.push_back(Anim);
-			m_AnimController->GetAnimationSet(nCntAnim, &m_AnimSet[nCntAnim]);
+			m_anim_set.push_back(Anim);
+			m_anim_controller->GetAnimationSet(nCntAnim, &m_anim_set[nCntAnim]);
 		}
-		m_AnimController->SetTrackAnimationSet(0, m_AnimSet[0]);
-		m_AnimController->SetTrackSpeed(0, AdjustSpeed);
-		m_nNowAnim = 0;
+		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[0]);
+		m_anim_controller->SetTrackSpeed(0, AdjustSpeed);
+		m_now_anim = 0;
 	}
 
 	return S_OK;
@@ -60,8 +60,8 @@ HRESULT CXanimModel::Init(void)
 //=============================================================================
 void CXanimModel::Uninit(void)
 {
-	delete m_RootFrame;
-	delete m_AnimController;
+	delete m_root_frame;
+	delete m_anim_controller;
 }
 
 //=============================================================================
@@ -93,9 +93,9 @@ void CXanimModel::Update(void)
 
 	if (g_bAnimUse == true)
 	{
-		if (m_AnimController != NULL)
+		if (m_anim_controller != NULL)
 		{
-			m_AnimController->AdvanceTime(1.0f, NULL);
+			m_anim_controller->AdvanceTime(1.0f, NULL);
 		}
 	}
 }
@@ -110,9 +110,9 @@ void CXanimModel::UpdateFrame(LPD3DXFRAME base, LPD3DXMATRIX parent_matrix)
 	// 姿勢行列の更新
 	if (parent_matrix != NULL)
 	{
-		D3DXMatrixMultiply(&frame->CombinedTransformationMatrix,
-			&frame->TransformationMatrix,
-			parent_matrix);
+		D3DXMatrixMultiply(	&frame->CombinedTransformationMatrix,
+							&frame->TransformationMatrix,
+							parent_matrix);
 	}
 	else
 	{
@@ -139,9 +139,9 @@ void CXanimModel::UpdateFrame(LPD3DXFRAME base, LPD3DXMATRIX parent_matrix)
 void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 {
 	// フレームの行列を更新
-	UpdateFrame(m_RootFrame, matrix);
+	UpdateFrame(m_root_frame, matrix);
 	// フレーム描画
-	DrawFrame(m_RootFrame);
+	DrawFrame(m_root_frame);
 }
 
 //=============================================================================
@@ -149,38 +149,38 @@ void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 //=============================================================================
 void CXanimModel::Draw(void)
 {
-	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
-	pDevice = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
-	D3DXMATRIX mtxParent, trans_matrix, rot_matrix;
+	LPDIRECT3DDEVICE9 device; //デバイスのポインタ
+	device = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
+	D3DXMATRIX mtx_parent, trans_matrix, rot_matrix;
 
-	D3DXMatrixIdentity(&m_MtxWold);
+	D3DXMatrixIdentity(&m_mtx_wold);
 
 	D3DXMatrixRotationYawPitchRoll(	&rot_matrix,
-									m_Rot.y,
-									m_Rot.x,
-									m_Rot.z);
-	D3DXMatrixMultiply(	&m_MtxWold,
-						&m_MtxWold,
+									m_rot.y,
+									m_rot.x,
+									m_rot.z);
+	D3DXMatrixMultiply(	&m_mtx_wold,
+						&m_mtx_wold,
 						&rot_matrix);
 
 	D3DXMatrixTranslation(	&trans_matrix,
-							m_Pos.x,
-							m_Pos.y,
-							m_Pos.z);
-	D3DXMatrixMultiply(	&m_MtxWold,
-						&m_MtxWold,
+							m_pos.x,
+							m_pos.y,
+							m_pos.z);
+	D3DXMatrixMultiply(	&m_mtx_wold,
+						&m_mtx_wold,
 						&trans_matrix);
 
-	pDevice->GetTransform(D3DTS_WORLD, &mtxParent);
+	device->GetTransform(D3DTS_WORLD, &mtx_parent);
 
 	//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
-	D3DXMatrixMultiply(	&m_MtxWold,
-						&m_MtxWold,
-						&mtxParent);
+	D3DXMatrixMultiply(	&m_mtx_wold,
+						&m_mtx_wold,
+						&mtx_parent);
 
-	pDevice->SetTransform(D3DTS_WORLD, &m_MtxWold);
+	device->SetTransform(D3DTS_WORLD, &m_mtx_wold);
 
-	DrawMatrix(&m_MtxWold);
+	DrawMatrix(&m_mtx_wold);
 }
 
 //=============================================================================
@@ -317,7 +317,7 @@ HRESULT CXanimModel::AllocateBoneMatrix(LPD3DXMESHCONTAINER container)
 	original_container->m_BoneMatrix = new D3DXMATRIX*[bone_num];
 	for (DWORD nCntBone = 0; nCntBone < bone_num; nCntBone++)
 	{
-		pFrame = (FrameData*)D3DXFrameFind(m_RootFrame, container->pSkinInfo->GetBoneName(nCntBone));
+		pFrame = (FrameData*)D3DXFrameFind(m_root_frame, container->pSkinInfo->GetBoneName(nCntBone));
 		if (pFrame == NULL)
 		{
 			return E_FAIL;
@@ -331,20 +331,40 @@ HRESULT CXanimModel::AllocateBoneMatrix(LPD3DXMESHCONTAINER container)
 //=============================================================================
 // モデルの生成
 //=============================================================================
-void CXanimModel::Create(string type)
+CXanimModel *CXanimModel::Create(string type)
+{
+	CXanimModel *anim_model = nullptr;
+
+	if (anim_model == nullptr)
+	{
+		anim_model = new CXanimModel;
+		if (anim_model != nullptr)
+		{
+			anim_model->m_load_pas = type;
+			anim_model->Load();
+			anim_model->Init();
+		}
+	}
+
+	return anim_model;
+}
+
+//=============================================================================
+// モデルのロード
+//=============================================================================
+void CXanimModel::Load(void)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	pDevice = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
 
-	D3DXLoadMeshHierarchyFromX(	type.c_str(),
+	D3DXLoadMeshHierarchyFromX(	m_load_pas.c_str(),
 								D3DXMESH_MANAGED,
 								pDevice,
-								&m_HierarchyData,
+								&m_hierarchy_data,
 								NULL,
-								&m_RootFrame,
-								&m_AnimController);
-	AllocateAllBoneMatrix(m_RootFrame);
-	Init();
+								&m_root_frame,
+								&m_anim_controller);
+	AllocateAllBoneMatrix(m_root_frame);
 }
 
 //=============================================================================
@@ -352,12 +372,12 @@ void CXanimModel::Create(string type)
 //=============================================================================
 void CXanimModel::SetAnimation(int nAnim, float AdjustSpeed)
 {
-	if (m_AnimController != NULL)
+	if (m_anim_controller != NULL)
 	{
-		m_AnimController->SetTrackSpeed(0, AdjustSpeed);
-		m_AnimController->SetTrackAnimationSet(0, m_AnimSet[nAnim]);
-		m_AnimController->SetTrackAnimationSet(1, m_AnimSet[m_nNowAnim]);
-		m_AnimController->SetTrackPosition(0, 0);
-		m_nNowAnim = nAnim;
+		m_anim_controller->SetTrackSpeed(0, AdjustSpeed);
+		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[nAnim]);
+		m_anim_controller->SetTrackAnimationSet(1, m_anim_set[m_now_anim]);
+		m_anim_controller->SetTrackPosition(0, 0);
+		m_now_anim = nAnim;
 	}
 }
