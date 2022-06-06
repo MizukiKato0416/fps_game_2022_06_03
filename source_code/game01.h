@@ -99,6 +99,7 @@ private:
 	bool m_bDialog;						//セリフを出しているかどうか	
 	CPause *m_pPause;					//のポインタ
 	CXanimModel *pXanim;
+	float m_AnimSpeed;
 };	
 
 #endif // !_GAME01_H_

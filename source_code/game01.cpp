@@ -24,6 +24,7 @@
 //================================================
 CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 {
+	m_AnimSpeed = 1.0f;
 	m_pPlayer = nullptr;
 }
 
@@ -90,11 +91,17 @@ void CGame01::Update(void)
 		}
 	}
 #endif // !_DEBUG
-	pXanim->Update();
-	if (pInputKeyboard->GetTrigger(DIK_SPACE) == true)
+	if (pInputKeyboard->GetPress(DIK_LEFT) == true)
 	{
-		pXanim->PlayAnimation(160.0f / 4800);
+		m_AnimSpeed -= 0.01f;
 	}
+	else if (pInputKeyboard->GetPress(DIK_RIGHT) == true)
+	{
+		m_AnimSpeed += 0.01f;
+	}
+
+	pXanim->Update();
+	pXanim->PlayAnimation((160.0f * m_AnimSpeed) / 4800);
 }
 
 //================================================
