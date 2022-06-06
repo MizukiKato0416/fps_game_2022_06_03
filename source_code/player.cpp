@@ -19,6 +19,7 @@
 #include "shadow.h"
 #include "floor.h"
 #include "mesh_field.h"
+#include"xanimmodel.h"
 
 //================================================
 //マクロ定義
@@ -189,6 +190,7 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
+	pXanim->Uninit();
 	Release();
 }
 
@@ -303,6 +305,7 @@ void CPlayer::Draw(void)
 
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
 
 	//モデルの描画
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
@@ -619,6 +622,5 @@ bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius)
 		//当たっている
 		return true;
 	}
-
 	return false;
 }
