@@ -146,8 +146,6 @@ void CXanimModel::Draw(void)
 						&m_mtx_wold,
 						&mtx_parent);
 
-	device->SetTransform(D3DTS_WORLD, &m_mtx_wold);
-
 	DrawMatrix(&m_mtx_wold);
 }
 
@@ -361,4 +359,61 @@ void CXanimModel::PlayAnimation(float speed)
 		m_anim_controller->SetTrackSpeed(0, speed);
 		m_anim_controller->AdvanceTime(1.0f, NULL);
 	}
+}
+
+//=============================================================================
+// アニメーション再生
+//=============================================================================
+void CXanimModel::CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name)
+{
+	FrameData *frame_data = (FrameData*)frame;
+	MeshContainer *container_data = (MeshContainer*)frame_data->pMeshContainer;
+
+	// コンテナの数だけ描画する
+	while (container_data != NULL)
+	{
+		if (container_data->Name == name)
+		{
+			LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)container_data->m_BoneBuffer->GetBufferPointer();	// ボーンの数まわす
+			for (DWORD nCntBone = 0; nCntBone < container_data->m_BoneNum; nCntBone++)
+			{
+				for (DWORD nCntWeight = 0; nCntWeight < container_data->m_BoneWeightNum; nCntWeight++)
+				{
+					DWORD matrix_index = bone_buffer[nCntBone].BoneId[nCntWeight];
+
+					if (matrix_index != UINT_MAX)
+					{
+						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
+						*check_mtx = container_data->m_BoneOffsetMatrix[matrix_index] * (*container_data->m_BoneMatrix[matrix_index]);
+						break;
+					}
+				}
+			}
+		}
+		container_data = (MeshContainer*)container_data->pNextMeshContainer;
+	}
+
+	// 兄弟がいれば再帰で呼び出す
+	if (frame_data->pFrameSibling != NULL)
+	{
+		CheckContainer(frame_data->pFrameSibling, check_mtx, name);
+	}
+
+	// 子がいれば再帰で呼び出す
+	if (frame_data->pFrameFirstChild != NULL)
+	{
+		CheckContainer(frame_data->pFrameFirstChild, check_mtx, name);
+	}
+}
+
+//=============================================================================
+// 指定オブジェクトのマトリックス入手
+//=============================================================================
+D3DXMATRIX CXanimModel::GetMatrix(string name)
+{
+	D3DXMATRIX buf;
+
+	CheckContainer(m_root_frame, &buf, name);
+
+	return buf;
 }

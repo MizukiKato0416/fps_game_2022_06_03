@@ -36,9 +36,12 @@ public:
 	void Load(void);	// モデルのロード
 	void ChangeAnimation(int anim_num, float speed);	// アニメーション変更
 	void PlayAnimation(float speed);	// アニメーション再生
+	void CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name);
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
+	D3DXMATRIX GetMatrix(string name);	// ゲッダー
+	LPD3DXFRAME GetRootFrame(void) { return m_root_frame; }	// ゲッダー
 	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
 private:

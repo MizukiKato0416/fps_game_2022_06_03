@@ -102,6 +102,8 @@ void CGame01::Update(void)
 
 	pXanim->Update();
 	pXanim->PlayAnimation((160.0f * m_AnimSpeed) / 4800);
+
+	D3DXMATRIX test = pXanim->GetMatrix("Cube_001");
 }
 
 //================================================
