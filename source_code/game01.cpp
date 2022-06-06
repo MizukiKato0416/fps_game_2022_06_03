@@ -46,7 +46,7 @@ CGame01::~CGame01()
 HRESULT CGame01::Init(void)
 {
 	CXanimModel *pXanim = new CXanimModel;
-	pXanim->Create("data/zunda.x");
+	pXanim->Create("data/test.x");
 
 	//ƒvƒŒƒCƒ„[‚Ì¶¬
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));

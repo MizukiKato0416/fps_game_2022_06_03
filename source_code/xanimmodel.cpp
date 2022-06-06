@@ -35,6 +35,23 @@ CXanimModel::~CXanimModel()
 //=============================================================================
 HRESULT CXanimModel::Init(void)
 {
+	int nMaxAnim;
+	float AdjustSpeed = 160.0f / 4800.0f;
+
+	if (m_AnimController != NULL)
+	{
+		nMaxAnim = m_AnimController->GetMaxNumAnimationSets();
+		for (int nCntAnim = 0; nCntAnim < nMaxAnim; nCntAnim++)
+		{
+			LPD3DXANIMATIONSET Anim;
+			m_AnimSet.push_back(Anim);
+			m_AnimController->GetAnimationSet(nCntAnim, &m_AnimSet[nCntAnim]);
+		}
+		m_AnimController->SetTrackAnimationSet(0, m_AnimSet[0]);
+		m_AnimController->SetTrackSpeed(0, AdjustSpeed);
+		m_nNowAnim = 0;
+	}
+
 	return S_OK;
 }
 
@@ -317,8 +334,6 @@ HRESULT CXanimModel::AllocateBoneMatrix(LPD3DXMESHCONTAINER container)
 void CXanimModel::Create(string type)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
-	int nMaxAnim;
-	FLOAT AdjustSpeed = FPS / (4800 * 10);
 	pDevice = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
 
 	D3DXLoadMeshHierarchyFromX(	type.c_str(),
@@ -329,19 +344,7 @@ void CXanimModel::Create(string type)
 								&m_RootFrame,
 								&m_AnimController);
 	AllocateAllBoneMatrix(m_RootFrame);
-	if (m_AnimController != NULL)
-	{
-		nMaxAnim = m_AnimController->GetMaxNumAnimationSets();
-		for (int nCntAnim = 0; nCntAnim < nMaxAnim; nCntAnim++)
-		{
-			LPD3DXANIMATIONSET Anim;
-			m_AnimSet.push_back(Anim);
-			m_AnimController->GetAnimationSet(nCntAnim, &m_AnimSet[nCntAnim]);
-		}
-		m_AnimController->SetTrackAnimationSet(0, m_AnimSet[0]);
-		m_AnimController->SetTrackSpeed(0, AdjustSpeed);
-		m_nNowAnim = 0;
-	}
+	Init();
 }
 
 //=============================================================================
