@@ -227,9 +227,6 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 			mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
 		}
 	}
-
-	// ƒJƒŠƒ“ƒO
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 }
 
 //=============================================================================
