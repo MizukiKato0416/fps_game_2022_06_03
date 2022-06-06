@@ -47,6 +47,7 @@ CGame01::~CGame01()
 HRESULT CGame01::Init(void)
 {
 	pXanim = CXanimModel::Create("data/test.x");
+	pXanim->ChangeAnimation(0, (120.0f * m_AnimSpeed) / 4800);
 
 	//ƒvƒŒƒCƒ„[‚Ì¶¬
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
@@ -101,7 +102,15 @@ void CGame01::Update(void)
 	}
 
 	pXanim->Update();
-	pXanim->PlayAnimation((160.0f * m_AnimSpeed) / 4800);
+	if (pInputKeyboard->GetPress(DIK_1) == true)
+	{
+		pXanim->ChangeAnimation(0, (70.0f * m_AnimSpeed) / 4800);
+	}
+	else if (pInputKeyboard->GetPress(DIK_2) == true)
+	{
+		pXanim->ChangeAnimation(1, (120.0f * m_AnimSpeed) / 4800);
+	}
+
 }
 
 //================================================

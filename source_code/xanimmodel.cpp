@@ -65,7 +65,7 @@ void CXanimModel::Uninit(void)
 //=============================================================================
 void CXanimModel::Update(void)
 {
-
+	m_anim_controller->AdvanceTime(1.0f, NULL);
 }
 
 //=============================================================================
@@ -341,20 +341,7 @@ void CXanimModel::ChangeAnimation(int anim_num, float speed)
 		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[anim_num]);
 		m_anim_controller->SetTrackAnimationSet(1, m_anim_set[m_now_anim]);
 		m_anim_controller->SetTrackPosition(0, 0);
-		m_anim_controller->AdvanceTime(1.0f, NULL);
 		m_now_anim = anim_num;
-	}
-}
-
-//=============================================================================
-// アニメーション再生
-//=============================================================================
-void CXanimModel::PlayAnimation(float speed)
-{
-	if (m_anim_controller != NULL)
-	{
-		m_anim_controller->SetTrackSpeed(0, speed);
-		m_anim_controller->AdvanceTime(1.0f, NULL);
 	}
 }
 
