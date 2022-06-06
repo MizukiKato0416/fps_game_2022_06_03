@@ -249,9 +249,6 @@ void CModel::Draw(void)
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	//現在のマテリアルを保存
-	pDevice->GetMaterial(&matDef);
-
 	if (m_bObjParent == false)
 	{
 		//各パーツの親のマトリックスの設定
@@ -275,7 +272,8 @@ void CModel::Draw(void)
 
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
-
+	
+	/*
 	//マテリアルデータへのポインタを取得
 	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
 
@@ -299,13 +297,75 @@ void CModel::Draw(void)
 
 	//保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
+	*/
+
+	//カメラのポインタ配列1番目のアドレス取得
+	CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
+	//cameraの取得
+	CCamera* pCamera = &**pCameraAddress;
+	if (pCamera != nullptr)
+	{
+		//スクリーン座標に変換
+		D3DXVECTOR3 screenPos[MODEL_VTX];
+
+		//8頂点の設定
+		for (int nCntVtx = 0; nCntVtx < MODEL_VTX; nCntVtx++)
+		{
+			screenPos[nCntVtx] = pCamera->WorldPosToScreenPos(D3DXVECTOR3(m_vtxMtxWorld[nCntVtx]._41, m_vtxMtxWorld[nCntVtx]._42, m_vtxMtxWorld[nCntVtx]._43));
+		}
+
+		//スクリーンに映っているとき
+		if ((screenPos[0].x >= 0.0f && screenPos[0].x <= SCREEN_WIDTH && screenPos[0].y >= 0.0f && screenPos[0].y <= SCREEN_HEIGHT) ||
+			(screenPos[1].x >= 0.0f && screenPos[1].x <= SCREEN_WIDTH && screenPos[1].y >= 0.0f && screenPos[1].y <= SCREEN_HEIGHT) ||
+			(screenPos[2].x >= 0.0f && screenPos[2].x <= SCREEN_WIDTH && screenPos[2].y >= 0.0f && screenPos[2].y <= SCREEN_HEIGHT) ||
+			(screenPos[3].x >= 0.0f && screenPos[3].x <= SCREEN_WIDTH && screenPos[3].y >= 0.0f && screenPos[3].y <= SCREEN_HEIGHT) ||
+			(screenPos[4].x >= 0.0f && screenPos[4].x <= SCREEN_WIDTH && screenPos[4].y >= 0.0f && screenPos[4].y <= SCREEN_HEIGHT) ||
+			(screenPos[5].x >= 0.0f && screenPos[5].x <= SCREEN_WIDTH && screenPos[5].y >= 0.0f && screenPos[5].y <= SCREEN_HEIGHT) ||
+			(screenPos[6].x >= 0.0f && screenPos[6].x <= SCREEN_WIDTH && screenPos[6].y >= 0.0f && screenPos[6].y <= SCREEN_HEIGHT) ||
+			(screenPos[7].x >= 0.0f && screenPos[7].x <= SCREEN_WIDTH && screenPos[7].y >= 0.0f && screenPos[7].y <= SCREEN_HEIGHT))
+		{
+
+			//現在のマテリアルを保存
+			pDevice->GetMaterial(&matDef);
+			//マテリアルデータへのポインタを取得
+			pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+			for (int nCntMat = 0; nCntMat < (int)m_nNumMat; nCntMat++)
+			{
+				//pMat[nCntMat].MatD3D.Diffuse.r = 1.0f;
+				//pMat[nCntMat].MatD3D.Diffuse.g = 0.0f;
+				//pMat[nCntMat].MatD3D.Diffuse.b = 0.0f;
+				//pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
+
+				//マテリアルの設定
+				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+				//テクスチャの設定
+				pDevice->SetTexture(0, m_pTexture[nCntMat]);
+
+				//モデル(パーツ)の描画
+				m_pMesh->DrawSubset(nCntMat);
+			}
+			//保存していたマテリアルを戻す
+			pDevice->SetMaterial(&matDef);
+
+		}
+		else
+		{
+			int nCnt = 0;
+		}
+	}
+	
 
 	//8頂点の設定
 	for (int nCntVtx = 0; nCntVtx < MODEL_VTX; nCntVtx++)
 	{
 		D3DXMatrixIdentity(&m_vtxMtxWorld[nCntVtx]);		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&mtxRot);		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&mtxTrans);		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&mtxParent);		//ワールドマトリックスの初期化
 
-		//向きを反映
+											//向きを反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_vtxRot[nCntVtx].y, m_vtxRot[nCntVtx].x, m_vtxRot[nCntVtx].z);
 		D3DXMatrixMultiply(&m_vtxMtxWorld[nCntVtx], &m_vtxMtxWorld[nCntVtx], &mtxRot);
 

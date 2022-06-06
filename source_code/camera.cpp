@@ -234,6 +234,38 @@ int CCamera::GetNum(void)
 	return m_nNum;
 }
 
+//=======================================================================
+//ワールド座標からスクリーン座標への変換
+//=======================================================================
+D3DXVECTOR3 CCamera::WorldPosToScreenPos(D3DXVECTOR3 pos)
+{
+	// ビュー行列と射影行列の取得
+	D3DXMATRIX view = m_mtxView;
+	D3DXMATRIX proj = m_mtxProjection;
+
+	// ビューポート行列（スクリーン行列）の作成
+	float w = (float)SCREEN_WIDTH / 2.0f;
+	float h = (float)SCREEN_HEIGHT / 2.0f;
+
+	D3DXMATRIX viewport = {
+		w , 0 , 0 , 0 ,
+		0 ,-h , 0 , 0 ,
+		0 , 0 , 1 , 0 ,
+		w , h , 0 , 1
+	};
+
+	D3DXVECTOR3 screenPos, tmp = pos;
+	// ビュー変換とプロジェクション変換
+	tmp = VTransform(tmp, view);
+	tmp = VTransform(tmp, proj);
+	// zで割って-1~1の範囲に収める
+	tmp.x /= tmp.z; tmp.y /= tmp.z; tmp.z /= tmp.z;
+	// スクリーン変換
+	screenPos = VTransform(tmp, viewport);
+
+	return screenPos;
+}
+
 //================================================
 //回転処理
 //================================================
