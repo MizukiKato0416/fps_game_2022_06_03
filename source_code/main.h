@@ -45,6 +45,8 @@ using namespace std;
 //プロトタイプ宣言
 //========================================================
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+//行列を使ったベクトルの変換
+D3DXVECTOR3 VTransform(D3DXVECTOR3 InV, D3DXMATRIX InM);
 
 #ifdef _DEBUG
 int GetFPS(void);

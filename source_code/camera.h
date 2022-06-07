@@ -59,6 +59,9 @@ public:
 	void SetRotateX(const bool bRotateX) { m_bRotateX = bRotateX; }
 	//カメラをY軸回転させるかどうか設定処理
 	void SetRotateY(const bool bRotateY) { m_bRotateY = bRotateY; }
+	//ワールド座標からスクリーン座標への変換
+	D3DXVECTOR3 WorldPosToScreenPos(D3DXVECTOR3 pos);
+
 
 private:
 	//メンバ関数
