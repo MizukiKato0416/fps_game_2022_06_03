@@ -35,7 +35,7 @@ HRESULT CXanimModel::Init(void)
 {
 	int nMaxAnim;
 
-	if (m_anim_controller != NULL)
+	if (m_anim_controller != nullptr)
 	{
 		nMaxAnim = m_anim_controller->GetMaxNumAnimationSets();
 		for (int nCntAnim = 0; nCntAnim < nMaxAnim; nCntAnim++)

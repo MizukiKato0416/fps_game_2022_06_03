@@ -183,6 +183,7 @@ HRESULT CPlayer::Init(void)
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	pXanim = CXanimModel::Create("data/test.x");
+	pXanim->ChangeAnimation(0, 60 / 4800);
 
 	return S_OK;
 }
@@ -311,12 +312,6 @@ void CPlayer::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
 	pXanim->Draw();
-
-	//モデルの描画
-	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
-	{
-		//m_apModel[nCntModel]->Draw();
-	}
 }
 
 //================================================
@@ -384,8 +379,6 @@ void CPlayer::Move(void)
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-	pXanim->ChangeSpeed(60 / 4800);
 
 	//パッドX取得処理
 	CInputPadX *pInputPadX;
