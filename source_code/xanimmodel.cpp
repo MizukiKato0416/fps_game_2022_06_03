@@ -17,7 +17,7 @@
 //=============================================================================
 CXanimModel::CXanimModel()
 {
-
+	m_anim_controller = nullptr;
 }
 
 //=============================================================================
@@ -65,7 +65,10 @@ void CXanimModel::Uninit(void)
 //=============================================================================
 void CXanimModel::Update(void)
 {
-	m_anim_controller->AdvanceTime(1.0f, NULL);
+	if (m_anim_controller != nullptr)
+	{
+		m_anim_controller->AdvanceTime(1.0f, NULL);
+	}
 }
 
 //=============================================================================
