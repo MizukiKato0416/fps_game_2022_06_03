@@ -183,7 +183,7 @@ HRESULT CPlayer::Init(void)
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	pXanim = CXanimModel::Create("data/test.x");
-	pXanim->ChangeAnimation(0, 60 / 4800);
+	pXanim->ChangeAnimation(0, 60.0f / 4800.0f);
 
 	return S_OK;
 }
