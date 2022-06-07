@@ -182,7 +182,7 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
-	//pXanim = CXanimModel::Create("data/test.x");
+	pXanim = CXanimModel::Create("data/test.x");
 
 	return S_OK;
 }
@@ -192,7 +192,7 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
-	//pXanim->Uninit();
+	pXanim->Uninit();
 	Release();
 }
 
@@ -260,7 +260,7 @@ void CPlayer::Update(void)
 	pos = GetPos();
 	m_pos = pos;
 
-	//pXanim->Update();
+	pXanim->Update();
 }
 
 //================================================
@@ -310,16 +310,12 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//pXanim->Draw();
-
-	//D3DXMATRIX test = pXanim->GetMatrix("Cube_002");
-
-	//pDevice->SetTransform(D3DTS_WORLD, &test);
+	pXanim->Draw();
 
 	//モデルの描画
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
 	{
-		m_apModel[nCntModel]->Draw();
+		//m_apModel[nCntModel]->Draw();
 	}
 }
 
@@ -388,6 +384,8 @@ void CPlayer::Move(void)
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	pXanim->ChangeSpeed(60 / 4800);
 
 	//パッドX取得処理
 	CInputPadX *pInputPadX;
