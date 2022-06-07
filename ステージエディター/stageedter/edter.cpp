@@ -12,7 +12,7 @@
 #include "keyinput.h"
 #include "manager.h"
 #include "renderer.h"
-#include "DxLib.h"
+#include "meshfield.h"
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -43,6 +43,10 @@ CEdter::~CEdter()
 //=============================================================================
 HRESULT CEdter::Init(void)
 {
+	//メッシュフィールドの生成
+	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
+	pMeshField->BindTexture(CManager::GetTexture()->GetTexture(4));
+
 	ifstream iFile;
 	string FileString;
 	D3DXVECTOR3 Pos;

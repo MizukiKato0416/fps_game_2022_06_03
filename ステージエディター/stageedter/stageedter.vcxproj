@@ -163,6 +163,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
+    <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="mouseinput.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
+    <ClInclude Include="meshfield.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="mouseinput.h" />
     <ClInclude Include="renderer.h" />

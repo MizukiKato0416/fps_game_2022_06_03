@@ -180,6 +180,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
+//=======================================================================
+//行列を使ったベクトルの変換
+//=======================================================================
+D3DXVECTOR3 VTransform(D3DXVECTOR3 InV, D3DXMATRIX InM)
+{
+	D3DXVECTOR3 tmp;
+	tmp.x = InV.x * InM.m[0][0] + InV.y * InM.m[1][0] + InV.z * InM.m[2][0] + InM.m[3][0];
+	tmp.y = InV.x * InM.m[0][1] + InV.y * InM.m[1][1] + InV.z * InM.m[2][1] + InM.m[3][1];
+	tmp.z = InV.x * InM.m[0][2] + InV.y * InM.m[1][2] + InV.z * InM.m[2][2] + InM.m[3][2];
+
+	return tmp;
+}
+
 #ifdef _DEBUG
 //=============================================================================
 // FPS取得処理
