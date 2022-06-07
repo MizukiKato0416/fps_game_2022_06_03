@@ -9,6 +9,7 @@
 #include "fade.h"
 #include "floor.h"
 #include "mesh_field.h"
+#include "meshsphere.h"
 #include "model_single.h"
 
 //================================================
@@ -54,6 +55,14 @@ HRESULT CGame01::Init(void)
 	pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 	//CFloor *pFloor = CFloor::Create(D3DXVECTOR3(0.0f, 60.0f, 0.0f), D3DXVECTOR3(500.0f, 000.0f, 500.0f), D3DXVECTOR3(0.2f, 0.0f, 0.0f));
 	//pFloor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
+
+	//メッシュスフィア生成
+	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 5000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		                                           32, 8);
+	pMeshSphere->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("sky.jpg"));
+
+	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 0.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
 	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, true);
 	LoadModelTxt("data/model_set.txt");
