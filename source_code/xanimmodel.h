@@ -37,13 +37,16 @@ public:
 	void ChangeAnimation(int anim_num, float speed);	// アニメーション変更
 	void ChangeSpeed(float speed) { m_anim_controller->SetTrackSpeed(0, speed); }	// アニメーションスピード変更
 	void CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name);	// コンテナの名前のチェック
+	void CheckContainer(LPD3DXFRAME frame);	// コンテナ最小最大頂点のチェック
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
+	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
 	D3DXMATRIX GetMatrix(string name);	// ゲッダー
 	LPD3DXFRAME GetRootFrame(void) { return m_root_frame; }	// ゲッダー
 	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
+	D3DXVECTOR3 GetSize(void) { return m_size; }	// ゲッター
 private:
 	HierarchyData m_hierarchy_data;	// 階層データ
 	LPD3DXFRAME m_root_frame;	// ルートフレーム
@@ -53,6 +56,9 @@ private:
 	D3DXMATRIX m_mtx_wold;	// ワールドマトリックス
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 回転
+	D3DXVECTOR3 m_size;	// サイズ
+	D3DXVECTOR3 m_vtx_min;	// モデルの最小頂点
+	D3DXVECTOR3 m_vtx_max;	// モデルの最大頂点
 	int m_now_anim;	// 現在のアニメーション
 };
 
