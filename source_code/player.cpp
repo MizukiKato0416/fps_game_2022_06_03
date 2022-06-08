@@ -355,10 +355,16 @@ void CPlayer::Draw(void)
 
 	m_pAnimModel->Draw();
 
+	D3DXMATRIX test;
+	D3DXMatrixIdentity(&test);
+	test = m_pAnimModel->GetMatrix("handR");
+
+	pDevice->SetTransform(D3DTS_WORLD, &test);
+
 	//ƒ‚ƒfƒ‹‚Ì•`‰æ
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
 	{
-		//m_apModel[nCntModel]->Draw();
+		m_apModel[nCntModel]->Draw();
 	}
 }
 
