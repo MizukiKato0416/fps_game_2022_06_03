@@ -13,6 +13,11 @@
 #include "object3D.h"
 
 //================================================
+//マクロ定義
+//================================================
+#define MODEL_SINGLE_SUBTRACTION	(1.0f)		//誤差
+
+//================================================
 //静的メンバ変数宣言
 //================================================
 
@@ -293,6 +298,10 @@ bool CModelSingle::Collision(CObject *pObject)
 				vtxPos[5].z -= objectSize.x / 2.0f;
 				vtxPos[6].z -= objectSize.x / 2.0f;
 				vtxPos[7].z -= objectSize.x / 2.0f;
+				vtxPos[2].y -= objectSize.y;
+				vtxPos[3].y -= objectSize.y;
+				vtxPos[6].y -= objectSize.y;
+				vtxPos[7].y -= objectSize.y;
 
 				//8頂点のワールドマトリックスを取得
 				D3DXMATRIX *pVtxMtxWorld = pModelSingle->m_pModel->GetVtxMtxWorld();
@@ -388,25 +397,29 @@ bool CModelSingle::Collision(CObject *pObject)
 
 				//内積の計算結果がマイナスの時
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f &&
-					fVecDotOld[4] > -FLT_EPSILON * 10000)
+					fVecDotOld[4] >= -MODEL_SINGLE_SUBTRACTION)
 				{//上の面
 				 //押し出す位置を求める
 					D3DXVECTOR3 objectPos = pos;
 					objectPos.y = ((vecNor[4].x * vecPos[4].x) - (vecNor[4].z * vecPos[4].z)) / vecNor[4].y;
 
 					objectPos.y += pModelSingle->m_pos.y + pModelSingle->m_size.y;
-					//objectPos.y += pModelSingle->m_pos.y ;
 
 					pObject->SetPos(objectPos);
 					bLand = true;
 				}
 				else if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[5] <= 0.0f &&
-					fVecDotOld[5] > -FLT_EPSILON * 10000)
+					fVecDotOld[5] > -MODEL_SINGLE_SUBTRACTION)
 				{//下の面
-				
+					D3DXVECTOR3 objectPos = pos;
+					objectPos.y = ((vecNor[5].x * vecPos[5].x) - (vecNor[5].z * vecPos[5].z)) / vecNor[5].y;
+
+					objectPos.y += pModelSingle->m_pos.y - pModelSingle->m_size.y;
+
+					pObject->SetPos(objectPos);
 				}
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
-					fVecDotOld[0] > -FLT_EPSILON * 10000)
+					fVecDotOld[0] > -MODEL_SINGLE_SUBTRACTION)
 				{//奥の面
 					//ムーブベクトルを求める
 					D3DXVECTOR3 moveVec = pos - posOld;
@@ -424,7 +437,7 @@ bool CModelSingle::Collision(CObject *pObject)
 					pObject->SetPos(objectPos);
 				}
 				else if (fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
-						 fVecDotOld[2] > -FLT_EPSILON * 10000)
+						 fVecDotOld[2] > -MODEL_SINGLE_SUBTRACTION)
 				{//前の面
 					//ムーブベクトルを求める
 					D3DXVECTOR3 moveVec = pos - posOld;
@@ -442,7 +455,7 @@ bool CModelSingle::Collision(CObject *pObject)
 					pObject->SetPos(objectPos);
 				}
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
-					fVecDotOld[1] > -FLT_EPSILON * 10000)
+					fVecDotOld[1] > -MODEL_SINGLE_SUBTRACTION)
 				{//右の面
 					//ムーブベクトルを求める
 					D3DXVECTOR3 moveVec = pos - posOld;
@@ -460,7 +473,7 @@ bool CModelSingle::Collision(CObject *pObject)
 					pObject->SetPos(objectPos);
 				}
 				else if (fVecDot[0] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
-						 fVecDotOld[3] > -FLT_EPSILON * 10000)
+						 fVecDotOld[3] > -MODEL_SINGLE_SUBTRACTION)
 				{//左の面
 					//ムーブベクトルを求める
 					D3DXVECTOR3 moveVec = pos - posOld;

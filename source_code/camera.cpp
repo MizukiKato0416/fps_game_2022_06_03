@@ -242,6 +242,17 @@ D3DXVECTOR3 CCamera::WorldPosToScreenPos(D3DXVECTOR3 pos)
 	// ビュー行列と射影行列の取得
 	D3DXMATRIX view = m_mtxView;
 	D3DXMATRIX proj = m_mtxProjection;
+	
+	//プロジェクションマトリックスの初期化
+	D3DXMatrixIdentity(&proj);
+
+	//プロジェクションマトリックスを作成
+	D3DXMatrixPerspectiveFovLH(&proj,
+		D3DXToRadian(60.0f),									//画角
+		(float)m_viewport.Width / (float)m_viewport.Height,		//比率
+		CAMERA_MIN_RENDERER,									//Z方向の描画範囲
+		CAMERA_MAX_RENDERER);
+
 
 	// ビューポート行列（スクリーン行列）の作成
 	float w = (float)SCREEN_WIDTH / 2.0f;
