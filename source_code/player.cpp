@@ -19,6 +19,7 @@
 #include "shadow.h"
 #include "floor.h"
 #include "mesh_field.h"
+#include "xanimmodel.h"
 
 //================================================
 //マクロ定義
@@ -181,6 +182,10 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	// アニメーション付きXファイルの生成
+	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+
 	return S_OK;
 }
 
@@ -189,6 +194,7 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
+	m_pAnimModel->Uninit();
 	Release();
 }
 
@@ -283,6 +289,21 @@ void CPlayer::Update(void)
 		pos = GetPos();
 		m_pos = pos;
 	}
+
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	if (pInputKeyboard->GetTrigger(DIK_1) == true)
+	{
+		m_pAnimModel->ChangeAnimation(0, 20.0f / 4800.0f);
+	}
+	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
+	{
+		m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+	}
+
+	m_pAnimModel->Update();
 }
 
 //================================================
@@ -332,10 +353,12 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
+	m_pAnimModel->Draw();
+
 	//モデルの描画
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
 	{
-		m_apModel[nCntModel]->Draw();
+		//m_apModel[nCntModel]->Draw();
 	}
 }
 
