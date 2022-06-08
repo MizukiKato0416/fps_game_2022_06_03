@@ -162,9 +162,13 @@ HRESULT CPlayer::Init(void)
 	m_pMotionPlayer = CMotionPlayer::Create(this);
 	m_pMotionPlayer->SetMotion(CMotionRoad::MOTION_PLAYER_TYPE_NEUTRAL, this);
 
+	// アニメーション付きXファイルの生成
+	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	modelSize = m_apModel[0]->GetSize();
+	modelSize = m_pAnimModel->GetSize();
 
 	//サイズのXとZを比べて大きいほうをXとZそれぞれに割り当てる
 	if (modelSize.x >= modelSize.z)
@@ -181,10 +185,6 @@ HRESULT CPlayer::Init(void)
 
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
-
-	// アニメーション付きXファイルの生成
-	m_pAnimModel = CXanimModel::Create("data/motion.x");
-	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
 
 	return S_OK;
 }
@@ -273,7 +273,7 @@ void CPlayer::Update(void)
 	m_pos = pos;
 
 	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 10.0f) == true)
+	if (CMeshField::Collision(this, m_size.x * 20.0f) == true)
 	{
 		//位置取得
 		m_pos = GetPos();
@@ -365,7 +365,7 @@ void CPlayer::Draw(void)
 
 	D3DXMATRIX test;
 	D3DXMatrixIdentity(&test);
-	test = m_pAnimModel->GetMatrix("handR");
+	test = m_pAnimModel->GetMatrix("handL");
 
 	pDevice->SetTransform(D3DTS_WORLD, &test);
 
