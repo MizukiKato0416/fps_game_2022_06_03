@@ -23,8 +23,10 @@
 #define CAMERA_RESULT_DISTANCE		(200.0f)								//リザルトの視点と注視点の距離
 #define CAMERA_V_MAX_POS_Y			(400.0f)								//視点のy座標最大値
 #define CAMERA_V_MIN_POS_Y			(50.0f)									//視点のy座標最小値
-#define CAMERA_MAX_RENDERER			(200000.0f)								//cameraでの描画最大Z値
+#define CAMERA_MAX_RENDERER			(13000.0f)								//cameraでの描画最大Z値
 #define CAMERA_MIN_RENDERER			(50.0f)									//cameraでの描画最小Z値
+#define CAMERA_POS_Y				(80.0f)								//カメラのY位置
+#define CAMERA_POS_XZ				(20.0f)									//カメラのXZ位置
 
 //================================================
 //静的メンバ変数宣言
@@ -248,7 +250,7 @@ D3DXVECTOR3 CCamera::WorldPosToScreenPos(D3DXVECTOR3 pos)
 
 	//プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&proj,
-		D3DXToRadian(80.0f),									//画角
+		D3DXToRadian(55.0f),									//画角
 		(float)m_viewport.Width / (float)m_viewport.Height,		//比率
 		CAMERA_MIN_RENDERER,									//Z方向の描画範囲
 		CAMERA_MAX_RENDERER);
@@ -401,16 +403,22 @@ void CCamera::MainCameraUpdate(void)
 	{
 		if (object[count_object]->GetObjType() == CObject::OBJTYPE::PLAYER)
 		{
-			//注視点をプレイヤーに固定する
-			m_posR = object[count_object]->GetPos();
-			
+			//視点をプレイヤーに固定する
+			m_posV = object[count_object]->GetPos();
+			m_posV.y += CAMERA_POS_Y;
+
+			//プレイヤーにキャスト
+			CPlayer *pPlayer = (CPlayer*)object[count_object];
+			//XとZの位置を調節
+			m_posV.x += sinf(pPlayer->GetRot().y) * CAMERA_POS_XZ;
+			m_posV.z += cosf(pPlayer->GetRot().y) * CAMERA_POS_XZ;
 		}
 	}
 
 	//視点の場所を注視点を元に移動
-	m_posV.x = m_posR.x + m_fDifferVR * sinf(m_rot.x) * sinf(m_rot.y);
-	m_posV.z = m_posR.z + m_fDifferVR * sinf(m_rot.x) * cosf(m_rot.y);
-	m_posV.y = m_posR.y + m_fDifferVR * cosf(m_rot.x);
+	m_posR.x = m_posV.x + m_fDifferVR * sinf(m_rot.x) * sinf(m_rot.y);
+	m_posR.z = m_posV.z + m_fDifferVR * sinf(m_rot.x) * cosf(m_rot.y);
+	m_posR.y = m_posV.y + m_fDifferVR * cosf(m_rot.x);
 
 	
 	//マウス取得処理
@@ -429,7 +437,7 @@ void CCamera::MainCameraUpdate(void)
 	}
 	if (mouseVelocity.y != 0.0f)
 	{
-		m_rot.x += mouseVelocity.y * CAMERA_V__MOUSE_SPEED_XZ;
+		m_rot.x -= mouseVelocity.y * CAMERA_V__MOUSE_SPEED_XZ;
 	}
 
 

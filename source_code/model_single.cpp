@@ -249,10 +249,10 @@ bool CModelSingle::SimpleCollision(CObject *pObject)
 //================================================
 //回転させていい当たり判定処理
 //================================================
-bool CModelSingle::Collision(CObject *pObject)
+int CModelSingle::Collision(CObject *pObject)
 {
 	//着地しているかどうか
-	bool bLand = false;
+	int nHit = 0;
 
 	//オブジェクト情報を入れるポインタ
 	vector<CObject*> object;
@@ -406,7 +406,7 @@ bool CModelSingle::Collision(CObject *pObject)
 					objectPos.y += pModelSingle->m_pos.y + pModelSingle->m_size.y;
 
 					pObject->SetPos(objectPos);
-					bLand = true;
+					nHit = 1;
 				}
 				else if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[5] <= 0.0f &&
 					fVecDotOld[5] > -MODEL_SINGLE_SUBTRACTION)
@@ -416,6 +416,7 @@ bool CModelSingle::Collision(CObject *pObject)
 
 					objectPos.y += pModelSingle->m_pos.y - pModelSingle->m_size.y;
 
+					nHit = 2;
 					pObject->SetPos(objectPos);
 				}
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
@@ -493,7 +494,7 @@ bool CModelSingle::Collision(CObject *pObject)
 			}
 		}
 	}
-	return bLand;
+	return nHit;
 }
 
 //================================================
