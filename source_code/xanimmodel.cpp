@@ -230,6 +230,9 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 			mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
 		}
 	}
+
+	// カリング
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 //=============================================================================
@@ -349,14 +352,14 @@ void CXanimModel::ChangeAnimation(int anim_num, float speed)
 }
 
 //=============================================================================
-// アニメーション再生
+// コンテナのチェック
 //=============================================================================
 void CXanimModel::CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name)
 {
 	FrameData *frame_data = (FrameData*)frame;
 	MeshContainer *container_data = (MeshContainer*)frame_data->pMeshContainer;
 
-	// コンテナの数だけ描画する
+	// コンテナがあったら
 	while (container_data != NULL)
 	{
 		if (container_data->Name == name)

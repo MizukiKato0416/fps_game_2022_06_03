@@ -296,7 +296,7 @@ void CPlayer::Update(void)
 
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
 	{
-		m_pAnimModel->ChangeAnimation(0, 20.0f / 4800.0f);
+		m_pAnimModel->ChangeAnimation(0, (20.0f * 4.0f) / 4800.0f);
 	}
 	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
 	{

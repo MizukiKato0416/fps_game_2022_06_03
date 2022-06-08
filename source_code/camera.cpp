@@ -248,7 +248,7 @@ D3DXVECTOR3 CCamera::WorldPosToScreenPos(D3DXVECTOR3 pos)
 
 	//プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&proj,
-		D3DXToRadian(60.0f),									//画角
+		D3DXToRadian(80.0f),									//画角
 		(float)m_viewport.Width / (float)m_viewport.Height,		//比率
 		CAMERA_MIN_RENDERER,									//Z方向の描画範囲
 		CAMERA_MAX_RENDERER);
