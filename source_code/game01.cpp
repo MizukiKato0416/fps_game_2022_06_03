@@ -65,6 +65,7 @@ HRESULT CGame01::Init(void)
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
 	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, true);
+	CModelSingle::Create(D3DXVECTOR3(50.0f, 40.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "fan.x", NULL, true);
 	LoadModelTxt("data/model_set.txt");
 
 	return S_OK;

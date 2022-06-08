@@ -246,51 +246,50 @@ void CMeshField::Draw(void)
 									0,													//開始する頂点のインデックス
 									2 * m_nLine * m_nVertical + (m_nVertical * 4) - 4);	//描画するプリミティブ数
 
-	/*
-	//カメラのポインタ配列1番目のアドレス取得
-	CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
-	//cameraの取得
-	CCamera* pCamera = &**pCameraAddress;
-	if (pCamera != nullptr)
-	{
-		for (int nCnt1 = 0; nCnt1 < 2 * m_nLine * m_nVertical + (m_nVertical * 4) - 4; nCnt1++)
-		{
-			//対象の現在位置取得
-			D3DXVECTOR3 pos[3];
-			pos[0] = m_indexPos[nCnt1];
-			pos[1] = m_indexPos[nCnt1 + 1];
-			pos[2] = m_indexPos[nCnt1 + 2];
+	
+	////カメラのポインタ配列1番目のアドレス取得
+	//CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
+	////cameraの取得
+	//CCamera* pCamera = &**pCameraAddress;
+	//if (pCamera != nullptr)
+	//{
+	//	for (int nCnt1 = 0; nCnt1 < m_indexPos.size() - 2; nCnt1++)
+	//	{
+	//		//対象の現在位置取得
+	//		D3DXVECTOR3 pos[3];
+	//		pos[0] = m_indexPos[nCnt1];
+	//		pos[1] = m_indexPos[nCnt1 + 1];
+	//		pos[2] = m_indexPos[nCnt1 + 2];
 
-			//スクリーン座標に変換
-			D3DXVECTOR3 screenPos[3];
-			screenPos[0] = pCamera->WorldPosToScreenPos(pos[0]);
-			screenPos[1] = pCamera->WorldPosToScreenPos(pos[1]);
-			screenPos[2] = pCamera->WorldPosToScreenPos(pos[2]);
+	//		//スクリーン座標に変換
+	//		D3DXVECTOR3 screenPos[3];
+	//		screenPos[0] = pCamera->WorldPosToScreenPos(pos[0]);
+	//		screenPos[1] = pCamera->WorldPosToScreenPos(pos[1]);
+	//		screenPos[2] = pCamera->WorldPosToScreenPos(pos[2]);
 
-			//スクリーンに映っているとき
-			if ((screenPos[0].x >= 0.0f && screenPos[0].x <= SCREEN_WIDTH && screenPos[0].y >= 0.0f && screenPos[0].y <= SCREEN_HEIGHT) ||
-				(screenPos[1].x >= 0.0f && screenPos[1].x <= SCREEN_WIDTH && screenPos[1].y >= 0.0f && screenPos[1].y <= SCREEN_HEIGHT) ||
-				(screenPos[2].x >= 0.0f && screenPos[2].x <= SCREEN_WIDTH && screenPos[2].y >= 0.0f && screenPos[2].y <= SCREEN_HEIGHT))
-			{
-				//頂点バッファをデータストリームに設定
-				pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
-				//インデックスバッファをデータストリームに設定
-				pDevice->SetIndices(m_pIdxBuff);
+	//		//スクリーンに映っているとき
+	//		if ((screenPos[0].x >= 0.0f && screenPos[0].x <= SCREEN_WIDTH && screenPos[0].y >= 0.0f && screenPos[0].y <= SCREEN_HEIGHT) ||
+	//			(screenPos[1].x >= 0.0f && screenPos[1].x <= SCREEN_WIDTH && screenPos[1].y >= 0.0f && screenPos[1].y <= SCREEN_HEIGHT) ||
+	//			(screenPos[2].x >= 0.0f && screenPos[2].x <= SCREEN_WIDTH && screenPos[2].y >= 0.0f && screenPos[2].y <= SCREEN_HEIGHT))
+	//		{
+	//			//頂点バッファをデータストリームに設定
+	//			pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+	//			//インデックスバッファをデータストリームに設定
+	//			pDevice->SetIndices(m_pIdxBuff);
 
-				pDevice->SetFVF(FVF_VERTEX_3D);					//頂点フォーマットの設定
+	//			pDevice->SetFVF(FVF_VERTEX_3D);					//頂点フォーマットの設定
 
-				pDevice->SetTexture(0, m_pTexture);				//テクスチャの設定
+	//			pDevice->SetTexture(0, m_pTexture);				//テクスチャの設定
 
-				pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,	//プリミティブの種類
-					0,
-					0,
-					((m_nLine + 1) * (m_nVertical + 1)),				//頂点の数
-					nCnt1,												//開始する頂点のインデックス
-					3);	//描画するプリミティブ数
-			}
-		}
-	}
-	*/
+	//			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,	//プリミティブの種類
+	//				0,
+	//				0,
+	//				((m_nLine + 1) * (m_nVertical + 1)),				//頂点の数
+	//				nCnt1,												//開始する頂点のインデックス
+	//				2);	//描画するプリミティブ数
+	//		}
+	//	}
+	//}
 }
 
 //================================================
