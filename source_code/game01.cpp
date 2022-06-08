@@ -9,6 +9,7 @@
 #include "fade.h"
 #include "floor.h"
 #include "mesh_field.h"
+#include "meshsphere.h"
 #include "model_single.h"
 
 //================================================
@@ -55,7 +56,16 @@ HRESULT CGame01::Init(void)
 	//CFloor *pFloor = CFloor::Create(D3DXVECTOR3(0.0f, 60.0f, 0.0f), D3DXVECTOR3(500.0f, 000.0f, 500.0f), D3DXVECTOR3(0.2f, 0.0f, 0.0f));
 	//pFloor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 
-	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, false);
+	//メッシュスフィア生成
+	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 5000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		                                           32, 8);
+	pMeshSphere->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("sky.jpg"));
+
+	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 0.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
+
+	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, true);
+	LoadModelTxt("data/model_set.txt");
 
 	return S_OK;
 }
@@ -100,4 +110,41 @@ void CGame01::Update(void)
 void CGame01::Draw(void)
 {
 
+}
+
+//================================================
+//モデルロード処理
+//================================================
+void CGame01::LoadModelTxt(const string &Pas)
+{
+	//ファイルの読み込み
+	FILE *pFile;
+	pFile = fopen(Pas.c_str(), "r");
+	if (pFile != NULL)
+	{
+		char cStr[128];
+		while (fgets(cStr, 128, pFile) != nullptr)
+		{
+			if (strncmp("SET_MODEL\n", cStr, 11) == 0)
+			{
+				char cBuff[1][128];
+				string sPas;
+				D3DXVECTOR3 pos;
+				D3DXVECTOR3 rot;
+				int nColl;
+				fscanf(pFile, "%*s%*s%s", cBuff);
+				fscanf(pFile, "%*s%*s%f%f%f", &pos.x, &pos.y, &pos.z);
+				fscanf(pFile, "%*s%*s%f%f%f", &rot.x, &rot.y, &rot.z);
+				fscanf(pFile, "%*s%*s%d", &nColl);
+
+				sPas = cBuff[0];
+				CModelSingle::Create(pos, rot, sPas, NULL, nColl);
+			}
+		}
+	}
+	else
+	{
+		printf("ファイルが開けませんでした\n");
+	}
+	fclose(pFile);
 }

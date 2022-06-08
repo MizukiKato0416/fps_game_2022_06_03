@@ -353,6 +353,7 @@ void CModel::Draw(void)
 		else
 		{
 			int nCnt = 0;
+			nCnt++;
 		}
 	}
 	

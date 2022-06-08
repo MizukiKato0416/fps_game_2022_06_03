@@ -236,9 +236,29 @@ void CPlayer::Update(void)
 
 		//ジャンプ処理
 		Jump();
+
+		//位置取得
+		pos = GetPos();
+		m_pos = pos;
 	}
 
-	//床との当たり判定
+	//モデルとの当たり判定
+	if (CModelSingle::Collision(this) == true)
+	{
+		//重力を0にする
+		m_move.y = 0.0f;
+
+		//ジャンプをしていない状態にする
+		m_bJump = false;
+
+		//ジャンプ処理
+		Jump();
+	}
+	//位置取得
+	pos = GetPos();
+	m_pos = pos;
+
+	//メッシュフィールドとの当たり判定
 	if (CMeshField::Collision(this, m_size.x * 10.0f) == true)
 	{
 		//位置取得
@@ -258,12 +278,11 @@ void CPlayer::Update(void)
 
 		//ジャンプ処理
 		Jump();
+
+		//位置取得
+		pos = GetPos();
+		m_pos = pos;
 	}
-
-
-	//位置取得
-	pos = GetPos();
-	m_pos = pos;
 }
 
 //================================================
