@@ -54,8 +54,6 @@ HRESULT CLight::Init(D3DXVECTOR3 vecDir, const D3DXVECTOR3 &pos)
 
 	//ƒ‰ƒCƒg‚ÌŠgUŒõ‚ğİ’è
 	m_light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	//m_light.Diffuse = D3DXCOLOR(1.0f, 0.45f, 0.0f, 1.0f);
-	//m_light.Diffuse = D3DXCOLOR(0.1f, 0.1f, 0.1f, 1.0f);
 
 	//ˆÊ’uİ’è
 	m_light.Position = pos;

@@ -15,6 +15,7 @@
 //================================================
 //マクロ定義
 //================================================
+#define GAME01_FIELD_SIZE		(13000.0f)			//マップの広さ
 
 //================================================
 //静的メンバ変数宣言
@@ -52,16 +53,17 @@ HRESULT CGame01::Init(void)
 
 	//メッシュフィールド生成
 	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
+	//CMeshField *pMeshField = CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(500.0f, 0.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2, 2);
 	pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 	//CFloor *pFloor = CFloor::Create(D3DXVECTOR3(0.0f, 60.0f, 0.0f), D3DXVECTOR3(500.0f, 000.0f, 500.0f), D3DXVECTOR3(0.2f, 0.0f, 0.0f));
 	//pFloor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 
 	//メッシュスフィア生成
-	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 5000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, GAME01_FIELD_SIZE, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		                                           32, 8);
 	pMeshSphere->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("sky.jpg"));
 
-	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(5000.0f, 0.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, 0.0f, GAME01_FIELD_SIZE), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
 	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, true);

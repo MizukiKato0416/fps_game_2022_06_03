@@ -18,6 +18,9 @@
 CXanimModel::CXanimModel()
 {
 	m_anim_controller = nullptr;
+	m_size = { 0.0f, 0.0f, 0.0f };
+	m_vtx_min = { 100000.0f, 100000.0f, 100000.0f };
+	m_vtx_max = { -100000.0f, -100000.0f, -100000.0f };
 }
 
 //=============================================================================
@@ -334,6 +337,7 @@ void CXanimModel::Load(void)
 								&m_root_frame,
 								&m_anim_controller);
 	AllocateAllBoneMatrix(m_root_frame);
+	CheckContainer(m_root_frame);
 }
 
 //=============================================================================
@@ -393,6 +397,137 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, strin
 	if (frame_data->pFrameFirstChild != NULL)
 	{
 		CheckContainer(frame_data->pFrameFirstChild, check_mtx, name);
+	}
+}
+
+void CXanimModel::CheckContainer(LPD3DXFRAME frame)
+{
+	FrameData *frame_data = (FrameData*)frame;
+	MeshContainer *container_data = (MeshContainer*)frame_data->pMeshContainer;
+
+	// コンテナがあったら
+	while (container_data != NULL)
+	{
+		int num_vtx = 0;// 頂点数
+		DWORD size_fvf;	// 頂点フォーマットのサイズ
+		BYTE *vtx_buf;	// 頂点バッファへのポインタ
+
+		// 通常メッシュ
+		if (container_data->MeshData.Type == D3DXMESHTYPE_MESH)
+		{
+			// 頂点数を取得
+			num_vtx = container_data->MeshData.pMesh->GetNumVertices();
+
+			// 頂点フォーマットのサイズを取得
+			size_fvf = D3DXGetFVFVertexSize(container_data->MeshData.pMesh->GetFVF());
+
+			// 頂点バッファをロック
+			container_data->MeshData.pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&vtx_buf);
+
+			for (int nCntVtx = 0; nCntVtx < num_vtx; nCntVtx++)
+			{
+				D3DXVECTOR3 vtx = *(D3DXVECTOR3*)vtx_buf;	// 頂点座標の代入
+
+				// 全ての頂点を比較して最大値と最小手を抜き出す
+				// 最大値
+				if (vtx.x >= m_vtx_max.x)
+				{
+					m_vtx_max.x = vtx.x;
+				}
+				if (vtx.y >= m_vtx_max.y)
+				{
+					m_vtx_max.y = vtx.y;
+				}
+				if (vtx.z >= m_vtx_max.z)
+				{
+					m_vtx_max.z = vtx.z;
+				}
+				// 最小値
+				if (vtx.x <= m_vtx_min.x)
+				{
+					m_vtx_min.x = vtx.x;
+				}
+				if (vtx.y <= m_vtx_min.y)
+				{
+					m_vtx_min.y = vtx.y;
+				}
+				if (vtx.z <= m_vtx_min.z)
+				{
+					m_vtx_min.z = vtx.z;
+				}
+
+				vtx_buf += size_fvf;		//頂点フォーマットのサイズ分ポインタを進める
+			}
+
+			m_size.x = m_vtx_max.x - m_vtx_min.x;
+			m_size.y += m_vtx_max.y - m_vtx_min.y;
+			m_size.z = m_vtx_max.z - m_vtx_min.z;
+		}
+
+		// プログレッシブメッシュ
+		else if (container_data->MeshData.Type == D3DXMESHTYPE_PMESH)
+		{
+			// 頂点数を取得
+			num_vtx = container_data->MeshData.pPMesh->GetNumVertices();
+
+			// 頂点フォーマットのサイズを取得
+			size_fvf = D3DXGetFVFVertexSize(container_data->MeshData.pPMesh->GetFVF());
+
+			// 頂点バッファをロック
+			container_data->MeshData.pPMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&vtx_buf);
+
+			for (int nCntVtx = 0; nCntVtx < num_vtx; nCntVtx++)
+			{
+				D3DXVECTOR3 vtx = *(D3DXVECTOR3*)vtx_buf;	// 頂点座標の代入
+
+				// 全ての頂点を比較して最大値と最小手を抜き出す
+				// 最大値
+				if (vtx.x >= m_vtx_max.x)
+				{
+					m_vtx_max.x = vtx.x;
+				}
+				if (vtx.y >= m_vtx_max.y)
+				{
+					m_vtx_max.y = vtx.y;
+				}
+				if (vtx.z >= m_vtx_max.z)
+				{
+					m_vtx_max.z = vtx.z;
+				}
+				// 最小値
+				if (vtx.x <= m_vtx_min.x)
+				{
+					m_vtx_min.x = vtx.x;
+				}
+				if (vtx.y <= m_vtx_min.y)
+				{
+					m_vtx_min.y = vtx.y;
+				}
+				if (vtx.z <= m_vtx_min.z)
+				{
+					m_vtx_min.z = vtx.z;
+				}
+
+				m_size.x = m_vtx_max.x - m_vtx_min.x;
+				m_size.y = m_vtx_max.y - m_vtx_min.y;
+				m_size.z = m_vtx_max.z - m_vtx_min.z;
+
+				vtx_buf += size_fvf;		//頂点フォーマットのサイズ分ポインタを進める
+			}
+		}
+		container_data = (MeshContainer*)container_data->pNextMeshContainer;
+	}
+
+	// 兄弟がいれば再帰で呼び出す
+	if (frame_data->pFrameSibling != NULL)
+	{
+		CheckContainer(frame_data->pFrameSibling);
+	}
+
+	// 子がいれば再帰で呼び出す
+	if (frame_data->pFrameFirstChild != NULL)
+	{
+		CheckContainer(frame_data->pFrameFirstChild);
 	}
 }
 

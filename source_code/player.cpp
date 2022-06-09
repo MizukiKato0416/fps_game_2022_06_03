@@ -24,7 +24,7 @@
 //================================================
 //マクロ定義
 //================================================
-#define PLAYER_JUMP							(12.0f)		//ジャンプ力
+#define PLAYER_JUMP							(8.0f)		//ジャンプ力
 #define PLAYER_JUMP_BALANCE_BALL			(12.0f)		//バランスボールのジャンプ力
 #define PLAYER_JUMP_GIRL					(17.0f)		//ロキコちゃんのジャンプ力
 #define PLAYER_JUMP_MIN						(5.0f)		//ジャンプ力最小値
@@ -36,8 +36,8 @@
 #define PLAYER_MOVE_FORWARD_MIN				(4.0f)		//前に進む力の最小値
 #define PLAYER_MOVE_FORWARD_MIN_NOT_JUMP	(1.5f)		//ジャンプしていないときの前に進む力の最小値
 #define PLAYER_MOVE_FORWARD_MAX				(50.0f)		//前に進む力の最大値
-#define PLAYER_GRAVITY						(0.4f)		//重力の大きさ
-#define PLAYER_MOVE_SPEED					(4.0f)		//通常移動の移動量
+#define PLAYER_GRAVITY						(0.5f)		//重力の大きさ
+#define PLAYER_MOVE_SPEED					(10.0f * 5)		//通常移動の移動量
 #define PLAYER_SIZE							(10.0f)		//プレイヤーのサイズ調整値
 #define PLAYER_SPARKLE_NUM					(3)			//軌道エフェクトの数
 
@@ -162,9 +162,13 @@ HRESULT CPlayer::Init(void)
 	m_pMotionPlayer = CMotionPlayer::Create(this);
 	m_pMotionPlayer->SetMotion(CMotionRoad::MOTION_PLAYER_TYPE_NEUTRAL, this);
 
+	// アニメーション付きXファイルの生成
+	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	modelSize = m_apModel[0]->GetSize();
+	modelSize = m_pAnimModel->GetSize();
 
 	//サイズのXとZを比べて大きいほうをXとZそれぞれに割り当てる
 	if (modelSize.x >= modelSize.z)
@@ -181,10 +185,6 @@ HRESULT CPlayer::Init(void)
 
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
-
-	// アニメーション付きXファイルの生成
-	m_pAnimModel = CXanimModel::Create("data/motion.x");
-	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
 
 	return S_OK;
 }
@@ -249,7 +249,9 @@ void CPlayer::Update(void)
 	}
 
 	//モデルとの当たり判定
-	if (CModelSingle::Collision(this) == true)
+	int nHit = CModelSingle::Collision(this);
+	//上からあたったとき
+	if (nHit == 1)
 	{
 		//重力を0にする
 		m_move.y = 0.0f;
@@ -260,21 +262,27 @@ void CPlayer::Update(void)
 		//ジャンプ処理
 		Jump();
 	}
+	else if (nHit == 2)
+	{//下からあたったとき
+		//重力を0にする
+		m_move.y = 0.0f;
+	}
+
 	//位置取得
 	pos = GetPos();
 	m_pos = pos;
 
 	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 10.0f) == true)
+	if (CMeshField::Collision(this, m_size.x * 200.0f) == true)
 	{
-		//位置取得
-		m_pos = GetPos();
-		if (m_pos.y > m_posOld.y + 5.0f)
-		{
-			m_pos = m_posOld;
-			//位置反映
-			SetPos(m_pos);
-		}
+		////位置取得
+		//m_pos = GetPos();
+		//if (m_pos.y > m_posOld.y + 5.0f)
+		//{
+		//	m_pos = m_posOld;
+		//	//位置反映
+		//	SetPos(m_pos);
+		//}
 
 		//重力を0にする
 		m_move.y = 0.0f;
@@ -355,10 +363,16 @@ void CPlayer::Draw(void)
 
 	m_pAnimModel->Draw();
 
+	D3DXMATRIX test;
+	D3DXMatrixIdentity(&test);
+	test = m_pAnimModel->GetMatrix("handL");
+
+	pDevice->SetTransform(D3DTS_WORLD, &test);
+
 	//モデルの描画
 	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
 	{
-		//m_apModel[nCntModel]->Draw();
+		m_apModel[nCntModel]->Draw();
 	}
 }
 
@@ -459,7 +473,7 @@ void CPlayer::Move(void)
 		//目的の向きを設定
 		if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f)
 		{
-			m_fObjectiveRot = rotCamera.y + atan2f((float)JoyStick.lY, (float)JoyStick.lX) + D3DX_PI / 2.0f;
+			m_fObjectiveRot = rotCamera.y + atan2f((float)JoyStick.lY, (float)JoyStick.lX);
 		}
 		else if (pInputKeyboard->GetPress(DIK_W) == true)
 		{
@@ -509,8 +523,8 @@ void CPlayer::Move(void)
 		}
 
 		//移動量加算
-		m_move.x = sinf(m_fObjectiveRot + D3DX_PI) * fSpeed;
-		m_move.z = cosf(m_fObjectiveRot + D3DX_PI) * fSpeed;
+		m_move.x = -sinf(m_fObjectiveRot + D3DX_PI) * fSpeed;
+		m_move.z = -cosf(m_fObjectiveRot + D3DX_PI) * fSpeed;
 		//回転をさせる
 		m_bRotate = true;
 
@@ -541,40 +555,17 @@ void CPlayer::Move(void)
 //================================================
 void CPlayer::Rotate(void)
 {
-	//回転させる状態なら
-	if (m_bRotate == true)
+	//cameraのポインタ配列1番目のアドレス取得
+	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
 	{
-		//目的の向きを計算
-		if (m_fObjectiveRot > D3DX_PI)
+		//cameraの取得
+		CCamera *pCamera = &**pCameraAddress;
+		if (pCamera != nullptr)
 		{
-			m_fObjectiveRot = -D3DX_PI - (D3DX_PI - m_fObjectiveRot);
-		}
-		else if (m_fObjectiveRot < -D3DX_PI)
-		{
-			m_fObjectiveRot = D3DX_PI - (-D3DX_PI - m_fObjectiveRot);
-		}
-
-		//プレイヤーの現在の向きごとにそれぞれ向きを変える量を計算
-		if (m_rot.y < 0.0f && -m_rot.y + m_fObjectiveRot > D3DX_PI)
-		{
-			m_fNumRot = (-D3DX_PI - m_rot.y) + -(D3DX_PI - m_fObjectiveRot);
-		}
-		else if (m_rot.y >= D3DX_PI / 2.0f && m_rot.y - m_fObjectiveRot > D3DX_PI)
-		{
-			m_fNumRot = (D3DX_PI - m_rot.y) - (-D3DX_PI - m_fObjectiveRot);
-		}
-		else
-		{
-			m_fNumRot = (m_fObjectiveRot - m_rot.y);
-		}
-
-		//プレイヤーの向きに加算
-		m_rot.y += m_fNumRot * 0.2f;
-
-		//既定の値に達したら回転をやめる
-		if (m_rot.y - m_fObjectiveRot < 0.001f && m_rot.y - m_fObjectiveRot > -0.001f)
-		{
-			m_bRotate = false;
+			//cameraの向き取得
+			m_rot.y = pCamera->GetRotV().y + D3DX_PI;
 		}
 	}
 

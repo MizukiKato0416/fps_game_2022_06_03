@@ -155,8 +155,10 @@
   <ItemGroup>
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="communicationdata.cpp" />
     <ClCompile Include="effect2D.cpp" />
     <ClCompile Include="effect3D.cpp" />
+    <ClCompile Include="enemy.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="fileload.cpp" />
     <ClCompile Include="floor.cpp" />
@@ -185,6 +187,7 @@
     <ClCompile Include="result.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sound.cpp" />
+    <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="xanimmodel.cpp" />
@@ -193,8 +196,10 @@
   <ItemGroup>
     <ClInclude Include="billboard.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="communicationdata.h" />
     <ClInclude Include="effect2D.h" />
     <ClInclude Include="effect3D.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="fileload.h" />
     <ClInclude Include="floor.h" />
@@ -223,6 +228,7 @@
     <ClInclude Include="result.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sound.h" />
+    <ClInclude Include="tcp_client.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="xanimmodel.h" />
