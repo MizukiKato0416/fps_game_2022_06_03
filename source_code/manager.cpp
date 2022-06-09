@@ -172,7 +172,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	}
 
 	//ÉâÉCÉgÇÃê∂ê¨
-	m_apLight[0] = CLight::Create(D3DXVECTOR3(-0.6f, -0.8f, 0.6f), D3DXVECTOR3(400.0f, 800.0f, -400.0f));
+	m_apLight[0] = CLight::Create(D3DXVECTOR3(-0.6f, 0.4f, 0.6f), D3DXVECTOR3(400.0f, 800.0f, -400.0f));
 	m_apLight[1] = CLight::Create(D3DXVECTOR3(0.4f, 0.4f, -0.4f), D3DXVECTOR3(-100.0f, 0.0f, 100.0f));
 	m_apLight[2] = CLight::Create(D3DXVECTOR3(0.0f, -0.2f, 0.6f), D3DXVECTOR3(100.0f, 0.0f, -100.0f));
 
