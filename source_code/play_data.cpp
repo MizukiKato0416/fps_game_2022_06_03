@@ -15,7 +15,6 @@ CPlayData::CPlayData()
 {	
 	m_nScore = 0;
 	m_pScore = nullptr;
-	m_nTime = 0;
 }
 
 //================================================
