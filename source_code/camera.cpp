@@ -26,7 +26,7 @@
 #define CAMERA_MAX_RENDERER			(13000.0f)								//cameraでの描画最大Z値
 #define CAMERA_MIN_RENDERER			(50.0f)									//cameraでの描画最小Z値
 #define CAMERA_POS_Y				(100.0f)								//カメラのY位置
-#define CAMERA_POS_XZ				(500.0f)									//カメラのXZ位置
+#define CAMERA_POS_XZ				(10.0f)								//カメラのXZ位置
 
 //================================================
 //静的メンバ変数宣言

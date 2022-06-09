@@ -18,7 +18,6 @@
 #include "game01.h"
 #include "result.h"
 #include "fade.h"
-#include "motion_road.h"
 #include "play_data.h"
 #include "sound.h"
 
@@ -40,7 +39,6 @@ CGame01 *CManager::m_pGame01 = nullptr;
 CResult *CManager::m_pResult = nullptr;
 CManager::MODE CManager::m_mode = MODE::TITLE;
 CFade *CManager::m_pFade = nullptr;
-CMotionRoad *CManager::m_pMotionRoad = nullptr;
 CPlayData *CManager::m_pPlayData = nullptr;
 CSound *CManager::m_pSound = nullptr;
 HWND CManager::m_hWnd = NULL;
@@ -141,16 +139,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-	//モーションロードクラスの生成
-	if (m_pMotionRoad == nullptr)
-	{
-		m_pMotionRoad = new CMotionRoad;
-		if (m_pMotionRoad != nullptr)
-		{
-			m_pMotionRoad->Init();
-		}
-	}
-
 	//プレイデータクラスの生成
 	if (m_pPlayData == nullptr)
 	{
@@ -209,17 +197,6 @@ void CManager::Uninit(void)
 
 		delete m_pSound;
 		m_pSound = nullptr;
-	}
-
-	//モーションロードクラスの破棄
-	if (m_pMotionRoad != nullptr)
-	{
-		//終了処理
-		m_pMotionRoad->Uninit();
-
-		//メモリの開放
-		delete m_pMotionRoad;
-		m_pMotionRoad = nullptr;
 	}
 
 	//Xファイル読み込みクラスの破棄
@@ -656,14 +633,6 @@ CManager::MODE CManager::GetMode(void)
 CFade* CManager::GetFade(void)
 {
 	return m_pFade;
-}
-
-//=============================================================================
-// MotionRoad取得処理
-//=============================================================================
-CMotionRoad* CManager::GetMotionRoad(void)
-{
-	return m_pMotionRoad;
 }
 
 //=============================================================================
