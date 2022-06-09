@@ -11,6 +11,7 @@ class CModel;
 class CMotionPlayer;
 class CSparkle;
 class CWind;
+class CXanimModel;
 
 //================================================
 //マクロ定義
@@ -75,6 +76,7 @@ private:
 	D3DXMATRIX *m_mtxWorldParent;					//親のワールドマトリックス
 	bool m_bObjParent;								//モデル以外との親子関係をつけるかどうか
 	bool m_bJump;									//ジャンプしているかどうか
+	CXanimModel *m_pAnimModel;
 };
 
 #endif // !_PLAYER_H_

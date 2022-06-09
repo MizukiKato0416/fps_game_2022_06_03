@@ -263,8 +263,8 @@ void CObject3D::Draw(void)
 	//カリングを行わない設定なら
 	if (m_bCulling == false)
 	{
-		// カリングを行う
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		// カリングを行わない
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	}
 
 	//4頂点の設定

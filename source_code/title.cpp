@@ -55,7 +55,6 @@ void CTitle::Uninit(void)
 //=============================================================================
 void CTitle::Update(void)
 {
-#ifdef _DEBUG
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -72,7 +71,6 @@ void CTitle::Update(void)
 			pFade->SetFade(CManager::MODE::GAME01);
 		}
 	}
-#endif // !_DEBUG
 }
 
 //=============================================================================

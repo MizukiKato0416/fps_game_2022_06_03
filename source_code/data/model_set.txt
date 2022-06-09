@@ -1,0 +1,28 @@
+//-----------------------------------------------
+//ÉÇÉfÉãÇÃîzíuèàóù
+//Author: â¡ì°êêà®
+//-----------------------------------------------
+SET_MODEL
+pas = airplane.x
+pos = -322.05 25.00 -358.90
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = fan.x
+pos = -394.43 40.00 163.30
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = rocket.x
+pos = -1249.03 10.00 -999.63
+rot = 0.00 -0.78 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = fan.x
+pos = 502.34 15.00 -612.57
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL

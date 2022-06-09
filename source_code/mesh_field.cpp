@@ -6,8 +6,6 @@
 #include "mesh_field.h"
 #include "object3D.h"
 #include "manager.h"
-#include "input_mouse.h"
-#include "game01.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -100,8 +98,59 @@ HRESULT CMeshField::Init(void)
 			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 			//テクスチャ
 			pVtx[nNum].tex = D3DXVECTOR2(0.0f + (1.0f * nLine), 0.0f + (1.0f * nVertical));
-			//法線
-			pVtx[nNum].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+		}
+	}
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+
+	//頂点バッファをロックし、頂点データのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+	nNum = 0;
+	for (int nVertical = 0; nVertical < m_nVertical + 1; nVertical++)
+	{
+		for (int nLine = 0; nLine < m_nLine + 1; nLine++, nNum++)
+		{
+			D3DXVECTOR3 vecPos[2];
+
+			if (nVertical < m_nVertical)
+			{
+				if (nLine < m_nLine)
+				{
+					vecPos[0] = m_bufferPos[nNum + 1] - m_bufferPos[nNum];
+					vecPos[1] = m_bufferPos[nNum + (m_nLine + 2)] - m_bufferPos[nNum];
+				}
+				else
+				{
+					vecPos[0] = m_bufferPos[nNum + (m_nLine + 1)] - m_bufferPos[nNum];
+					vecPos[1] = m_bufferPos[nNum - 1] - m_bufferPos[nNum];
+				}
+			}
+			else
+			{
+				if (nLine < m_nLine)
+				{
+					vecPos[0] = m_bufferPos[nNum / 2] - m_bufferPos[nNum];
+					vecPos[1] = m_bufferPos[nNum + 1] - m_bufferPos[nNum];
+				}
+				else
+				{
+					vecPos[0] = m_bufferPos[nNum - (m_nLine + 1)] - m_bufferPos[nNum];
+					vecPos[1] = m_bufferPos[nNum - (m_nLine + 1) - 1] - m_bufferPos[nNum];
+				}
+			}
+
+
+
+			//法線を求める
+			D3DXVECTOR3 vecNor;
+			D3DXVec3Cross(&vecNor, &vecPos[0], &vecPos[1]);
+			//正規化する
+			D3DXVec3Normalize(&vecNor, &vecNor);
+			//vecNor = {0.0f, 1.0f, 0.0f};
+
+			//法線設定
+			pVtx[nNum].nor = vecNor;
 		}
 	}
 
@@ -152,14 +201,16 @@ HRESULT CMeshField::Init(void)
 		m_indexRot.push_back(m_rot);
 	}
 
+	//インデックスバッファをアンロックする
+	m_pIdxBuff->Unlock();
+	
+	//頂点情報の保存
 	for (int nCnt1 = 0; nCnt1 < m_nVertical; nCnt1++)
 	{
 		for (int nCnt2 = 0; nCnt2 < m_nLine + 1; nCnt2++)
 		{
-			//番号データの設定
 			m_indexPos[(nCnt2 * 2) + 0 + (m_nLine + 2) * 2 * nCnt1] = m_bufferPos[((m_nLine + 1) + nCnt2 + (m_nLine + 1) * nCnt1)];
 			m_indexPos[(nCnt2 * 2) + 1 + (m_nLine + 2) * 2 * nCnt1] = m_bufferPos[(0 + nCnt2 + (m_nLine + 1) * nCnt1)];
-			
 		}
 	}
 
@@ -169,8 +220,6 @@ HRESULT CMeshField::Init(void)
 		m_indexPos[((m_nLine + 1) * 2 + 1) * (nCnt3 + 1) + (1 * nCnt3)] = m_bufferPos[(m_nLine * 2 + 2 + (m_nLine + 1) * nCnt3)];
 	}
 
-	//インデックスバッファをアンロックする
-	m_pIdxBuff->Unlock();
 	//オブジェクトの種類の設定
 	SetObjType(CObject::OBJTYPE::FLOOR);
 	return S_OK;
@@ -245,6 +294,51 @@ void CMeshField::Draw(void)
 									((m_nLine + 1) * (m_nVertical + 1)),				//頂点の数
 									0,													//開始する頂点のインデックス
 									2 * m_nLine * m_nVertical + (m_nVertical * 4) - 4);	//描画するプリミティブ数
+
+	
+	////カメラのポインタ配列1番目のアドレス取得
+	//CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
+	////cameraの取得
+	//CCamera* pCamera = &**pCameraAddress;
+	//if (pCamera != nullptr)
+	//{
+	//	for (int nCnt1 = 0; nCnt1 < m_indexPos.size() - 2; nCnt1++)
+	//	{
+	//		//対象の現在位置取得
+	//		D3DXVECTOR3 pos[3];
+	//		pos[0] = m_indexPos[nCnt1];
+	//		pos[1] = m_indexPos[nCnt1 + 1];
+	//		pos[2] = m_indexPos[nCnt1 + 2];
+
+	//		//スクリーン座標に変換
+	//		D3DXVECTOR3 screenPos[3];
+	//		screenPos[0] = pCamera->WorldPosToScreenPos(pos[0]);
+	//		screenPos[1] = pCamera->WorldPosToScreenPos(pos[1]);
+	//		screenPos[2] = pCamera->WorldPosToScreenPos(pos[2]);
+
+	//		//スクリーンに映っているとき
+	//		if ((screenPos[0].x >= 0.0f && screenPos[0].x <= SCREEN_WIDTH && screenPos[0].y >= 0.0f && screenPos[0].y <= SCREEN_HEIGHT) ||
+	//			(screenPos[1].x >= 0.0f && screenPos[1].x <= SCREEN_WIDTH && screenPos[1].y >= 0.0f && screenPos[1].y <= SCREEN_HEIGHT) ||
+	//			(screenPos[2].x >= 0.0f && screenPos[2].x <= SCREEN_WIDTH && screenPos[2].y >= 0.0f && screenPos[2].y <= SCREEN_HEIGHT))
+	//		{
+	//			//頂点バッファをデータストリームに設定
+	//			pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
+	//			//インデックスバッファをデータストリームに設定
+	//			pDevice->SetIndices(m_pIdxBuff);
+
+	//			pDevice->SetFVF(FVF_VERTEX_3D);					//頂点フォーマットの設定
+
+	//			pDevice->SetTexture(0, m_pTexture);				//テクスチャの設定
+
+	//			pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,	//プリミティブの種類
+	//				0,
+	//				0,
+	//				((m_nLine + 1) * (m_nVertical + 1)),				//頂点の数
+	//				nCnt1,												//開始する頂点のインデックス
+	//				2);	//描画するプリミティブ数
+	//		}
+	//	}
+	//}
 }
 
 //================================================
