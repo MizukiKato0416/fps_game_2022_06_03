@@ -11,12 +11,13 @@
 // インクルード
 //-------------------------------
 #include "main.h"
+#include "d3dx9.h"
 
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_BULLET (30)
 #define MAX_PLAYER (3)
+#define MAX_BULLET (30)
 
 //-------------------------------
 // Classの定義
@@ -45,12 +46,12 @@ public:
 		BULLET_DATA Bullet[MAX_BULLET];	// 弾データ
 		bool bConnect = false;	// 接続確認
 	} COMMUNICATION_DATA;
-
 	CCommunicationData();	// デフォルトコンストラクタ
 	~CCommunicationData();	// デフォルトデストラクタ
-	COMMUNICATION_DATA *GetCmmuData(void) { return &m_CommuData; }	// データのセッター
-	void SetCmmuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// データのゲッダー
+	COMMUNICATION_DATA *GetCommuData(void) { return &m_CommuData; }	// データのセッター
+	void SetCommuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// データの
 private:
+	SOCKET m_socket;	// ソケット
 	COMMUNICATION_DATA m_CommuData;	// データ
 };
 
