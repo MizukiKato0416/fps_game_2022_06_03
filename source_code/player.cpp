@@ -37,7 +37,7 @@
 #define PLAYER_MOVE_FORWARD_MIN_NOT_JUMP	(1.5f)		//ジャンプしていないときの前に進む力の最小値
 #define PLAYER_MOVE_FORWARD_MAX				(50.0f)		//前に進む力の最大値
 #define PLAYER_GRAVITY						(0.5f)		//重力の大きさ
-#define PLAYER_MOVE_SPEED					(10.0f)		//通常移動の移動量
+#define PLAYER_MOVE_SPEED					(10.0f * 5)		//通常移動の移動量
 #define PLAYER_SIZE							(10.0f)		//プレイヤーのサイズ調整値
 #define PLAYER_SPARKLE_NUM					(3)			//軌道エフェクトの数
 
@@ -273,16 +273,16 @@ void CPlayer::Update(void)
 	m_pos = pos;
 
 	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 20.0f) == true)
+	if (CMeshField::Collision(this, m_size.x * 200.0f) == true)
 	{
-		//位置取得
-		m_pos = GetPos();
-		if (m_pos.y > m_posOld.y + 5.0f)
-		{
-			m_pos = m_posOld;
-			//位置反映
-			SetPos(m_pos);
-		}
+		////位置取得
+		//m_pos = GetPos();
+		//if (m_pos.y > m_posOld.y + 5.0f)
+		//{
+		//	m_pos = m_posOld;
+		//	//位置反映
+		//	SetPos(m_pos);
+		//}
 
 		//重力を0にする
 		m_move.y = 0.0f;

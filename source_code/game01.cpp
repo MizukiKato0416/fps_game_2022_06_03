@@ -53,6 +53,7 @@ HRESULT CGame01::Init(void)
 
 	//メッシュフィールド生成
 	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
+	//CMeshField *pMeshField = CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(500.0f, 0.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2, 2);
 	pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 	//CFloor *pFloor = CFloor::Create(D3DXVECTOR3(0.0f, 60.0f, 0.0f), D3DXVECTOR3(500.0f, 000.0f, 500.0f), D3DXVECTOR3(0.2f, 0.0f, 0.0f));
 	//pFloor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
