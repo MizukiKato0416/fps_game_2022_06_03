@@ -10,8 +10,6 @@
 #include "input_pad_d.h"
 #include "input_mouse.h"
 #include "player.h"
-#include "motion_player.h"
-#include "model.h"
 #include "x_load.h"
 #include "model_single.h"
 #include "texture.h"
@@ -20,26 +18,15 @@
 #include "floor.h"
 #include "mesh_field.h"
 #include "xanimmodel.h"
+#include "model.h"
 
 //================================================
 //マクロ定義
 //================================================
-#define PLAYER_JUMP							(8.0f)		//ジャンプ力
-#define PLAYER_JUMP_BALANCE_BALL			(12.0f)		//バランスボールのジャンプ力
-#define PLAYER_JUMP_GIRL					(17.0f)		//ロキコちゃんのジャンプ力
-#define PLAYER_JUMP_MIN						(5.0f)		//ジャンプ力最小値
-#define PLAYER_JUMP_MAX						(30.0f)		//ジャンプ力最大値
-#define PLAYER_BOUND						(0.8f)		//バウンド力
-#define PLAYER_MOVE_FORWARD_TRAMPOLINE		(15.0f)		//トランポリンの前に進む力
-#define PLAYER_MOVE_FORWARD_GIRL			(30.0f)		//ロキコちゃんの前に進む力
-#define PLAYER_MOVE_FORWARD_SUBTRACTION		(0.985f)	//前に進む力の減算量
-#define PLAYER_MOVE_FORWARD_MIN				(4.0f)		//前に進む力の最小値
-#define PLAYER_MOVE_FORWARD_MIN_NOT_JUMP	(1.5f)		//ジャンプしていないときの前に進む力の最小値
-#define PLAYER_MOVE_FORWARD_MAX				(50.0f)		//前に進む力の最大値
-#define PLAYER_GRAVITY						(0.5f)		//重力の大きさ
-#define PLAYER_MOVE_SPEED					(10.0f * 5)		//通常移動の移動量
-#define PLAYER_SIZE							(10.0f)		//プレイヤーのサイズ調整値
-#define PLAYER_SPARKLE_NUM					(3)			//軌道エフェクトの数
+#define PLAYER_JUMP							(8.0f)			//ジャンプ力
+#define PLAYER_GRAVITY						(0.5f)			//重力の大きさ
+#define PLAYER_MOVE_SPEED					(10.0f * 1)		//通常移動の移動量
+#define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
 
 //================================================
 //静的メンバ変数宣言
@@ -56,9 +43,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_offsetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_pParent = nullptr;
-	memset(&m_apModel, NULL, sizeof(m_apModel));
-	m_pMotionPlayer = nullptr;
+	m_pGunModel = nullptr;
 	m_fObjectiveRot = 0.0f;
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
@@ -90,66 +75,8 @@ HRESULT CPlayer::Init(void)
 	m_bRotate = false;
 	m_bJump = false;
 
-	//モデルの生成
-	//textファイル読み込み
-	FILE *pFile = fopen("data/MOTION/motion_player.txt", "r");
-	if (pFile != nullptr)
-	{
-		char cString[128];
-		//一行ずつ保存
-		while (fgets(cString, 128, pFile) != NULL)
-		{
-			//文字列を保存
-			fscanf(pFile, "%s", cString);
-			//文字列の中にPARTSSETがあったら
-			if (strncmp("PARTSSET", cString, 9) == 0)
-			{
-				//インデックス読み込み
-				int nIndex = 0;
-				fscanf(pFile, "%*s%*s%d", &nIndex);
-				fscanf(pFile, "%*s%*s");
-
-				//親読み込み
-				int nParent = 0;
-				fscanf(pFile, "%*s%*s%d", &nParent);
-				fscanf(pFile, "%*s%*s");
-
-				//位置読み込み
-				D3DXVECTOR3 modelPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				fscanf(pFile, "%*s%*s%f%f%f", &modelPos.x, &modelPos.y, &modelPos.z);
-
-				//向き読み込み
-				D3DXVECTOR3 rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-				fscanf(pFile, "%*s%*s%f%f%f", &rot.x, &rot.y, &rot.z);
-
-				//モデル生成
-				int nModelType = 0;
-				nModelType = CManager::GetInstance()->GetXload()->GetNum("01_body.x");
-				m_apModel[nIndex] = CModel::Create(modelPos, rot, CManager::GetInstance()->GetXload()->GetType(nModelType + nIndex));
-
-
-				//親の設定
-				if (nParent == -1)
-				{
-					m_apModel[nIndex]->SetParent(nullptr);
-				}
-				else
-				{
-					m_apModel[nIndex]->SetParent(m_apModel[nParent]);
-				}
-
-				if (nIndex == MAX_PLAYER_MODEL - 1)
-				{
-					break;
-				}
-			}
-		}
-	}
-	else
-	{
-		printf("ファイルが開けませんでした\n");
-	}
-	fclose(pFile);
+	//銃モデルの生成
+	m_pGunModel = CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, "asult_gun.x", nullptr, false);
 
 	//位置の設定
 	SetPos(m_pos);
@@ -157,10 +84,6 @@ HRESULT CPlayer::Init(void)
 
 	//オブジェクトの種類の設定
 	SetObjType(CObject::OBJTYPE::PLAYER);
-
-	//モーションの生成
-	m_pMotionPlayer = CMotionPlayer::Create(this);
-	m_pMotionPlayer->SetMotion(CMotionRoad::MOTION_PLAYER_TYPE_NEUTRAL, this);
 
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
@@ -182,6 +105,8 @@ HRESULT CPlayer::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
+
+	
 
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
@@ -224,9 +149,6 @@ void CPlayer::Update(void)
 
 	//回転の慣性
 	Rotate();
-
-	//モーション
-	m_pMotionPlayer->Update(this);
 
 	//位置反映
 	SetPos(m_pos);
@@ -273,17 +195,8 @@ void CPlayer::Update(void)
 	m_pos = pos;
 
 	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 200.0f) == true)
+	if (CMeshField::Collision(this, m_size.x * 15.0f) == true)
 	{
-		////位置取得
-		//m_pos = GetPos();
-		//if (m_pos.y > m_posOld.y + 5.0f)
-		//{
-		//	m_pos = m_posOld;
-		//	//位置反映
-		//	SetPos(m_pos);
-		//}
-
 		//重力を0にする
 		m_move.y = 0.0f;
 
@@ -363,17 +276,12 @@ void CPlayer::Draw(void)
 
 	m_pAnimModel->Draw();
 
-	D3DXMATRIX test;
-	D3DXMatrixIdentity(&test);
+	//マトリックスを取得
+	D3DXMATRIX *test = nullptr;
 	test = m_pAnimModel->GetMatrix("handL");
-
-	pDevice->SetTransform(D3DTS_WORLD, &test);
-
-	//モデルの描画
-	for (int nCntModel = 0; nCntModel < MAX_PLAYER_MODEL; nCntModel++)
-	{
-		m_apModel[nCntModel]->Draw();
-	}
+	//銃と親子関係をつける
+	m_pGunModel->GetModel()->SetMtxParent(test);
+	m_pGunModel->GetModel()->SetObjParent(true);
 }
 
 //================================================
@@ -395,38 +303,6 @@ CPlayer *CPlayer::Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot)
 		}
 	}
 	return pPlayer;
-}
-
-//================================================
-//モデルの位置設定処理
-//================================================
-void CPlayer::SetModelPos(const int &nCntModel, const D3DXVECTOR3 &pos)
-{
-	m_apModel[nCntModel]->SetPos(pos);
-}
-
-//================================================
-//モデルの位置取得処理
-//================================================
-D3DXVECTOR3 CPlayer::GetModelPos(const int &nCntModel)
-{
-	return m_apModel[nCntModel]->GetPos();
-}
-
-//================================================
-//モデルの向き設定処理
-//================================================
-void CPlayer::SetModelRot(const int &nCntModel, const D3DXVECTOR3 &rot)
-{
-	m_apModel[nCntModel]->SetRot(rot);
-}
-
-//================================================
-//モデルの向き取得処理
-//================================================
-D3DXVECTOR3 CPlayer::GetModelRot(const int &nCntModel)
-{
-	return m_apModel[nCntModel]->GetRot();
 }
 
 //================================================
@@ -527,12 +403,6 @@ void CPlayer::Move(void)
 		m_move.z = -cosf(m_fObjectiveRot + D3DX_PI) * fSpeed;
 		//回転をさせる
 		m_bRotate = true;
-
-		if (m_pMotionPlayer->GetMotion() != CMotionRoad::MOTION_PLAYER_TYPE_MOVE)		//移動モーションでない
-		{
-			//移動モーションにする
-			m_pMotionPlayer->SetMotion(CMotionRoad::MOTION_PLAYER_TYPE_MOVE, this);
-		}
 	}
 	else
 	{//スティックに傾きがなかったら
@@ -540,13 +410,6 @@ void CPlayer::Move(void)
 		//移動量をゼロにする
 		m_move.x = 0.0f;
 		m_move.z = 0.0f;
-
-		//移動モーションだったら
-		if (m_pMotionPlayer->GetMotion() == CMotionRoad::MOTION_PLAYER_TYPE_MOVE)
-		{
-			//ニュートラルモーションにする
-			m_pMotionPlayer->SetMotion(CMotionRoad::MOTION_PLAYER_TYPE_NEUTRAL, this);
-		}
 	}
 }
 

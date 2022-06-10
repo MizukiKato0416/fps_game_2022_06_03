@@ -534,11 +534,11 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 //=============================================================================
 // 指定オブジェクトのマトリックス入手
 //=============================================================================
-D3DXMATRIX CXanimModel::GetMatrix(string name)
+D3DXMATRIX *CXanimModel::GetMatrix(string name)
 {
-	D3DXMATRIX buf;
+	D3DXMATRIX *buf = new D3DXMATRIX;
 
-	CheckContainer(m_root_frame, &buf, name);
+	CheckContainer(m_root_frame, buf, name);
 
 	return buf;
 }

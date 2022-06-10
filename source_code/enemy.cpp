@@ -10,6 +10,8 @@
 #include "enemy.h"
 #include "manager.h"
 #include "renderer.h"
+#include "tcp_client.h"
+#include "xanimmodel.h"
 #include <thread>
 
 //=============================================================================
@@ -34,6 +36,8 @@ CEnemy::~CEnemy()
 //=============================================================================
 HRESULT CEnemy::Init(void)
 {
+	m_model = CXanimModel::Create("data/motion.x");
+	m_model->ChangeAnimation(1, 60.0f / 4800.0f);
 
 	std::thread th(Recv, m_commu_data.GetCmmuData());
 
@@ -48,6 +52,7 @@ HRESULT CEnemy::Init(void)
 void CEnemy::Uninit(void)
 {
 	Release();
+	m_model->Uninit();
 }
 
 //=============================================================================
@@ -55,6 +60,7 @@ void CEnemy::Uninit(void)
 //=============================================================================
 void CEnemy::Update(void)
 {
+	m_model->Update();
 	Move();
 	Attack();
 }
@@ -95,6 +101,7 @@ void CEnemy::Draw(void)
 	//マトリックスの設定
 	pDevice->SetTransform(	D3DTS_WORLD,
 							&m_mtx_wld);
+	m_model->Draw();
 
 }
 
@@ -124,23 +131,24 @@ CEnemy *CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 //=============================================================================
 void CEnemy::Recv(CCommunicationData::COMMUNICATION_DATA *my_data)
 {
-	/*while (pData->bConnect == false)
+	while (true)
 	{
-		CTcpClient *pTcp = CManager::GetTcpClient();
-		char aRecv[MAX_COMMUDATA];
+		CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
+		CCommunicationData::COMMUNICATION_DATA buf;
+		char aRecv[128];
 
 		pTcp->Recv(&aRecv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		if (nRecvSize < 0)
+		memcpy(&buf, &aRecv[0], (int)sizeof(CCommunicationData::COMMUNICATION_DATA));
+		if (my_data->Player.nNumber == buf.Player.nNumber)
 		{
-			if (pTcp != NULL)
-			{
-				pTcp->Uninit();
-				pTcp = NULL;
-				break;
-			}
+			my_data->Player.Pos = buf.Player.Pos;
+			my_data->Player.Rot = buf.Player.Rot;
 		}
-		memcpy(pData, &aRecv[0], (int)sizeof(CCommunicationData::COMMUNICATION_DATA));
-	}*/
+		if (my_data->bConnect == false)
+		{
+			break;
+		}
+	}
 }
 
 //=============================================================================

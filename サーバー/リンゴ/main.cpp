@@ -20,6 +20,7 @@
 // グローバル変数
 //------------------------
 int g_stop = 1;
+int g_accept_count = 0;
 
 //------------------------
 // メイン関数
@@ -47,14 +48,14 @@ void main(void)
 		thread th(StopOrSurver);
 
 		th.detach();
-		while (pListenner != NULL)
+		while (g_stop == 1)
 		{
-			thread th(Accept, pListenner);
-
-			th.detach();
-			if (g_stop == 0)
+			if (g_accept_count <= 5)
 			{
-				break;
+				thread th(Accept, pListenner);
+
+				th.detach();
+				g_accept_count++;
 			}
 		}
 	}
@@ -100,7 +101,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];
 	char recv_data[MAX_COMMUDATA];
 	char send_data[MAX_COMMUDATA];
-	int recv;
+	int recv = 0;
 
 	FD_ZERO(&readfds);
 

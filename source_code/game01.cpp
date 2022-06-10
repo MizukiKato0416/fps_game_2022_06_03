@@ -11,11 +11,13 @@
 #include "mesh_field.h"
 #include "meshsphere.h"
 #include "model_single.h"
+#include "tcp_client.h"
+#include "enemy.h"
 
 //================================================
 //マクロ定義
 //================================================
-#define GAME01_FIELD_SIZE		(13000.0f)			//マップの広さ
+#define GAME01_FIELD_SIZE		(50000.0f)			//マップの広さ
 
 //================================================
 //静的メンバ変数宣言
@@ -47,9 +49,15 @@ CGame01::~CGame01()
 //================================================
 HRESULT CGame01::Init(void)
 {
+	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
+	pClient->Connect();
 
 	//プレイヤーの生成
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
+	CEnemy *enemy[3];
+	enemy[0] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	enemy[1] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	enemy[2] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//メッシュフィールド生成
 	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
