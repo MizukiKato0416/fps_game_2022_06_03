@@ -21,6 +21,7 @@
 #include "model.h"
 #include "tcp_client.h"
 #include "communicationdata.h"
+#include "game01.h"
 #include <thread>
 
 //================================================
@@ -154,6 +155,12 @@ void CPlayer::Update(void)
 
 	//位置反映
 	SetPos(m_pos);
+
+	//マップの移動制限
+	if (CManager::GetInstance()->GetGame01() != nullptr)
+	{
+		CManager::GetInstance()->GetGame01()->MapLimit(this);
+	}
 
 	//床との当たり判定
 	if (CFloor::Collision(this, m_size.x) == true)

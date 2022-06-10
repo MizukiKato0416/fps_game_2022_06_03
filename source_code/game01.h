@@ -9,17 +9,7 @@
 
 //前方宣言
 class CPlayer;
-class CFloor;
-class CRoad;
-class CGauge;
-class CBg;
-class CObject2D;
-class CRocket;
-class CModelSingle;
-class CLetter;
-class CNextDialogUI;
-class CDialog;
-class CPause;
+class CMeshField;
 
 //================================================
 //マクロ定義
@@ -43,12 +33,14 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void MapLimit(CObject* pObj);		//マップの移動制限
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理
 		
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
+	CMeshField *m_pMeshField;			//メッシュフィールドのポインタ
 };	
 
 #endif // !_GAME01_H_

@@ -29,6 +29,7 @@
 CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 {
 	m_pPlayer = nullptr;
+	m_pMeshField = nullptr;
 }
 
 //================================================
@@ -58,11 +59,8 @@ HRESULT CGame01::Init(void)
 	enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//メッシュフィールド生成
-	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
-	//CMeshField *pMeshField = CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(500.0f, 0.0f, 500.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2, 2);
-	pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
-	//CFloor *pFloor = CFloor::Create(D3DXVECTOR3(0.0f, 60.0f, 0.0f), D3DXVECTOR3(500.0f, 000.0f, 500.0f), D3DXVECTOR3(0.2f, 0.0f, 0.0f));
-	//pFloor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
+	m_pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
+	m_pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
 
 	//メッシュスフィア生成
 	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, GAME01_FIELD_SIZE, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
@@ -119,6 +117,37 @@ void CGame01::Update(void)
 void CGame01::Draw(void)
 {
 
+}
+
+//================================================
+//マップの移動制限
+//================================================
+void CGame01::MapLimit(CObject* pObj)
+{
+	D3DXVECTOR3 objPos = pObj->GetPos();
+	D3DXVECTOR3 size = m_pMeshField->GetSize();
+	D3DXVECTOR3 pos = m_pMeshField->GetPos();
+
+	if (objPos.x >= pos.x + size.x / 2.0f)
+	{
+		objPos.x = pos.x + size.x / 2.0f;
+		pObj->SetPos(objPos);
+	}
+	else if (objPos.x <= pos.x - size.x / 2.0f)
+	{
+		objPos.x = pos.x - size.x / 2.0f;
+		pObj->SetPos(objPos);
+	}
+	if (objPos.z >= pos.z + size.z / 2.0f)
+	{
+		objPos.z = pos.z + size.z / 2.0f;
+		pObj->SetPos(objPos);
+	}
+	else if (objPos.z <= pos.z - size.z / 2.0f)
+	{
+		objPos.z = pos.z - size.z / 2.0f;
+		pObj->SetPos(objPos);
+	}
 }
 
 //================================================
