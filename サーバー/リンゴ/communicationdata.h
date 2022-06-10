@@ -18,6 +18,7 @@
 //-------------------------------
 #define MAX_PLAYER (3)
 #define MAX_BULLET (30)
+#define MAX_COMMU_DATA (512)
 
 //-------------------------------
 // Class‚Ì’è‹`

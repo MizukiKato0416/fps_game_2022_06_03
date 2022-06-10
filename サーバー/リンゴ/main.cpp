@@ -21,6 +21,7 @@
 //------------------------
 int g_stop = 1;
 int g_accept_count = 0;
+bool g_accept = false;
 
 //------------------------
 // メイン関数
@@ -50,9 +51,10 @@ void main(void)
 		th.detach();
 		while (g_stop == 1)
 		{
-			if (g_accept_count <= 5)
+			if (g_accept_count <= 5 && g_accept == false)
 			{
 				thread th(Accept, pListenner);
+				g_accept = true;
 
 				th.detach();
 				g_accept_count++;
@@ -99,9 +101,9 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 	CCommunication *communication[MAX_PLAYER];
 	CCommunicationData commu_data[MAX_PLAYER + 1];
 	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];
-	char recv_data[MAX_COMMUDATA];
-	char send_data[MAX_COMMUDATA];
-	int recv = 0;
+	char recv_data[MAX_COMMU_DATA];
+	char send_data[MAX_COMMU_DATA];
+	int recv = 1;
 
 	FD_ZERO(&readfds);
 
@@ -111,11 +113,14 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		data[count_playr]->Player.nNumber = count_playr + 1;
 	}
 	data[0] = commu_data[0].GetCommuData();
+	data[0]->bConnect = true;
 	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
 	{
 		communication[count_player] = listener->Accept();
 		data[count_player + 1]->bConnect = true;
 	}
+
+	g_accept = false;
 
 	// ソケットの入手
 	sock[0] = player_01->GetSocket();
@@ -154,7 +159,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		maxfd = sock[3];
 	}
 
-	while (recv != -1)
+	while (recv > 0)
 	{
 		memcpy(&fds, &readfds, sizeof(fd_set));
 
@@ -171,7 +176,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー2にsendされていたら
-		if (FD_ISSET(sock[1], &fds))
+		else if (FD_ISSET(sock[1], &fds))
 		{
 			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
@@ -180,7 +185,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー3にsendされていたら
-		if (FD_ISSET(sock[1], &fds))
+		else if (FD_ISSET(sock[2], &fds))
 		{
 			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
@@ -189,7 +194,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー4にsendされていたら
-		if (FD_ISSET(sock[1], &fds))
+		else if (FD_ISSET(sock[3], &fds))
 		{
 			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 

@@ -31,18 +31,18 @@ public:
 	void Uninit(void);	// ポリゴンの終了
 	void Update(void);	// ポリゴンの更新
 	void Draw(void);	// ポリゴンの描画
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// ゲッダー
+	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int index) { return m_commu_data[index].GetCmmuData(); }	// ゲッダー
 	static CEnemy *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 生成
-	static void Recv(CCommunicationData::COMMUNICATION_DATA *my_data);	// レシーブスレッド
+	static void Recv(void);	// レシーブスレッド
 private:
 	void Attack(void);	// 攻撃
 	void Move(void);	// 移動
-	CXanimModel *m_model;	// モデル
-	CCommunicationData m_commu_data;	// 通信データ
-	D3DXVECTOR3 m_pos;		// 位置
-	D3DXVECTOR3 m_rot;		// 向き
-	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
-	int m_my_index;	// 自分のプレイヤー番号
+	static CCommunicationData m_commu_data[MAX_PLAYER];	// 通信データ
+	CXanimModel *m_model[MAX_PLAYER];	// モデル
+	D3DXVECTOR3 m_pos[MAX_PLAYER];		// 位置
+	D3DXVECTOR3 m_rot[MAX_PLAYER];		// 向き
+	D3DXMATRIX m_mtx_wld[MAX_PLAYER];	// ワールドマトリックス
+	int m_my_index[MAX_PLAYER];	// 自分のプレイヤー番号
 };
 
 #endif

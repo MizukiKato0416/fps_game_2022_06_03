@@ -19,6 +19,9 @@
 #include "mesh_field.h"
 #include "xanimmodel.h"
 #include "model.h"
+#include "tcp_client.h"
+#include "communicationdata.h"
+#include <thread>
 
 //================================================
 //マクロ定義
@@ -28,10 +31,6 @@
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
-
-//================================================
-//静的メンバ変数宣言
-//================================================
 
 //================================================
 //デフォルトコンストラクタ
@@ -130,6 +129,10 @@ void CPlayer::Update(void)
 {
 	CSound *sound;
 	sound = CManager::GetInstance()->GetSound();
+	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
+	char send[MAX_COMMU_DATA];
+
 	//位置取得
 	D3DXVECTOR3 pos = GetPos();
 
@@ -225,6 +228,10 @@ void CPlayer::Update(void)
 	}
 
 	m_pAnimModel->Update();
+
+	pData->Player.Pos = m_pos;
+	pData->Player.Rot = m_rot;
+	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 }
 
 //================================================

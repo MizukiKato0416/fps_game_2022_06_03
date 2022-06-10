@@ -5,6 +5,7 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 #include "object.h"
+#include "communicationdata.h"
 
 //前方宣言
 class CModelSingle;
@@ -55,6 +56,7 @@ private:
 	void Jump(void);								//ジャンプ処理
 
 	//メンバ変数
+	CCommunicationData m_commu_data;	// 通信データ
 	D3DXVECTOR3 m_pos;								//位置
 	D3DXVECTOR3 m_offsetPos;						//プレイヤーが子になったときのオフセット位置
 	D3DXVECTOR3 m_posOld;							//1フレーム前の位置

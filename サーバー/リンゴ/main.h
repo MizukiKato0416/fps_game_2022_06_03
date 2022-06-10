@@ -27,7 +27,6 @@ class CTcpListener;
 // É}ÉNÉçíËã`
 //------------------------
 #define MAX_IP_NUM (16)
-#define MAX_COMMUDATA (64)
 
 #pragma comment(lib, "ws2_32.lib")
 
