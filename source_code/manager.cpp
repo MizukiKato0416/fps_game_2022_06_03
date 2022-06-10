@@ -21,6 +21,7 @@
 #include "motion_road.h"
 #include "play_data.h"
 #include "sound.h"
+#include "tcp_client.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -43,6 +44,7 @@ CFade *CManager::m_pFade = nullptr;
 CMotionRoad *CManager::m_pMotionRoad = nullptr;
 CPlayData *CManager::m_pPlayData = nullptr;
 CSound *CManager::m_pSound = nullptr;
+CTcpClient *CManager::m_pCommu = nullptr;
 HWND CManager::m_hWnd = NULL;
 
 //================================================
@@ -70,6 +72,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	srand((unsigned int)time(NULL));
 
 	m_hWnd = hWnd;
+
+	CTcpClient::WSASInit();
 
 	//レンダリングクラスの生成
 	if (m_pRenderer == nullptr)
@@ -161,6 +165,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
+	//通信クラスの生成
+	if (m_pCommu == nullptr)
+	{
+		m_pCommu = new CTcpClient;
+		if (m_pCommu != nullptr)
+		{
+			m_pCommu->Init();
+		}
+	}
+
 	//サウンドクラスの生成
 	if (m_pSound == nullptr)
 	{
@@ -191,6 +205,7 @@ void CManager::Uninit(void)
 {
 	//全てのオブジェクトの破棄
 	CObject::ReleaseAll();
+	CTcpClient::WSASUninit();
 
 	//プレイデータクラスの破棄
 	if (m_pPlayData != nullptr)
@@ -201,6 +216,14 @@ void CManager::Uninit(void)
 		//メモリの開放
 		delete m_pPlayData;
 		m_pPlayData = nullptr;
+	}
+
+	if (m_pCommu != nullptr)
+	{
+		m_pCommu->Uninit();
+
+		delete m_pCommu;
+		m_pCommu = nullptr;
 	}
 
 	if (m_pSound != nullptr)

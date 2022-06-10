@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\サーバー\リンゴ\communication.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="x_load.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\サーバー\リンゴ\communication.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />

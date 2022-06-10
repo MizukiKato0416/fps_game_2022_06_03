@@ -29,6 +29,23 @@ CTcpClient::~CTcpClient()
 }
 
 //-------------------------------
+// WSASの初期化
+//-------------------------------
+void CTcpClient::WSASInit(void)
+{
+	WSADATA  wsaData;
+	int nErr = WSAStartup(WINSOCK_VERSION, &wsaData);
+}
+
+//-------------------------------
+// WSASの終了処理
+//-------------------------------
+void CTcpClient::WSASUninit(void)
+{
+	WSACleanup();
+}
+
+//-------------------------------
 // 初期化
 //-------------------------------
 bool CTcpClient::Init(void)
@@ -36,13 +53,7 @@ bool CTcpClient::Init(void)
 	FILE *pFile;
 	char aFile[2][64];
 
-	//------------------------
-	// 初期化
-	//------------------------
-	WSADATA  wsaData;
-	int nErr = WSAStartup(WINSOCK_VERSION, &wsaData);
-
-	pFile = fopen("data/Txtdata/severdata.txt", "r");
+	pFile = fopen("data/severdata.txt", "r");
 
 	if (pFile != NULL)
 	{
@@ -52,22 +63,18 @@ bool CTcpClient::Init(void)
 			if (strcmp(aFile[0], "PORT_NUM") == 0) // PORT_NUMの文字列を見つけたら
 			{
 				fscanf(pFile, "%s", &aFile[1]);
-				fscanf(pFile, "%d", &m_port);
+				fscanf(pFile, "%d", &m_nPort);
 			}
 			if (strcmp(aFile[0], "IP_NUM") == 0) // MAX_WAITの文字列を見つけたら
 			{
 				fscanf(pFile, "%s", &aFile[1]);
-				fscanf(pFile, "%s", m_ip.c_str());
+				fscanf(pFile, "%s", m_Ip.c_str());
 			}
 			if (strcmp(aFile[0], "END_SCRIPT") == 0) //END_SCRIPTの文字列を見つけたら
 			{
 				break;
 			}
 		}
-	}
-	else
-	{
-		printf("サーバーデータが読み取れませんでした。");
 	}
 
 	fclose(pFile);
@@ -96,8 +103,8 @@ bool CTcpClient::Connect(void)
 	struct sockaddr_in addr;
 
 	addr.sin_family = AF_INET;	// どの通信か
-	addr.sin_port = htons(m_port);	// ポート番号
-	addr.sin_addr.S_un.S_addr = inet_addr(m_ip.c_str());
+	addr.sin_port = htons(m_nPort);	// ポート番号
+	addr.sin_addr.S_un.S_addr = inet_addr(m_Ip.c_str());
 
 	//------------------------
 	// 接続
@@ -150,8 +157,6 @@ void CTcpClient::Uninit(void)
 	//------------------------
 	// 接続切断
 	//------------------------
-
-	printf("接続を切断します。\n");
 	closesocket(m_socket);	// 接続受付用ソケット
 	m_socket = INVALID_SOCKET;
 }

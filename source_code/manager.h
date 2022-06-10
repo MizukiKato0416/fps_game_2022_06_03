@@ -23,6 +23,7 @@ class CFade;
 class CMotionRoad;
 class CPlayData;
 class CSound;
+class CTcpClient;
 
 //================================================
 //マクロ定義
@@ -69,6 +70,7 @@ public:
 	static CMotionRoad *GetMotionRoad(void);									//モーションロード取得処理
 	static CPlayData *GetPlayData(void);										//プレイデータ取得処理
 	static CSound *GetSound(void) { return m_pSound; }							//サウンド取得処理
+	static CTcpClient *GetCommunication(void) { return m_pCommu; }				//通信クラス取得処理
 	static HWND GetWindowHandle(void) { return m_hWnd; }						//hwnd取得処理
 
 private:
@@ -94,6 +96,7 @@ private:
 	static CMotionRoad *m_pMotionRoad;					//モーションロードのポインタ
 	static CPlayData *m_pPlayData;						//プレイデータのポインタ
 	static CSound *m_pSound;							//サウンド
+	static CTcpClient *m_pCommu;					//通信クラス
 	static HWND m_hWnd;									//ウィンドウハンドル
 };
 
