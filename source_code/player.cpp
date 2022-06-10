@@ -25,7 +25,8 @@
 //================================================
 #define PLAYER_JUMP							(8.0f)			//ジャンプ力
 #define PLAYER_GRAVITY						(0.5f)			//重力の大きさ
-#define PLAYER_MOVE_SPEED					(10.0f * 1)		//通常移動の移動量
+#define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
+#define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
 
 //================================================
@@ -87,6 +88,7 @@ HRESULT CPlayer::Init(void)
 
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
 
 	//サイズを取得
@@ -105,8 +107,6 @@ HRESULT CPlayer::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
-
-	
 
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
@@ -339,7 +339,7 @@ void CPlayer::Move(void)
 	}
 
 	//移動量設定用変数
-	float fSpeed = PLAYER_MOVE_SPEED;
+	float fSpeed = PLAYER_WALK_SPEED;
 
 	//スティックの傾きがあったらまたはWASDを押したら
 	if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f || 
