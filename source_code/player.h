@@ -72,6 +72,7 @@ private:
 	bool m_bObjParent;								//モデル以外との親子関係をつけるかどうか
 	bool m_bJump;									//ジャンプしているかどうか
 	CXanimModel *m_pAnimModel;
+	float m_fAnimSpeed;
 };
 
 #endif // !_PLAYER_H_

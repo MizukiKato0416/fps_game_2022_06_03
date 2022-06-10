@@ -18,6 +18,7 @@
 // 前方宣言
 //*****************************************************************************
 class CXanimModel;
+class CModelSingle;
 
 //*****************************************************************************
 // クラス定義
@@ -39,6 +40,7 @@ private:
 	void Move(void);	// 移動
 	static CCommunicationData m_commu_data[MAX_PLAYER];	// 通信データ
 	CXanimModel *m_model[MAX_PLAYER];	// モデル
+	CModelSingle *m_pGunModel[MAX_PLAYER];			// 銃モデル
 	D3DXVECTOR3 m_pos[MAX_PLAYER];		// 位置
 	D3DXVECTOR3 m_rot[MAX_PLAYER];		// 向き
 	D3DXMATRIX m_mtx_wld[MAX_PLAYER];	// ワールドマトリックス
