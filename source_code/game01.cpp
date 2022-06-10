@@ -54,10 +54,8 @@ HRESULT CGame01::Init(void)
 
 	//プレイヤーの生成
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
-	CEnemy *enemy[3];
-	enemy[0] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	enemy[1] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	enemy[2] = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CEnemy *enemy;
+	enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//メッシュフィールド生成
 	CMeshField *pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");

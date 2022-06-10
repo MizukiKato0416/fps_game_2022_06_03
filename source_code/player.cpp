@@ -19,18 +19,18 @@
 #include "mesh_field.h"
 #include "xanimmodel.h"
 #include "model.h"
+#include "tcp_client.h"
+#include "communicationdata.h"
+#include <thread>
 
 //================================================
 //マクロ定義
 //================================================
 #define PLAYER_JUMP							(8.0f)			//ジャンプ力
 #define PLAYER_GRAVITY						(0.5f)			//重力の大きさ
-#define PLAYER_MOVE_SPEED					(10.0f * 1)		//通常移動の移動量
+#define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
+#define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
-
-//================================================
-//静的メンバ変数宣言
-//================================================
 
 //================================================
 //デフォルトコンストラクタ
@@ -87,6 +87,7 @@ HRESULT CPlayer::Init(void)
 
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
 
 	//サイズを取得
@@ -105,8 +106,6 @@ HRESULT CPlayer::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
-
-	
 
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
@@ -130,6 +129,9 @@ void CPlayer::Update(void)
 {
 	CSound *sound;
 	sound = CManager::GetInstance()->GetSound();
+	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
+
 	//位置取得
 	D3DXVECTOR3 pos = GetPos();
 
@@ -211,20 +213,12 @@ void CPlayer::Update(void)
 		m_pos = pos;
 	}
 
-	//キーボード取得処理
-	CInputKeyboard *pInputKeyboard;
-	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-	if (pInputKeyboard->GetTrigger(DIK_1) == true)
-	{
-		m_pAnimModel->ChangeAnimation(0, (20.0f * 4.0f) / 4800.0f);
-	}
-	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
-	{
-		m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
-	}
-
 	m_pAnimModel->Update();
+
+	pData->Player.Pos = m_pos;
+	pData->Player.Rot = m_rot;
+	pData->Player.fMotionSpeed = m_fAnimSpeed;
+	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 }
 
 //================================================
@@ -339,13 +333,21 @@ void CPlayer::Move(void)
 	}
 
 	//移動量設定用変数
-	float fSpeed = PLAYER_MOVE_SPEED;
+	float fSpeed = PLAYER_WALK_SPEED;
 
 	//スティックの傾きがあったらまたはWASDを押したら
 	if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f || 
 		pInputKeyboard->GetPress(DIK_W) == true || pInputKeyboard->GetPress(DIK_A) == true ||
 		pInputKeyboard->GetPress(DIK_S) == true || pInputKeyboard->GetPress(DIK_D) == true)
 	{
+		//歩きモーションでなかったら
+		if (m_pAnimModel->GetAnimation() != 0)
+		{
+			//歩きモーションにする
+			m_pAnimModel->ChangeAnimation(0, (20.0f * 3.0f) / 4800.0f);
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+		}
+
 		//目的の向きを設定
 		if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f)
 		{
@@ -353,6 +355,11 @@ void CPlayer::Move(void)
 		}
 		else if (pInputKeyboard->GetPress(DIK_W) == true)
 		{
+			if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
+			{
+				fSpeed = PLAYER_RUN_SPEED;
+			}
+
 			if (pInputKeyboard->GetPress(DIK_A) == true)
 			{
 				//目的の向きを設定
@@ -410,6 +417,14 @@ void CPlayer::Move(void)
 		//移動量をゼロにする
 		m_move.x = 0.0f;
 		m_move.z = 0.0f;
+
+		//ニュートラルモーションでなかったら
+		if (m_pAnimModel->GetAnimation() != 1)
+		{
+			//ニュートラルモーションにする
+			m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+			m_fAnimSpeed = 60.0f / 4800.0f;
+		}
 	}
 }
 

@@ -12,15 +12,25 @@
 #include "renderer.h"
 #include "tcp_client.h"
 #include "xanimmodel.h"
+#include "model.h"
+#include "model_single.h"
 #include <thread>
+
+//=============================================================================
+// 静的メンバ変数宣言
+//=============================================================================
+CCommunicationData CEnemy::m_commu_data[MAX_PLAYER];
 
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
 CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 {
-	m_pos ={ 0.0f, 0.0f, 0.0f };
-	m_rot ={ 0.0f, 0.0f, 0.0f };
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		m_pos[count_enemy] = { 0.0f, 0.0f, 0.0f };
+		m_rot[count_enemy] = { 0.0f, 0.0f, 0.0f };
+	}
 }
 
 //=============================================================================
@@ -36,10 +46,14 @@ CEnemy::~CEnemy()
 //=============================================================================
 HRESULT CEnemy::Init(void)
 {
-	m_model = CXanimModel::Create("data/motion.x");
-	m_model->ChangeAnimation(1, 60.0f / 4800.0f);
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		m_model[count_enemy] = CXanimModel::Create("data/motion.x");
+		m_model[count_enemy]->ChangeAnimation(1, 60.0f / 4800.0f);
+		m_pGunModel[count_enemy] = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
+	}
 
-	std::thread th(Recv, m_commu_data.GetCmmuData());
+	std::thread th(Recv);
 
 	th.detach();
 
@@ -52,7 +66,10 @@ HRESULT CEnemy::Init(void)
 void CEnemy::Uninit(void)
 {
 	Release();
-	m_model->Uninit();
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		m_model[count_enemy]->Uninit();
+	}
 }
 
 //=============================================================================
@@ -60,7 +77,11 @@ void CEnemy::Uninit(void)
 //=============================================================================
 void CEnemy::Update(void)
 {
-	m_model->Update();
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		m_model[count_enemy]->Update();
+	}
+	
 	Move();
 	Attack();
 }
@@ -73,36 +94,46 @@ void CEnemy::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice; // デバイスのポインタ
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスを取得する
 
-	//--------------------------------------
-	//プレイヤー(原点)のマトリックスの設定
-	//--------------------------------------
-	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		//--------------------------------------
+		//プレイヤー(原点)のマトリックスの設定
+		//--------------------------------------
+		D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 
-	D3DXMatrixIdentity(&m_mtx_wld);	//マトリックス初期化
+		D3DXMatrixIdentity(&m_mtx_wld[count_enemy]);	//マトリックス初期化
 
-	//向きの設定
-	D3DXMatrixRotationYawPitchRoll(	&mtxRot,
-									m_rot.y,
-									m_rot.x,
-									m_rot.z);
+										//向きの設定
+		D3DXMatrixRotationYawPitchRoll(&mtxRot,
+			m_rot[count_enemy].y,
+			m_rot[count_enemy].x,
+			m_rot[count_enemy].z);
 
-	D3DXMatrixMultiply(	&m_mtx_wld,
-						&m_mtx_wld,
-						&mtxRot);
-	//位置
-	D3DXMatrixTranslation(	&mtxTrans,
-							m_pos.x,
-							m_pos.y,
-							m_pos.z);
+		D3DXMatrixMultiply(&m_mtx_wld[count_enemy],
+			&m_mtx_wld[count_enemy],
+			&mtxRot);
+		//位置
+		D3DXMatrixTranslation(&mtxTrans,
+			m_pos[count_enemy].x,
+			m_pos[count_enemy].y,
+			m_pos[count_enemy].z);
 
-	D3DXMatrixMultiply(	&m_mtx_wld,
-						&m_mtx_wld,
-						&mtxTrans);
-	//マトリックスの設定
-	pDevice->SetTransform(	D3DTS_WORLD,
-							&m_mtx_wld);
-	m_model->Draw();
+		D3DXMatrixMultiply(&m_mtx_wld[count_enemy],
+			&m_mtx_wld[count_enemy],
+			&mtxTrans);
+		//マトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD,
+			&m_mtx_wld[count_enemy]);
+		m_model[count_enemy]->Draw();
 
+		//マトリックスを取得
+		D3DXMATRIX *hand = nullptr;
+		hand = m_model[count_enemy]->GetMatrix("handL");
+
+		//銃と親子関係をつける
+		m_pGunModel[count_enemy]->GetModel()->SetMtxParent(hand);
+		m_pGunModel[count_enemy]->GetModel()->SetObjParent(true);
+	}
 }
 
 //=============================================================================
@@ -116,9 +147,6 @@ CEnemy *CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 		pEnemy = new CEnemy;
 	}
 
-	pEnemy->m_pos = pos;
-	pEnemy->m_rot = rot;
-
 	if (pEnemy != NULL)
 	{
 		pEnemy->Init();
@@ -129,24 +157,21 @@ CEnemy *CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 //=============================================================================
 // レシーブスレッド
 //=============================================================================
-void CEnemy::Recv(CCommunicationData::COMMUNICATION_DATA *my_data)
+void CEnemy::Recv(void)
 {
-	while (true)
+	int size = 1;
+
+	while (size > 0)
 	{
 		CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
-		CCommunicationData::COMMUNICATION_DATA buf;
-		char aRecv[128];
+		char recv[MAX_COMMU_DATA];
 
-		pTcp->Recv(&aRecv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		memcpy(&buf, &aRecv[0], (int)sizeof(CCommunicationData::COMMUNICATION_DATA));
-		if (my_data->Player.nNumber == buf.Player.nNumber)
+		for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 		{
-			my_data->Player.Pos = buf.Player.Pos;
-			my_data->Player.Rot = buf.Player.Rot;
-		}
-		if (my_data->bConnect == false)
-		{
-			break;
+			CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+
+			size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 	}
 }
@@ -164,8 +189,18 @@ void CEnemy::Attack(void)
 //=============================================================================
 void CEnemy::Move(void)
 {
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+		int now_motion = -1;
 
-	m_pos = pData->Player.Pos;
-	m_rot = pData->Player.Rot;
+		m_pos[count_enemy] = pData->Player.Pos;
+		m_rot[count_enemy] = pData->Player.Rot;
+		
+		now_motion = m_model[count_enemy]->GetAnimation();
+		if (now_motion != pData->Player.nMotion)
+		{
+			m_model[count_enemy]->ChangeAnimation(pData->Player.nMotion, pData->Player.fMotionSpeed);
+		}
+	}
 }
