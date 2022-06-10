@@ -131,7 +131,6 @@ void CPlayer::Update(void)
 	sound = CManager::GetInstance()->GetSound();
 	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
 	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
-	char send[MAX_COMMU_DATA];
 
 	//位置取得
 	D3DXVECTOR3 pos = GetPos();
@@ -212,19 +211,6 @@ void CPlayer::Update(void)
 		//位置取得
 		pos = GetPos();
 		m_pos = pos;
-	}
-
-	//キーボード取得処理
-	CInputKeyboard *pInputKeyboard;
-	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-	if (pInputKeyboard->GetTrigger(DIK_1) == true)
-	{
-		m_pAnimModel->ChangeAnimation(0, (20.0f * 4.0f) / 4800.0f);
-	}
-	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
-	{
-		m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
 	}
 
 	m_pAnimModel->Update();
@@ -353,6 +339,13 @@ void CPlayer::Move(void)
 		pInputKeyboard->GetPress(DIK_W) == true || pInputKeyboard->GetPress(DIK_A) == true ||
 		pInputKeyboard->GetPress(DIK_S) == true || pInputKeyboard->GetPress(DIK_D) == true)
 	{
+		//歩きモーションでなかったら
+		if (m_pAnimModel->GetAnimation() != 0)
+		{
+			//歩きモーションにする
+			m_pAnimModel->ChangeAnimation(0, (20.0f * 3.0f) / 4800.0f);
+		}
+
 		//目的の向きを設定
 		if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f)
 		{
@@ -360,6 +353,11 @@ void CPlayer::Move(void)
 		}
 		else if (pInputKeyboard->GetPress(DIK_W) == true)
 		{
+			if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
+			{
+				fSpeed = PLAYER_RUN_SPEED;
+			}
+
 			if (pInputKeyboard->GetPress(DIK_A) == true)
 			{
 				//目的の向きを設定
@@ -417,6 +415,13 @@ void CPlayer::Move(void)
 		//移動量をゼロにする
 		m_move.x = 0.0f;
 		m_move.z = 0.0f;
+
+		//ニュートラルモーションでなかったら
+		if (m_pAnimModel->GetAnimation() != 1)
+		{
+			//ニュートラルモーションにする
+			m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+		}
 	}
 }
 
