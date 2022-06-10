@@ -198,7 +198,7 @@ void CEnemy::Move(void)
 		m_rot[count_enemy] = pData->Player.Rot;
 		
 		now_motion = m_model[count_enemy]->GetAnimation();
-		if (now_motion != pData->Player.nMotion)
+		if (now_motion != pData->Player.nMotion && pData->bConnect == true)
 		{
 			m_model[count_enemy]->ChangeAnimation(pData->Player.nMotion, pData->Player.fMotionSpeed);
 		}

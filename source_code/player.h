@@ -71,8 +71,9 @@ private:
 	D3DXMATRIX *m_mtxWorldParent;					//親のワールドマトリックス
 	bool m_bObjParent;								//モデル以外との親子関係をつけるかどうか
 	bool m_bJump;									//ジャンプしているかどうか
-	CXanimModel *m_pAnimModel;
-	float m_fAnimSpeed;
+	CXanimModel *m_pAnimModel;						//モデル
+	float m_fAnimSpeed;								//アニメーションのスピード
+	float m_fMoveSpeed;								//移動する速さ
 };
 
 #endif // !_PLAYER_H_

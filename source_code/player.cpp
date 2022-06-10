@@ -27,8 +27,8 @@
 //================================================
 //マクロ定義
 //================================================
-#define PLAYER_JUMP							(8.0f)			//ジャンプ力
-#define PLAYER_GRAVITY						(0.5f)			//重力の大きさ
+#define PLAYER_JUMP							(15.0f)			//ジャンプ力
+#define PLAYER_GRAVITY						(1.0f)			//重力の大きさ
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
@@ -49,6 +49,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
 	m_bJump = false;
+	m_fMoveSpeed = 0.0f;
 }
 
 //================================================
@@ -75,6 +76,7 @@ HRESULT CPlayer::Init(void)
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
 	m_bJump = false;
+	m_fMoveSpeed = 0.0f;
 
 	//銃モデルの生成
 	m_pGunModel = CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, "asult_gun.x", nullptr, false);
@@ -340,7 +342,7 @@ void CPlayer::Move(void)
 	}
 
 	//移動量設定用変数
-	float fSpeed = PLAYER_WALK_SPEED;
+	m_fMoveSpeed = PLAYER_WALK_SPEED;
 
 	//スティックの傾きがあったらまたはWASDを押したら
 	if ((float)JoyStick.lX != 0.0f || (float)JoyStick.lY != 0.0f || 
@@ -351,8 +353,8 @@ void CPlayer::Move(void)
 		if (m_pAnimModel->GetAnimation() != 0)
 		{
 			//歩きモーションにする
-			m_pAnimModel->ChangeAnimation(0, (20.0f * 3.0f) / 4800.0f);
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+			m_pAnimModel->ChangeAnimation(0, m_fAnimSpeed);
 		}
 
 		//目的の向きを設定
@@ -362,9 +364,20 @@ void CPlayer::Move(void)
 		}
 		else if (pInputKeyboard->GetPress(DIK_W) == true)
 		{
+			//SHIFTを押したら早くする
 			if (pInputKeyboard->GetPress(DIK_LSHIFT) == true)
 			{
-				fSpeed = PLAYER_RUN_SPEED;
+				m_fMoveSpeed = PLAYER_RUN_SPEED;
+
+				//走りモーションにする
+				m_fAnimSpeed = (20.0f * 5.0f) / 4800.0f;
+				m_pAnimModel->ChangeSpeed(m_fAnimSpeed);
+			}
+			else
+			{
+				//歩きモーションにする
+				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+				m_pAnimModel->ChangeSpeed(m_fAnimSpeed);
 			}
 
 			if (pInputKeyboard->GetPress(DIK_A) == true)
@@ -413,8 +426,8 @@ void CPlayer::Move(void)
 		}
 
 		//移動量加算
-		m_move.x = -sinf(m_fObjectiveRot + D3DX_PI) * fSpeed;
-		m_move.z = -cosf(m_fObjectiveRot + D3DX_PI) * fSpeed;
+		m_move.x = -sinf(m_fObjectiveRot + D3DX_PI) * m_fMoveSpeed;
+		m_move.z = -cosf(m_fObjectiveRot + D3DX_PI) * m_fMoveSpeed;
 		//回転をさせる
 		m_bRotate = true;
 	}
