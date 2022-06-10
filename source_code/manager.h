@@ -20,7 +20,6 @@ class CTitle;
 class CGame01;
 class CResult;
 class CFade;
-class CMotionRoad;
 class CPlayData;
 class CSound;
 class CTcpClient;
@@ -67,7 +66,6 @@ public:
 	static void SetMode(MODE mode);												//モード設定
 	static MODE GetMode(void);													//モード取得
 	static CFade *GetFade(void);												//フェード取得処理
-	static CMotionRoad *GetMotionRoad(void);									//モーションロード取得処理
 	static CPlayData *GetPlayData(void);										//プレイデータ取得処理
 	static CSound *GetSound(void) { return m_pSound; }							//サウンド取得処理
 	static CTcpClient *GetCommunication(void) { return m_pCommu; }				//通信クラス取得処理
@@ -93,7 +91,6 @@ private:
 	static CResult *m_pResult;							//リザルトのポインタ
 	static MODE m_mode;									//モード
 	static CFade *m_pFade;								//フェードのポインタ
-	static CMotionRoad *m_pMotionRoad;					//モーションロードのポインタ
 	static CPlayData *m_pPlayData;						//プレイデータのポインタ
 	static CSound *m_pSound;							//サウンド
 	static CTcpClient *m_pCommu;					//通信クラス

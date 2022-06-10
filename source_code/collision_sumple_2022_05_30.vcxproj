@@ -177,8 +177,6 @@
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model_single.cpp" />
-    <ClCompile Include="motion_player.cpp" />
-    <ClCompile Include="motion_road.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
@@ -219,8 +217,6 @@
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_single.h" />
-    <ClInclude Include="motion_player.h" />
-    <ClInclude Include="motion_road.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
