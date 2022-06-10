@@ -224,6 +224,7 @@ void CPlayer::Update(void)
 
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
+	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 }
 
@@ -351,6 +352,7 @@ void CPlayer::Move(void)
 		{
 			//歩きモーションにする
 			m_pAnimModel->ChangeAnimation(0, (20.0f * 3.0f) / 4800.0f);
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
 		}
 
 		//目的の向きを設定
@@ -428,6 +430,7 @@ void CPlayer::Move(void)
 		{
 			//ニュートラルモーションにする
 			m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+			m_fAnimSpeed = 60.0f / 4800.0f;
 		}
 	}
 }

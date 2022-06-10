@@ -20,7 +20,7 @@
 // グローバル変数
 //------------------------
 int g_stop = 1;
-int g_accept_count = 0;
+int g_accept_count = 1;
 bool g_accept = false;
 
 //------------------------
@@ -53,7 +53,7 @@ void main(void)
 		{
 			if (g_accept_count <= 5 && g_accept == false)
 			{
-				thread th(Accept, pListenner);
+				thread th(Accept, pListenner, g_accept);
 				g_accept = true;
 
 				th.detach();
@@ -80,13 +80,13 @@ void main(void)
 //------------------------
 // 接続待ち
 //------------------------
-void Accept(CTcpListener *listener)
+void Accept(CTcpListener *listener, int room_num)
 {
 	CCommunication *communication;
 
 	communication = listener->Accept();
 
-	thread th(CreateRoom, listener, communication);
+	thread th(CreateRoom, listener, communication, room_num);
 
 	th.detach();
 }
@@ -94,7 +94,7 @@ void Accept(CTcpListener *listener)
 //------------------------
 // 部屋生成
 //------------------------
-void CreateRoom(CTcpListener *listener, CCommunication *player_01)
+void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 {
 	fd_set fds, readfds;
 	SOCKET maxfd, sock[MAX_PLAYER + 1];
@@ -170,44 +170,68 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		if (FD_ISSET(sock[0], &fds))
 		{
 			recv = player_01->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[0].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
 
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー2にsendされていたら
-		else if (FD_ISSET(sock[1], &fds))
+		if (FD_ISSET(sock[1], &fds))
 		{
 			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[1].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー3にsendされていたら
-		else if (FD_ISSET(sock[2], &fds))
+		if (FD_ISSET(sock[2], &fds))
 		{
 			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[2].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー4にsendされていたら
-		else if (FD_ISSET(sock[3], &fds))
+		if (FD_ISSET(sock[3], &fds))
 		{
 			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[3].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
+		system("cls");
+
+		CCommunicationData::COMMUNICATION_DATA *screen_info[MAX_PLAYER + 1];
+		
+		for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
+		{
+			screen_info[count_playr] = commu_data[count_playr].GetCommuData();
+		}
+		cout << "=======================================================" << endl;
+		cout << "ルーム : " << room_num << endl;
+		cout << "Player : 1->pos" << screen_info[0]->Player.Pos.x <<" : " << screen_info[0]->Player.Pos.y <<" : " << screen_info[0]->Player.Pos.z << endl;
+		cout << "Player : 1->rot" << screen_info[0]->Player.Rot.x <<" : " << screen_info[0]->Player.Rot.y <<" : " << screen_info[0]->Player.Rot.z << endl;
+		cout << "Player : 2->pos" << screen_info[1]->Player.Pos.x <<" : " << screen_info[1]->Player.Pos.y <<" : " << screen_info[1]->Player.Pos.z << endl;
+		cout << "Player : 2->rot" << screen_info[1]->Player.Rot.x <<" : " << screen_info[1]->Player.Rot.y <<" : " << screen_info[1]->Player.Rot.z << endl;
+		cout << "Player : 3->pos" << screen_info[2]->Player.Pos.x <<" : " << screen_info[2]->Player.Pos.y <<" : " << screen_info[2]->Player.Pos.z << endl;
+		cout << "Player : 3->rot" << screen_info[2]->Player.Rot.x <<" : " << screen_info[2]->Player.Rot.y <<" : " << screen_info[2]->Player.Rot.z << endl;
+		cout << "Player : 4->pos" << screen_info[3]->Player.Pos.x <<" : " << screen_info[3]->Player.Pos.y <<" : " << screen_info[3]->Player.Pos.z << endl;
+		cout << "Player : 4->rot" << screen_info[3]->Player.Rot.x <<" : " << screen_info[3]->Player.Rot.y <<" : " << screen_info[3]->Player.Rot.z << endl;
+		cout << "=======================================================" << endl;
 	}
 	player_01->Uninit();
 	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
 	{
 		communication[count_player]->Uninit();
 	}
+	g_accept_count--;
 }
 
 //------------------------
