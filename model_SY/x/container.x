@@ -173,7 +173,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Pictures\\3îN_FPS\\ëfçﬁ\\istockphoto-948890576-170667a.jpg";
+    "data\\TEXTURE\\MESH\\Container.jpg";
    }
   }
  }
