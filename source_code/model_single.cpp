@@ -399,7 +399,7 @@ int CModelSingle::Collision(CObject *pObject)
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f &&
 					fVecDotOld[4] >= -MODEL_SINGLE_SUBTRACTION)
 				{//上の面
-				 //押し出す位置を求める
+					//押し出す位置を求める
 					D3DXVECTOR3 objectPos = pos;
 					objectPos.y = ((vecNor[4].x * vecPos[4].x) - (vecNor[4].z * vecPos[4].z)) / vecNor[4].y;
 

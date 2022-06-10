@@ -18,9 +18,9 @@
 #include "game01.h"
 #include "result.h"
 #include "fade.h"
-#include "motion_road.h"
 #include "play_data.h"
 #include "sound.h"
+#include "tcp_client.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -40,9 +40,9 @@ CGame01 *CManager::m_pGame01 = nullptr;
 CResult *CManager::m_pResult = nullptr;
 CManager::MODE CManager::m_mode = MODE::TITLE;
 CFade *CManager::m_pFade = nullptr;
-CMotionRoad *CManager::m_pMotionRoad = nullptr;
 CPlayData *CManager::m_pPlayData = nullptr;
 CSound *CManager::m_pSound = nullptr;
+CTcpClient *CManager::m_pCommu = nullptr;
 HWND CManager::m_hWnd = NULL;
 
 //================================================
@@ -70,6 +70,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	srand((unsigned int)time(NULL));
 
 	m_hWnd = hWnd;
+
+	CTcpClient::WSASInit();
 
 	//レンダリングクラスの生成
 	if (m_pRenderer == nullptr)
@@ -141,16 +143,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-	//モーションロードクラスの生成
-	if (m_pMotionRoad == nullptr)
-	{
-		m_pMotionRoad = new CMotionRoad;
-		if (m_pMotionRoad != nullptr)
-		{
-			m_pMotionRoad->Init();
-		}
-	}
-
 	//プレイデータクラスの生成
 	if (m_pPlayData == nullptr)
 	{
@@ -158,6 +150,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		if (m_pPlayData != nullptr)
 		{
 			m_pPlayData->Init();
+		}
+	}
+
+	//通信クラスの生成
+	if (m_pCommu == nullptr)
+	{
+		m_pCommu = new CTcpClient;
+		if (m_pCommu != nullptr)
+		{
+			m_pCommu->Init();
 		}
 	}
 
@@ -179,7 +181,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	//フェードクラスの生成
 	m_pFade = CFade::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
 							D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
-							MODE::TITLE);	
+							MODE::GAME01);	
 
 	return S_OK;
 }
@@ -191,6 +193,7 @@ void CManager::Uninit(void)
 {
 	//全てのオブジェクトの破棄
 	CObject::ReleaseAll();
+	CTcpClient::WSASUninit();
 
 	//プレイデータクラスの破棄
 	if (m_pPlayData != nullptr)
@@ -203,23 +206,20 @@ void CManager::Uninit(void)
 		m_pPlayData = nullptr;
 	}
 
+	if (m_pCommu != nullptr)
+	{
+		m_pCommu->Uninit();
+
+		delete m_pCommu;
+		m_pCommu = nullptr;
+	}
+
 	if (m_pSound != nullptr)
 	{
 		m_pSound->Uninit();
 
 		delete m_pSound;
 		m_pSound = nullptr;
-	}
-
-	//モーションロードクラスの破棄
-	if (m_pMotionRoad != nullptr)
-	{
-		//終了処理
-		m_pMotionRoad->Uninit();
-
-		//メモリの開放
-		delete m_pMotionRoad;
-		m_pMotionRoad = nullptr;
 	}
 
 	//Xファイル読み込みクラスの破棄
@@ -656,14 +656,6 @@ CManager::MODE CManager::GetMode(void)
 CFade* CManager::GetFade(void)
 {
 	return m_pFade;
-}
-
-//=============================================================================
-// MotionRoad取得処理
-//=============================================================================
-CMotionRoad* CManager::GetMotionRoad(void)
-{
-	return m_pMotionRoad;
 }
 
 //=============================================================================
