@@ -39,7 +39,7 @@ HRESULT CRotate3D::Init(D3DXVECTOR3 SetSize,
 	float AddDistance,
 	float fAngle,
 	float fAddAngle,
-	int nTex,
+	string nTex,
 	int Synthetic,
 	int nLife,
 	int nParticleLife,
@@ -77,7 +77,7 @@ HRESULT CRotate3D::Init(D3DXVECTOR3 SetSize,
 	}
 	m_fAngle = fAngle;
 	m_fAddAngle = fAddAngle;
-	m_nTex = nTex;
+	m_pTexture = nTex;
 	m_nSynthetic = Synthetic;
 	m_nLife = nLife;
 	m_ParticleLife = nParticleLife;
@@ -164,7 +164,7 @@ void CRotate3D::Update()
 			D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 			m_Color,
 			m_MinColor,
-			m_nTex, m_ParticleLife,
+			m_pTexture, m_ParticleLife,
 			CStraight3D::STRAIGHT, {}, m_nSynthetic,
 			0.0f,
 			(CStraight3D::RAND_PATTEN)0,
@@ -187,7 +187,7 @@ void CRotate3D::Update()
 			m_MinColor,
 			m_Size,
 			D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-			m_nTex,
+			m_pTexture,
 			m_ParticleLife,
 			m_nSynthetic
 		);
@@ -222,7 +222,7 @@ CRotate3D *CRotate3D::Create(D3DXVECTOR3 SetSize,
 	float AddDistance,
 	float fAngle,
 	float fAddAngle,
-	int nTex,
+	string nTex,
 	int Synthetic,
 	int nLife,
 	int nParticleLife,

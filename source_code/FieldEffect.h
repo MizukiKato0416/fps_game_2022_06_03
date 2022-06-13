@@ -35,7 +35,7 @@ public:
 		float fDistance,
 		D3DCOLORVALUE ParticleColor,
 		D3DCOLORVALUE ParticleAddColor,
-		int nParticleTex,
+		string nParticleTex,
 		int nParticleLife,
 		int nParticleSynthetic,
 		float ParticleMove3d,
@@ -65,7 +65,7 @@ public:
 		float fDistance,
 		D3DCOLORVALUE ParticleColor,
 		D3DCOLORVALUE ParticleAddColor,
-		int nParticleTex,
+		string nParticleTex,
 		int nParticleLife,
 		int nParticleSynthetic,
 		float ParticleMove3d,
@@ -103,7 +103,7 @@ private:
 	float m_fDistance;	//パーティクル発生間隔距離
 	D3DCOLORVALUE m_ParticleColor;	//パーティクルカラー
 	D3DCOLORVALUE m_ParticleAddColor;	//パーティクルカラー増減
-	int m_nParticleTex;	//テクスチャ
+	string m_nParticleTex;	//テクスチャ
 	int m_nParticleLife;	//寿命
 	int m_nParticleSynthetic;	//合成
 	float m_ParticleMove3d;	//移動値

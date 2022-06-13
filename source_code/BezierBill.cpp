@@ -12,7 +12,7 @@
 //*****************************************************************************
 CBezierBill::CBezierBill(PRIORITY priorty) : CBillEffect(priorty)
 {
-
+	m_ControlBezier = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //*****************************************************************************
@@ -30,7 +30,7 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex, int nLife,
+	string nTex, int nLife,
 	D3DXVECTOR2 TexNum,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
@@ -46,7 +46,7 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	D3DCOLORVALUE SecondTrajecttcolor,
 	D3DCOLORVALUE SecondTrajectMincolor,
 	float TrajectMinSize,
-	int TrajectTex,
+	string TrajectTex,
 	int TrajectLife,
 	float DistanceTarget,
 	int Synthetic,
@@ -76,7 +76,6 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	m_TrajectLife = TrajectLife;
 
 	float randCont = float(rand() % (int)m_ControlBezier.x) - float(rand() % (int)m_ControlBezier.x);
-	float randCont2 = float(rand() % (int)m_ControlBezier.x) - float(rand() % (int)m_ControlBezier.x);
 
 	if (DistanceTarget <= 0)
 	{
@@ -92,8 +91,8 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 
 	m_XZr = (float)atan2(a.x, a.z);		//角度ｘｚ
 
-	float sx = (1.0 - m_ControlBezier.z) * pos.x + m_ControlBezier.z * m_Target.x;
-	float sz = (1.0 - m_ControlBezier.z) * pos.z + m_ControlBezier.z * m_Target.z;
+	float sx = (1.0f - m_ControlBezier.z) * pos.x + m_ControlBezier.z * m_Target.x;
+	float sz = (1.0f - m_ControlBezier.z) * pos.z + m_ControlBezier.z * m_Target.z;
 
 	//ベジェ計算
 	//制御点
@@ -299,7 +298,7 @@ CBezierBill *CBezierBill::Create(D3DXVECTOR3 Size,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex, int nLife,
+	string nTex, int nLife,
 	D3DXVECTOR2 TexNum,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
@@ -315,7 +314,7 @@ CBezierBill *CBezierBill::Create(D3DXVECTOR3 Size,
 	D3DCOLORVALUE SecondTrajecttcolor,
 	D3DCOLORVALUE SecondTrajectMincolor,
 	float TrajectMinSize,
-	int TrajectTex,
+	string TrajectTex,
 	int TrajectLife,
 	float DistanceTarget,
 	int Synthetic,

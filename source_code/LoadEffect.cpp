@@ -41,6 +41,9 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 	pFile = fopen(aFileName, "r");
 	char aFile[256];
 
+	char aFile1[256];
+
+
 	//変数定義
 #if 1
 	m_Total = 0;
@@ -66,7 +69,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 	int bRandColB = 0;
 	int bMousePos = 0;
 	int nSynthetic = 0;
-	int nTexture = 0;
+	string nTexture = " ";
 
 	float move3d = 0.0f;
 	float Addmove3d = 0.0f;
@@ -100,7 +103,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 	D3DXVECTOR3 ControlBezier = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DCOLORVALUE Therdcol;
 	D3DCOLORVALUE TherdChangeColor;
-	int SecondTex = 0;
+	string SecondTex;
 #endif
 
 	if (pFile != NULL)
@@ -205,6 +208,11 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 				{
 					fscanf(pFile, "%s", &aFile[0]);
 					fscanf(pFile, "%d", &nTexture);
+				}
+				if (strcmp(&aFile[0], "DISTANCE") == 0)		//発生距離
+				{
+					fscanf(pFile, "%s", &aFile[0]);
+					fscanf(pFile, "%d", &Distance);
 				}
 
 			}
@@ -354,7 +362,8 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 				if (strcmp(&aFile[0], "TEXTURE") == 0)		//テクスチャ
 				{
 					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &nTexture);
+					fscanf(pFile, "%s", &aFile[0]);
+					nTexture = &aFile[0];
 				}
 				if (strcmp(&aFile[0], "DISTANCE") == 0)		//発生距離
 				{
@@ -449,7 +458,8 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 				if (strcmp(&aFile[0], "SECONDTEX") == 0)	//パーティクルカラー
 				{
 					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &SecondTex);
+					fscanf(pFile, "%s", &aFile1[0]);
+					SecondTex = &aFile1[0];
 				}
 				if (strcmp(&aFile[0], "CONTROLBEZIER") == 0)	//パーティクルカラー
 				{
@@ -467,7 +477,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 			{
 				bEffectState2D = false;
 				CPresetEffect::SetEffectState2D(nPattern, pos, fRotate, move, Addmove, Diffusion, Destroyvec, fSize, fAddSize, col, ChangeColor, nLife, Density,
-					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture);
+					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture, (float)Distance);
 			}
 
 			//3Dエフェクト情報セット

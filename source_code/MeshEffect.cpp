@@ -9,8 +9,6 @@
 #include "object3D.h"
 
 //マクロ定義
-#define TEXTURE_FILENAME_MESH "data/Tex3DNameRead.txt"
-LPDIRECT3DTEXTURE9 CMeshEffect::m_pTexture[MAX_TEX] = {};
 int CMeshEffect::m_nMaxTex = 0;
 //=============================================================================
 // コンストラクタ
@@ -32,7 +30,7 @@ CMeshEffect::~CMeshEffect(void)
 //=============================================================================
 // 初期化
 //=============================================================================
-HRESULT CMeshEffect::Init( D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2, D3DXVECTOR3 VtxOldpos1, D3DXVECTOR3 VtxOldpos2, D3DXVECTOR3 /*Size*/, int nTex, int nLife, EFFECT_TYPE nType)
+HRESULT CMeshEffect::Init( D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2, D3DXVECTOR3 VtxOldpos1, D3DXVECTOR3 VtxOldpos2, D3DXVECTOR3 /*Size*/, string nTex, int nLife, EFFECT_TYPE nType)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
@@ -46,7 +44,7 @@ HRESULT CMeshEffect::Init( D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2, D3DXVECTOR3
 		NULL);
 
 	m_nLife = nLife;
-	m_nTexType = nTex;
+	m_pTexture = nTex;
 	m_atype = nType;
 
 	m_Max = Vtxpos1;
@@ -144,6 +142,7 @@ void CMeshEffect::Draw()
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	D3DXMATRIX mtxRot, mtxTrans; //計算用マトリックス
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(m_pTexture);
 
 	//Zテスト関係
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
@@ -194,7 +193,7 @@ void CMeshEffect::Draw()
 
 	//頂点フォーマット
 	pDevice->SetFVF(FVF_VERTEX_3D);
-	pDevice->SetTexture(0, m_pTexture[m_nTexType]);    //テクスチャの設定
+	pDevice->SetTexture(0, buf);    //テクスチャの設定
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		0,
@@ -228,6 +227,7 @@ void CMeshEffect::SetTexture(int nTex)
 	m_nTexType = nTex;
 }
 
+#if 0
 //=============================================================================
 // テクスチャ生成
 //=============================================================================
@@ -288,6 +288,7 @@ void CMeshEffect::UninitTextureMesh()
 	}
 
 }
+#endif
 
 //=============================================================================
 // サイズ変更

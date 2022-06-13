@@ -18,7 +18,7 @@ public:
 
 	HRESULT Init(D3DXVECTOR3 pos, float rot,
 		float fSize, int Vertical,
-		int Line, int nTex,
+		int Line, string nTex,
 		int Synthetic, D3DXVECTOR2 TexNum);
 	void Uninit();
 	void Update();
@@ -28,7 +28,6 @@ public:
 
 	void SetColor(D3DCOLORVALUE Color);
 	void SetSize(D3DXVECTOR3 pos ,float Size);
-	void Rotate(float Rotate);
 
 	void SetTexUV(D3DXVECTOR2 TexUV);
 	void SetAnimTexUV(D3DXVECTOR2 TexPattern);
@@ -48,7 +47,7 @@ protected:
 	D3DXVECTOR2 m_nSplit;
 	D3DXVECTOR2 m_MaxSplit;
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_TEXTURE];	//テクスチャ
+	string m_pTexture;	//テクスチャ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL;	//頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff = NULL;	//インデックスバッファ
 

@@ -2757,7 +2757,7 @@ Frame Root {
          0.000000,-0.000000, 0.161302, 0.000000,
         -1.624110,-0.003787, 0.977854, 1.000000;;
       }
-      Mesh { //handL_001 Mesh
+      Mesh handL{ //handL_001 Mesh
         24;
         -1.000000; 1.000000;-1.000000;,
         -1.000000;-1.000000;-1.000000;,
@@ -2910,7 +2910,7 @@ Frame Root {
          0.000000,-0.000000, 0.161302, 0.000000,
          1.623959,-0.003787, 0.977854, 1.000000;;
       }
-      Mesh { //handR_001 Mesh
+      Mesh handR{ //handR_001 Mesh
         24;
         -1.000000; 1.000000;-1.000000;,
         -1.000000;-1.000000;-1.000000;,
@@ -6786,8 +6786,13 @@ Frame Root {
 AnimTicksPerSecond {
   24;
 }
+<<<<<<< HEAD
 AnimationSet neutoral{
   Animation {
+=======
+AnimationSet {
+  Animation Test{
+>>>>>>> e149bbedbafac3bb4824731081db4e6e7fbf5f52
     {Armature}
     AnimationKey { //Position
       2;

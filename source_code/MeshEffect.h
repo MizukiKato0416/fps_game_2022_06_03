@@ -22,7 +22,7 @@ public:
 	CMeshEffect(PRIORITY priorty = PRIORITY::EFFECT3D);	//コンストラクタ
 	~CMeshEffect();	//デストラクタ
 
-	HRESULT Init(D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2, D3DXVECTOR3 VtxOldpos1, D3DXVECTOR3 VtxOldpos2, D3DXVECTOR3 Size, int nTex, int nLife, EFFECT_TYPE nType);	//初期化
+	HRESULT Init(D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2, D3DXVECTOR3 VtxOldpos1, D3DXVECTOR3 VtxOldpos2, D3DXVECTOR3 /*Size*/, string nTex, int nLife, EFFECT_TYPE nType);	//初期化
 	void Uninit(void);	//終了
 	void Update(void);	//更新
 	void Draw(void);	//描画
@@ -39,7 +39,7 @@ protected:
 	int m_Synthetic;
 
 private:
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_TEX];
+	string m_pTexture;
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL;	//頂点バッファへのポインタ
 	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff = NULL;	//インデックスバッファ
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
@@ -56,7 +56,6 @@ private:
 	int m_nIndx;	//インデックスの数
 
 	EFFECT_TYPE m_atype;	//エフェクトのタイプ
-	int m_nTexType;	//テクスチャタイプ
 
 	static int m_nMaxTex;
 };
