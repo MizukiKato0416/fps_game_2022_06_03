@@ -16,11 +16,11 @@ class CPlane : public CObject
 public:
 	CPlane(PRIORITY priorty = PRIORITY::EFFECT3D);
 	~CPlane();
-	HRESULT Init(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex);
+	HRESULT Init();
 	void Uninit();
 	void Update();
 	void Draw();
-	D3DXVECTOR3 GetSize() { return m_size; }
+	D3DXVECTOR3 GetSize() { return m_Oliginsize; }
 	void SetSize(D3DXVECTOR3 size);
 
 	LPDIRECT3DVERTEXBUFFER9 GetVtx() { return m_pVtxBuff; }
@@ -48,7 +48,7 @@ public:
 	static void UninitTexture();
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL; //頂点バッファへのポインタ
-	D3DXVECTOR3 m_size;
+
 	static int m_nMaxTex;					   //使用する最大テクスチャ
 	static int m_Synthetic;
 protected:
@@ -64,6 +64,11 @@ protected:
 	int m_nSetAnimCnt;
 	D3DXVECTOR2 m_nSplit;
 	D3DXVECTOR2 m_MaxSplit;
+
+	D3DXVECTOR3 m_Oliginpos;
+
+	D3DXVECTOR3 m_Oliginsize;
+	D3DXVECTOR2 m_OliginTex;
 
 };
 

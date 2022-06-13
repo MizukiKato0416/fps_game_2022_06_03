@@ -47,12 +47,16 @@ HRESULT CFieldEffect::Init(D3DXVECTOR3 size,
 	int CreatePreset,
 	int AnimPatternType)
 {
-	CPlane::Init(size, pos, D3DXVECTOR2(1.0f, 1.0f));
+	CPlane::Init();
 	CObject::SetObjType(CObject::OBJTYPE::EFFECT_3D);
 
 	nLife = 600;
 
 	EffectTime = START;
+
+	m_Oliginpos = pos;
+	m_OliginTex = D3DXVECTOR2(1.0f, 1.0f);
+	m_Oliginsize = size;
 
 	m_pos = pos;
 	m_size = sqrtf(size.x * size.x + size.z * size.z);

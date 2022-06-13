@@ -665,7 +665,7 @@ void CPresetEffect::CallOrder3D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 //=============================================================================
 // èâä˙âª
 //=============================================================================
-HRESULT CPresetEffect::Init(D3DXVECTOR3 /*pos*/)
+HRESULT CPresetEffect::Init()
 {
 	for (int i3 = 0; i3 < MAX_ORDER_3D; i3++)
 	{
@@ -740,7 +740,7 @@ CPresetEffect *CPresetEffect::CreateOrderMenu(int nDeley, int nPresetNum, int nO
 	{
 		for (int nCnt = {}; nCnt < MAX_ORDER_3D; nCnt++)
 		{
-			pPresetEffect->Init({});
+			pPresetEffect->Init();
 			pPresetEffect->SetOrder(nOrder[nCnt], nCnt);
 		}
 		pPresetEffect->SetOrderPreset(nDeley, nPresetNum);
