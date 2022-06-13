@@ -87,13 +87,7 @@
     <ClCompile Include="play_data.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="result.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="shadow.cpp">
@@ -181,6 +175,12 @@
       <Filter>ソース ファイル\しゅうすけ</Filter>
     </ClCompile>
     <ClCompile Include="shoot.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
