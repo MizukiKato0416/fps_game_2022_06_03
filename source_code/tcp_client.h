@@ -22,6 +22,8 @@ class CTcpClient
 public:
 	CTcpClient();	// デフォルトコンストラクタ
 	~CTcpClient();	// デフォルトデストラクタ
+	static void WSASInit(void);	// WSASの初期化
+	static void WSASUninit(void);	// WSASの終了処理
 	bool Init(void);	// 初期化(IPアドレス, ポート番号)
 	bool Connect(void);	// 接続
 	int Send(char *pSendData, int nSendDataSize);	// 送信(送信データ格納先, 送信データサイズ)
@@ -29,8 +31,8 @@ public:
 	void Uninit(void);	// 終了
 private:
 	SOCKET m_socket;	// ソケット
-	string m_ip;	// IPアドレス
-	int m_port;	// ポート番号
+	string m_Ip;	// IPアドレス
+	int m_nPort;	// ポート番号
 };
 
 #endif // _TCP_CLIENT_H_

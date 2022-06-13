@@ -17,6 +17,7 @@
 //-------------------------------
 #define MAX_BULLET (30)
 #define MAX_PLAYER (3)
+#define MAX_COMMU_DATA (512)
 
 //-------------------------------
 // Classの定義
@@ -30,6 +31,8 @@ public:
 	typedef struct
 	{
 		int nNumber;	// プレイヤーのインデックス
+		int nMotion;	// モーションの種類
+		float fMotionSpeed;	// モーションのスピード
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 	} PLAYUER_DATA;

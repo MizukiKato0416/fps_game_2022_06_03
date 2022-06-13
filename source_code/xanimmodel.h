@@ -42,11 +42,12 @@ public:
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
-	D3DXMATRIX GetMatrix(string name);	// ゲッダー
+	D3DXMATRIX *GetMatrix(string name);	// ゲッダー
 	LPD3DXFRAME GetRootFrame(void) { return m_root_frame; }	// ゲッダー
 	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
 	D3DXVECTOR3 GetSize(void) { return m_size; }	// ゲッター
+	int GetAnimation(void) { return m_now_anim; }	// ゲッター
 private:
 	HierarchyData m_hierarchy_data;	// 階層データ
 	LPD3DXFRAME m_root_frame;	// ルートフレーム

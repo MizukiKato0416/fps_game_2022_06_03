@@ -23,10 +23,10 @@
 #define CAMERA_RESULT_DISTANCE		(200.0f)								//リザルトの視点と注視点の距離
 #define CAMERA_V_MAX_POS_Y			(400.0f)								//視点のy座標最大値
 #define CAMERA_V_MIN_POS_Y			(50.0f)									//視点のy座標最小値
-#define CAMERA_MAX_RENDERER			(13000.0f)								//cameraでの描画最大Z値
+#define CAMERA_MAX_RENDERER			(100000.0f)								//cameraでの描画最大Z値
 #define CAMERA_MIN_RENDERER			(50.0f)									//cameraでの描画最小Z値
 #define CAMERA_POS_Y				(100.0f)								//カメラのY位置
-#define CAMERA_POS_XZ				(500.0f)									//カメラのXZ位置
+#define CAMERA_POS_XZ				(150.0f)								//カメラのXZ位置
 
 //================================================
 //静的メンバ変数宣言
@@ -250,7 +250,7 @@ D3DXVECTOR3 CCamera::WorldPosToScreenPos(D3DXVECTOR3 pos)
 
 	//プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&proj,
-		D3DXToRadian(55.0f),									//画角
+		D3DXToRadian(100.0f),									//画角
 		(float)m_viewport.Width / (float)m_viewport.Height,		//比率
 		CAMERA_MIN_RENDERER,									//Z方向の描画範囲
 		CAMERA_MAX_RENDERER);
