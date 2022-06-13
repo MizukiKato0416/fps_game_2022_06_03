@@ -54,6 +54,7 @@ private:
 	void Move(void);								//移動処理
 	void Rotate(void);								//回転処理
 	void Jump(void);								//ジャンプ処理
+	void Shoot(void);								//射撃処理
 
 	//メンバ変数
 	CCommunicationData m_commu_data;	// 通信データ
@@ -74,6 +75,7 @@ private:
 	CXanimModel *m_pAnimModel;						//モデル
 	float m_fAnimSpeed;								//アニメーションのスピード
 	float m_fMoveSpeed;								//移動する速さ
+	int m_nCounter;									//次の弾が出るまでのカウンター
 };
 
 #endif // !_PLAYER_H_
