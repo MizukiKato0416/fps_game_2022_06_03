@@ -32,15 +32,18 @@ public:
 	typedef struct
 	{
 		int nNumber;	// プレイヤーのインデックス
-		int nMotion;	// モーションの種類
 		float fMotionSpeed;	// モーションのスピード
+		string Motion;	// モーションの種類
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 	} PLAYUER_DATA;
 
 	typedef struct
 	{
+		D3DXVECTOR3 Pos;	// 弾の位置
 		D3DXVECTOR3 Rot;	// 弾の角度
+		int nCollPlayer;	// 当てた相手の番号
+		bool bHit;			// 当たったどうか
 	} BULLET_DATA;
 
 	typedef struct
