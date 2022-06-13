@@ -83,6 +83,8 @@ void CPlane::Uninit()
 		m_pVtxBuff->Release();
 		m_pVtxBuff = NULL;
 	}
+
+	Release();
 }
 
 //更新処理
@@ -268,7 +270,7 @@ void CPlane::ChangeSize(D3DXVECTOR3 size)
 {
 	VERTEX_3D*pVtx;//頂点情報へのポインタ
 
-				   //頂点バッファをロックし、頂点データへのポインタを取得
+	//頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
