@@ -44,7 +44,7 @@ HRESULT CBillEffect::Init(D3DXVECTOR3 Size,
 	D3DXVECTOR2 nSplit,
 	ANIMPATTERN AnimPattern)
 {
-	CPlane::Init(Size, D3DXVECTOR3(0.0f, 0.0f, 0.0f), TexNum);
+	CPlane::Init();
 	SetTexture(nTex);
 
 
