@@ -8,7 +8,6 @@
 #include "control.h"
 #include "object3D.h"
 
-LPDIRECT3DTEXTURE9 CSphere::m_pTexture[MAX_TEXTURE] = {};
 int CSphere::m_nMaxTex = 0;
 
 //=============================================================================
@@ -41,7 +40,7 @@ CSphere::~CSphere(void)
 //=============================================================================
 // 初期化
 //=============================================================================
-HRESULT CSphere::Init(D3DXVECTOR3 pos, float rot, float fSize, int Vertical, int Line, int nTex, int Synthetic, D3DXVECTOR2 TexNum)
+HRESULT CSphere::Init(D3DXVECTOR3 pos, float rot, float fSize, int Vertical, int Line, string nTex, int Synthetic, D3DXVECTOR2 TexNum)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
@@ -51,7 +50,7 @@ HRESULT CSphere::Init(D3DXVECTOR3 pos, float rot, float fSize, int Vertical, int
 	m_fRadius = fSize;
 	m_nVertical = Vertical;
 	m_nLine = Line;
-	m_nTex = nTex;
+	m_pTexture = nTex;
 	m_TexUV = TexNum;
 
 	m_Synthetic = Synthetic;
@@ -184,6 +183,7 @@ void CSphere::Draw()
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	D3DXMATRIX mtxRot, mtxTrans; //計算用マトリックス
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(m_pTexture);
 
 	//Zテスト関係
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
@@ -234,7 +234,7 @@ void CSphere::Draw()
 
 	//頂点フォーマット
 	pDevice->SetFVF(FVF_VERTEX_3D);
-	pDevice->SetTexture(0, m_pTexture[m_nTex]);    //テクスチャの設定
+	pDevice->SetTexture(0, buf);    //テクスチャの設定
 	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
 		0,
 		0,
@@ -378,7 +378,7 @@ void CSphere::SetAnimTexUV( D3DXVECTOR2 TexPattern)
 
 }
 
-
+#if 0
 //=============================================================================
 // テクスチャ生成
 //=============================================================================
@@ -428,14 +428,6 @@ void CSphere::CreateTextureSphere(void)
 //=============================================================================
 void CSphere::UninitTextureSphere()
 {
-	//テクスチャ破棄
-	for (int nCnt = 0; nCnt < m_nMaxTex; nCnt++)
-	{
-		if (m_pTexture[nCnt] != NULL)
-		{
-			m_pTexture[nCnt]->Release();
-			m_pTexture[nCnt] = NULL;
-		}
-	}
 
 }
+#endif

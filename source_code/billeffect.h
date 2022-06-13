@@ -27,7 +27,7 @@ public:
 		D3DXVECTOR3 MinSize,
 		D3DCOLORVALUE color,
 		D3DCOLORVALUE Mincolor,
-		int nTex, int nLife,
+		string nTex, int nLife,
 		D3DXVECTOR2 TexNum,
 		D3DXVECTOR2 TexMove,
 		int nAnimCounter,

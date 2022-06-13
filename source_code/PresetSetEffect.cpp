@@ -79,7 +79,7 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	bool bColorRandB,
 	bool bMousePos,
 	int Synthetic,
-	int Texture)
+	string Texture)
 {
 	m_EffectState2D[m_nEffectPattern].m_nPattern = nPattern;
 	m_EffectState2D[m_nEffectPattern].m_pos = pos;
@@ -134,7 +134,7 @@ void CPresetEffect::SetEffectState3D(
 	bool bColorRandG,
 	bool bColorRandB,
 	int Synthetic,
-	int Texture,
+	string Texture,
 	int nDistance,
 	int ParticleTime,
 	D3DXVECTOR3 pos,
@@ -155,7 +155,7 @@ void CPresetEffect::SetEffectState3D(
 	D3DXVECTOR3 ControlBezier,
 	D3DCOLORVALUE TherdCol,
 	D3DCOLORVALUE TherdChangecolor,
-	int SecondTex)
+	string SecondTex)
 {
 	m_EffectState3D[m_nEffectPattern].m_nPattern = nPattern;
 	m_EffectState3D[m_nEffectPattern].m_fRotate = m_fRotate;
@@ -211,7 +211,8 @@ void CPresetEffect::SetEffectState3D(
 	m_nEffectPattern++;
 }
 
-
+//‚Qdˆ—
+#if 0
 //=============================================================================
 // ŒÄ‚Î‚ê‚½•¨‚ğŒÄ‚Ño‚·‚â‚Â2D
 //=============================================================================
@@ -353,7 +354,8 @@ void CPresetEffect::SetEffectState3D(
 		assert(false);
 		break;
 	}
-}*/
+}*/ 
+#endif
 
 //=============================================================================
 // ŒÄ‚Î‚ê‚½•¨‚ğŒÄ‚Ño‚·‚â‚Â3D

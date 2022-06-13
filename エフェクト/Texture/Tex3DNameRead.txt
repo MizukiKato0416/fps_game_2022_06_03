@@ -1,0 +1,34 @@
+#*********************************************************
+#テクスチャのパス読み込む(主にエフェクト、パーティクル)
+#*********************************************************
+
+#*********************************************************
+#最大テクスチャ数
+#*********************************************************
+NUM_TEXTURE = 0
+
+#*********************************************************
+# テクスチャファイル名
+#*********************************************************
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/field000.jpg				//０地面
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Effect000.jpg			//１エフェクト
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/trans.png				//２軌跡
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/jagged001.png			//３ギザ輪
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/CycleEffect00.png		//４輪
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Effect001.jpg			//５ひし形
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/trans001.png				//６軌跡２
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Effect003.png			//７エフェクト３
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/trans002.png				//８軌跡３
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Explosion.png				//９爆発
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Smoke0.png			//１０煙
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Smoke1.png			//１１煙２
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Thunder.png			//１２サンダー
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Thunder2.png			//１３サンダー
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Target0.png			//１４ターゲット
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Thunder3.png			//１５斜めサンダー
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Crater.png			//１６クレーター
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/ExplosionRing.png		//１７爆発リング
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Thunder4.png			//１８斜めサンダー
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/Thunder5.png			//１９アニメーションサンダー
+TEXTURE_FILENAME = data/TEXTURE/3DEffect/MuzzleflashLow.png			//20マズルフラッシュ
+END_SCRIPT

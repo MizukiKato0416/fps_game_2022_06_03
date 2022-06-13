@@ -24,7 +24,6 @@ public:
 	void SetSize(D3DXVECTOR3 size);
 
 	LPDIRECT3DVERTEXBUFFER9 GetVtx() { return m_pVtxBuff; }
-	void SetTexture(int nTex) { m_nTexType = nTex; }		//指定された番号のテクスチャを貼れるように
 	void ChangeColor(D3DXCOLOR col);
 
 	//エフェクト用関数
@@ -39,10 +38,9 @@ public:
 
 	void SetPosBill(D3DXVECTOR3 pos, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3, D3DXVECTOR3 pos4);
 
-	static CPlane *Create(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex);
+	static CPlane *Create();
 	static void CreateTextureFiled();
 
-	static LPDIRECT3DTEXTURE9 *GetTexture(int nTex) { return &m_pTexture[nTex]; }
 
 	//テクスチャ破棄
 	static void UninitTexture();
@@ -52,7 +50,7 @@ private:
 	static int m_nMaxTex;					   //使用する最大テクスチャ
 	static int m_Synthetic;
 protected:
-	static LPDIRECT3DTEXTURE9 m_pTexture[MAX_TEXTURE_FILED];	//テクスチャへのポインタ
+	string m_pTexture;	//テクスチャのパス
 
 	int m_nTexType;												//貼るテクスチャ
 	D3DXVECTOR2 m_TexNum;

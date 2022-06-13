@@ -94,7 +94,7 @@ HRESULT CPlayer::Init(void)
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
 	//ニュートラルモーションにする
-	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+	m_pAnimModel->ChangeAnimation(0, 20.0f / 4800.0f);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -442,7 +442,7 @@ void CPlayer::Move(void)
 		if (m_pAnimModel->GetAnimation() != 1)
 		{
 			//ニュートラルモーションにする
-			m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+			m_pAnimModel->ChangeAnimation(0, 60.0f / 4800.0f);
 			m_fAnimSpeed = 60.0f / 4800.0f;
 		}
 	}

@@ -31,7 +31,7 @@ HRESULT CThunderBill::Init(D3DXVECTOR3 pos,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex,
+	string nTex,
 	int nLife,
 	float Destance,
 	D3DXVECTOR2 TexMove,
@@ -100,6 +100,7 @@ void CThunderBill::Draw()
 	D3DXMATRIX mtxView;
 	D3DXMATRIX mtxTrans, mtxWorld; //計算用マトリックス
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(m_pTexture);
 
 	D3DXMatrixIdentity(&mtxWorld);
 
@@ -176,7 +177,7 @@ void CThunderBill::Draw()
 	//頂点フォーマット
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
-	pDevice->SetTexture(0, m_pTexture[m_nTexType]);    //テクスチャの設定
+	pDevice->SetTexture(0, buf);    //テクスチャの設定
 
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,  //開始する始点のインデックス
@@ -213,7 +214,7 @@ CThunderBill *CThunderBill::Create(D3DXVECTOR3 pos,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex,
+	string nTex,
 	int nLife,
 	float Destance,
 	D3DXVECTOR2 TexMove,
