@@ -45,7 +45,7 @@ HRESULT CActiveBillBoard::Init(D3DXVECTOR3 pos,
 	D3DXVECTOR2 nSplit,
 	ANIMPATTERN AnimPattern)
 {
-	CBillEffect::Init(Size, MinSize, color, Mincolor, nType, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern, pos);
+	CBillEffect::Init(Size, MinSize, color, Mincolor, nType, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
 	m_nSynthenic = Synsetic;
 	m_CreatePreset = nPattern;
 	m_MinSize = MinSize;

@@ -53,7 +53,7 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	int TrajectSynthetic,
 	ANIMPATTERN AnimPattern)
 {
-	CBillEffect::Init(Size, MinSize, color, Mincolor, nTex, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern, pos);
+	CBillEffect::Init(Size, MinSize, color, Mincolor, nTex, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
 
 	m_nSynthenic = Synthetic;
 	m_TrajectSynthetic = TrajectSynthetic;
