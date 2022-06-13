@@ -13,6 +13,7 @@
 #include "model_single.h"
 #include "tcp_client.h"
 #include "enemy.h"
+#include "PresetSetEffect.h"
 
 //================================================
 //ƒ}ƒNƒ’è‹`
@@ -107,6 +108,11 @@ void CGame01::Update(void)
 		{
 			pFade->SetFade(CManager::MODE::RESULT);
 		}
+	}
+	if (pInputKeyboard->GetTrigger(DIK_SPACE) == true)
+	{
+		CPresetEffect::SetEffect3D(0, D3DXVECTOR3(0.0f, 100.0f, 0.0f), {});
+		CPresetEffect::SetEffect3D(1, D3DXVECTOR3(0.0f, 100.0f, 0.0f), {});
 	}
 #endif // !_DEBUG
 }
