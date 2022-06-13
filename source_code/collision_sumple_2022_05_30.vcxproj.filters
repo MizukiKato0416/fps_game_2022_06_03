@@ -180,6 +180,9 @@
     <ClCompile Include="Trajectory.cpp">
       <Filter>ソース ファイル\しゅうすけ</Filter>
     </ClCompile>
+    <ClCompile Include="shoot.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="ActiveBillboard.h">
       <Filter>ヘッダー ファイル\しゅうすけ</Filter>
+    </ClInclude>
+    <ClInclude Include="shoot.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

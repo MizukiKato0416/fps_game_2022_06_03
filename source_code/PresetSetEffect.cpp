@@ -79,7 +79,8 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	bool bColorRandB,
 	bool bMousePos,
 	int Synthetic,
-	string Texture)
+	string Texture,
+	float Distance)
 {
 	m_EffectState2D[m_nEffectPattern].m_nPattern = nPattern;
 	m_EffectState2D[m_nEffectPattern].m_pos = pos;
@@ -100,6 +101,7 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	m_EffectState2D[m_nEffectPattern].m_bMousePos = bMousePos;
 	m_EffectState2D[m_nEffectPattern].Synthetic = Synthetic;
 	m_EffectState2D[m_nEffectPattern].nTexture = Texture;
+	m_EffectState2D[m_nEffectPattern].m_Distance = Distance;
 
 	m_nEffectPattern++;
 }
@@ -216,7 +218,7 @@ void CPresetEffect::SetEffectState3D(
 //=============================================================================
 // åƒÇŒÇÍÇΩï®ÇåƒÇ—èoÇ∑Ç‚Ç¬2D
 //=============================================================================
-/*void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos)
+/*void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos, D3DXVECTOR3 PlayerPos)
 {
 	switch (m_EffectState2D[nPattern].m_nPattern)
 	{
@@ -278,16 +280,18 @@ void CPresetEffect::SetEffectState3D(
 			}
 
 			CMouseTracking::Create(pos,
-				m_EffectState2D[nPattern].m_move,
-				m_EffectState2D[nPattern].m_Col,
-				m_EffectState2D[nPattern].m_Changecolor,
-				D3DXVECTOR2(m_EffectState2D[nPattern].m_fSize, m_EffectState2D[nPattern].m_fSize),
-				D3DXVECTOR2(m_EffectState2D[nPattern].m_fAddSize, m_EffectState2D[nPattern].m_fAddSize),
-				m_EffectState2D[nPattern].m_nLife, m_EffectState2D[nPattern].nTexture,
-				Endpos, m_EffectState2D[nPattern].m_nDiffusion,
-				m_EffectState2D[nPattern].m_nDestroyvec,
-				m_EffectState2D[nPattern].Synthetic);
-		}
+			m_EffectState2D[nPattern].m_move,
+			m_EffectState2D[nPattern].m_Col,
+			m_EffectState2D[nPattern].m_Changecolor,
+			D3DXVECTOR2(m_EffectState2D[nPattern].m_fSize, m_EffectState2D[nPattern].m_fSize),
+			D3DXVECTOR2(m_EffectState2D[nPattern].m_fAddSize, m_EffectState2D[nPattern].m_fAddSize),
+			m_EffectState2D[nPattern].m_nLife, m_EffectState2D[nPattern].nTexture,
+			Endpos, m_EffectState2D[nPattern].m_nDiffusion,
+			m_EffectState2D[nPattern].m_nDestroyvec,
+			m_EffectState2D[nPattern].Synthetic,
+			m_EffectState2D[nPattern].m_Distance,
+			PlayerPos);
+			}
 		break;
 	case(3):
 		for (int nCnt = 0; nCnt < m_EffectState2D[nPattern].m_nDensity; nCnt++)

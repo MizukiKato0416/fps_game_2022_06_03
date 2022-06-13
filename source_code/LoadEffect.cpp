@@ -209,6 +209,11 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 					fscanf(pFile, "%s", &aFile[0]);
 					fscanf(pFile, "%d", &nTexture);
 				}
+				if (strcmp(&aFile[0], "DISTANCE") == 0)		//発生距離
+				{
+					fscanf(pFile, "%s", &aFile[0]);
+					fscanf(pFile, "%d", &Distance);
+				}
 
 			}
 
@@ -472,7 +477,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 			{
 				bEffectState2D = false;
 				CPresetEffect::SetEffectState2D(nPattern, pos, fRotate, move, Addmove, Diffusion, Destroyvec, fSize, fAddSize, col, ChangeColor, nLife, Density,
-					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture);
+					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture, (float)Distance);
 			}
 
 			//3Dエフェクト情報セット

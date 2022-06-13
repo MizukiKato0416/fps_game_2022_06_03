@@ -195,6 +195,7 @@
     <ClCompile Include="Rotate3d.cpp" />
     <ClCompile Include="SetMesh.cpp" />
     <ClCompile Include="shadow.cpp" />
+    <ClCompile Include="shoot.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SphereEffect.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="Rotate3d.h" />
     <ClInclude Include="SetMesh.h" />
     <ClInclude Include="shadow.h" />
+    <ClInclude Include="shoot.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SphereEffect.h" />
