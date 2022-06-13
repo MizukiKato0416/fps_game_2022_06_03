@@ -32,6 +32,7 @@
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
+#define PLAYER_SHOOT_COUNTER				(30)			//次の弾が出るまでのカウンター
 
 //================================================
 //デフォルトコンストラクタ
@@ -50,6 +51,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_bRotate = false;
 	m_bJump = false;
 	m_fMoveSpeed = 0.0f;
+	m_nCounter = 0;
 }
 
 //================================================
@@ -77,6 +79,7 @@ HRESULT CPlayer::Init(void)
 	m_bRotate = false;
 	m_bJump = false;
 	m_fMoveSpeed = 0.0f;
+	m_nCounter = 0;
 
 	//銃モデルの生成
 	m_pGunModel = CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, "asult_gun.x", nullptr, false);
@@ -91,7 +94,7 @@ HRESULT CPlayer::Init(void)
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
 	//ニュートラルモーションにする
-	m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+	m_pAnimModel->ChangeAnimation(0, 20.0f / 4800.0f);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -176,7 +179,7 @@ void CPlayer::Update(void)
 	}
 
 	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 15.0f) == true)
+	if (CMeshField::Collision(this, m_size.x * 20.0f) == true)
 	{
 		//重力を0にする
 		m_move.y = 0.0f;
@@ -274,11 +277,14 @@ void CPlayer::Draw(void)
 	m_pAnimModel->Draw();
 
 	//マトリックスを取得
-	D3DXMATRIX *test = nullptr;
-	test = m_pAnimModel->GetMatrix("handL");
+	D3DXMATRIX *handL = nullptr;
+	handL = m_pAnimModel->GetMatrix("handL");
 	//銃と親子関係をつける
-	m_pGunModel->GetModel()->SetMtxParent(test);
+	m_pGunModel->GetModel()->SetMtxParent(handL);
 	m_pGunModel->GetModel()->SetObjParent(true);
+
+	delete handL;
+	handL = nullptr;
 }
 
 //================================================
@@ -436,7 +442,7 @@ void CPlayer::Move(void)
 		if (m_pAnimModel->GetAnimation() != 1)
 		{
 			//ニュートラルモーションにする
-			m_pAnimModel->ChangeAnimation(1, 60.0f / 4800.0f);
+			m_pAnimModel->ChangeAnimation(0, 60.0f / 4800.0f);
 			m_fAnimSpeed = 60.0f / 4800.0f;
 		}
 	}
@@ -488,6 +494,49 @@ void CPlayer::Jump(void)
 		m_bJump = true;
 	}
 }
+
+//================================================
+//射撃処理
+//================================================
+void CPlayer::Shoot(void)
+{
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
+	{
+		//カウンターを減算
+		m_nCounter--;
+
+		//0より小さくなったら
+		if (m_nCounter < 0)
+		{
+			//既定の値にする
+			m_nCounter = PLAYER_SHOOT_COUNTER;
+
+
+		}
+	}
+	else
+	{
+
+		//既定の値より小さかったら
+		if (m_nCounter > 0 && m_nCounter < PLAYER_SHOOT_COUNTER)
+		{
+			//カウンターを加算
+			m_nCounter++;
+
+			//既定の値より大きくなったら
+			if (m_nCounter > PLAYER_SHOOT_COUNTER)
+			{
+				//0にする
+				m_nCounter = 0;
+			}
+		}
+	}
+}
+
 //================================================
 //プレイヤーとの当たり判定
 //================================================
