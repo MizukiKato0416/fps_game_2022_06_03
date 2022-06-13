@@ -6786,7 +6786,7 @@ Frame Root {
 AnimTicksPerSecond {
   24;
 }
-AnimationSet neutoral{
+AnimationSet neutral{
   Animation {
     {Armature}
     AnimationKey { //Position
@@ -12840,7 +12840,7 @@ AnimationSet walk{
   }
 } //End of AnimationSet
 
-AnimationSet fireneutoral{
+AnimationSet fireneutral{
   Animation {
     {Armature}
     AnimationKey { //Position
