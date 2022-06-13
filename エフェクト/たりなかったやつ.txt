@@ -1,3 +1,5 @@
 円のマクロ
 #define CIRCLE (float(rand() % 324) / 100.0f - float(rand() % 324) / 100.0f) //円
 #define CIRCLE2 (float(rand() % 648) / 100.0f - float(rand() % 648) / 100.0f) //円
+	string g = "mist.png";
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(g);

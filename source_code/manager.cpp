@@ -21,6 +21,7 @@
 #include "play_data.h"
 #include "sound.h"
 #include "tcp_client.h"
+#include "LoadEffect.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -72,6 +73,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	m_hWnd = hWnd;
 
 	CTcpClient::WSASInit();
+	CLoadEffect::EffectStateLoad("data/Preset.txt");
 
 	//レンダリングクラスの生成
 	if (m_pRenderer == nullptr)
