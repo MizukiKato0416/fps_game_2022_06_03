@@ -37,7 +37,7 @@ public:
 		D3DXVECTOR3 MinSize,
 		D3DCOLORVALUE color,
 		D3DCOLORVALUE Mincolor,
-		int nTex, int nLife,
+		string nTex, int nLife,
 		D3DXVECTOR2 TexNum,
 		D3DXVECTOR2 TexMove,
 		int nAnimCounter,
@@ -53,7 +53,7 @@ public:
 		D3DCOLORVALUE SecondTrajecttcolor,
 		D3DCOLORVALUE SecondTrajectMincolor,
 		float TrajectMinSize,
-		int TrajectTex,
+		string TrajectTex,
 		int TrajectLife,
 		float DistanceTarget,
 		int Synthetic,
@@ -68,7 +68,7 @@ public:
 		D3DXVECTOR3 MinSize,
 		D3DCOLORVALUE color,
 		D3DCOLORVALUE Mincolor,
-		int nTex, int nLife,
+		string nTex, int nLife,
 		D3DXVECTOR2 TexNum,
 		D3DXVECTOR2 TexMove,
 		int nAnimCounter,
@@ -84,7 +84,7 @@ public:
 		D3DCOLORVALUE SecondTrajecttcolor,
 		D3DCOLORVALUE SecondTrajectMincolor,
 		float TrajectMinSize,
-		int TrajectTex,
+		string TrajectTex,
 		int TrajectLife,
 		float DistanceTarget,
 		int Synthetic,
@@ -104,7 +104,7 @@ private:
 	float m_TrajectSize;
 	float m_TrajectAddSize;
 
-	int m_TjajectTex;
+	string m_TjajectTex;
 	int m_TrajectLife;
 
 	D3DXVECTOR3 m_pos;

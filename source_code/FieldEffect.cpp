@@ -34,7 +34,7 @@ HRESULT CFieldEffect::Init(D3DXVECTOR3 size,
 	float fDistance,
 	D3DCOLORVALUE ParticleColor,
 	D3DCOLORVALUE ParticleAddColor,
-	int nParticleTex,
+	string nParticleTex,
 	int nParticleLife,
 	int nParticleSynthetic,
 	float ParticleMove3d,
@@ -401,7 +401,7 @@ CFieldEffect *CFieldEffect::Create(D3DXVECTOR3 size,
 	float fDistance,
 	D3DCOLORVALUE ParticleColor,
 	D3DCOLORVALUE ParticleAddColor,
-	int nParticleTex,
+	string nParticleTex,
 	int nParticleLife,
 	int nParticleSynthetic,
 	float ParticleMove3d,
@@ -444,7 +444,6 @@ CFieldEffect *CFieldEffect::Create(D3DXVECTOR3 size,
 			CreatePreset,
 			AnimPatternType);
 
-		pFieldEffect->SetTexture(nParticleTex);
 	}
 
 	return pFieldEffect;

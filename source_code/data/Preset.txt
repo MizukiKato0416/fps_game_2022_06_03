@@ -17,7 +17,7 @@ EFFECTSTATE3D
 	COLOR = 255 135 0 255			//カラー
 	CHANGECOLOR = 0 -15 0 -25			//カラー変動値
 	LIFE = 7						//ライフ
-	TEXTURE = 20						//テクスチャ
+	TEXTURE = data/TEXTURE/EFFECT/MuzzleflashLow.png						//テクスチャ
 	SYNTHETIC = 0						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動
 	TEXNUM = 1.0 1.0					//テクスチャ枚数
@@ -47,7 +47,7 @@ EFFECTSTATE3D
 	COLOR = 255 255 0 170			//カラー
 	CHANGECOLOR = 0 -25 0 -10			//カラー変動値
 	LIFE = 3						//ライフ
-	TEXTURE = 3						//テクスチャ
+	TEXTURE = data/TEXTURE/EFFECT/trans.png						//テクスチャ
 	SYNTHETIC = 0						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動
 	TEXNUM = 1.0 1.0					//テクスチャ枚数

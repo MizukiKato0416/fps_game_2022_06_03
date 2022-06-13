@@ -12,7 +12,7 @@
 //*****************************************************************************
 CBezierBill::CBezierBill(PRIORITY priorty) : CBillEffect(priorty)
 {
-
+	m_ControlBezier = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //*****************************************************************************
@@ -30,7 +30,7 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex, int nLife,
+	string nTex, int nLife,
 	D3DXVECTOR2 TexNum,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
@@ -46,7 +46,7 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	D3DCOLORVALUE SecondTrajecttcolor,
 	D3DCOLORVALUE SecondTrajectMincolor,
 	float TrajectMinSize,
-	int TrajectTex,
+	string TrajectTex,
 	int TrajectLife,
 	float DistanceTarget,
 	int Synthetic,
@@ -299,7 +299,7 @@ CBezierBill *CBezierBill::Create(D3DXVECTOR3 Size,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex, int nLife,
+	string nTex, int nLife,
 	D3DXVECTOR2 TexNum,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
@@ -315,7 +315,7 @@ CBezierBill *CBezierBill::Create(D3DXVECTOR3 Size,
 	D3DCOLORVALUE SecondTrajecttcolor,
 	D3DCOLORVALUE SecondTrajectMincolor,
 	float TrajectMinSize,
-	int TrajectTex,
+	string TrajectTex,
 	int TrajectLife,
 	float DistanceTarget,
 	int Synthetic,

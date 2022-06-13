@@ -37,7 +37,7 @@ HRESULT CBillEffect::Init(D3DXVECTOR3 Size,
 	D3DXVECTOR3 MinSize,
 	D3DCOLORVALUE color,
 	D3DCOLORVALUE Mincolor,
-	int nTex, int nLife,
+	string nTex, int nLife,
 	D3DXVECTOR2 TexNum,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
@@ -45,13 +45,13 @@ HRESULT CBillEffect::Init(D3DXVECTOR3 Size,
 	ANIMPATTERN AnimPattern)
 {
 	CPlane::Init();
-	SetTexture(nTex);
-
 
 	m_Size = Size;			//大きさ
 	m_MinSize = MinSize;	//大きさ変動
 
 	m_TexSize = TexMove;
+
+	m_pTexture = nTex;
 
 	//カラー
 	m_Color = color;
@@ -242,6 +242,8 @@ void CBillEffect::Draw()
 	D3DXMATRIX mtxTrans, mtxWorld; //計算用マトリックス
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
 
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(m_pTexture);
+
 
 	//Zテスト関係
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
@@ -300,7 +302,7 @@ void CBillEffect::Draw()
 	//頂点フォーマット
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
-	pDevice->SetTexture(0, m_pTexture[m_nTexType]);    //テクスチャの設定
+	pDevice->SetTexture(0, buf);    //テクスチャの設定
 
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,
 		0,  //開始する始点のインデックス

@@ -40,7 +40,7 @@ public:
 		bool m_bColorRandB;		//色ランダムB
 		bool m_bMousePos;
 		int Synthetic;	//合成
-		int nTexture;	//テクスチャ
+		string nTexture;	//テクスチャ
 	} EFFECT_STATE2D;
 
 	//3Dの情報
@@ -73,7 +73,7 @@ public:
 		bool m_bColorRandG;		//色ランダムG
 		bool m_bColorRandB;		//色ランダムB
 		int Synthetic;	//合成
-		int nTexture;	//テクスチャ
+		string nTexture;	//テクスチャ
 		int ParticleTime;
 		D3DXVECTOR3 pos;	//位置
 		float m_fActiveAddSize;	//アクティブ中の大きさ変更
@@ -93,7 +93,7 @@ public:
 		D3DXVECTOR3 m_ControlBezier;
 		D3DCOLORVALUE m_TherdCol;			//3番目カラー
 		D3DCOLORVALUE m_TherdChangecolor;	//3番目カラー加算
-		int m_SecondTex;
+		string m_SecondTex;
 	} EFFECT_STATE3D;
 
 
@@ -120,7 +120,7 @@ public:
 		bool bColorRandB,
 		bool bMousePos,
 		int Synthetic,
-		int Texture);
+		string Texture);
 
 	//読み込んだエフェクトの情報を格納するやつ3D
 	static void SetEffectState3D(
@@ -150,7 +150,7 @@ public:
 		bool bColorRandG,
 		bool bColorRandB,
 		int Synthetic,
-		int Texture,
+		string Texture,
 		int nDistance,
 		int ParticleTime,
 		D3DXVECTOR3 pos,
@@ -171,7 +171,7 @@ public:
 		D3DXVECTOR3 ControlBezier,
 		D3DCOLORVALUE TherdCol,
 		D3DCOLORVALUE TherdChangecolor,
-		int SecondTex);
+		string SecondTex);
 
 	typedef struct
 	{
