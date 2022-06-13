@@ -32,7 +32,8 @@ public:
 		D3DXVECTOR2 TexMove,
 		int nAnimCounter,
 		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern);
+		ANIMPATTERN AnimPattern,
+		D3DXVECTOR3 pos);
 
 	virtual void Uninit();
 	virtual void Update();

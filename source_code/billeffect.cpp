@@ -42,10 +42,15 @@ HRESULT CBillEffect::Init(D3DXVECTOR3 Size,
 	D3DXVECTOR2 TexMove,
 	int nAnimCounter,
 	D3DXVECTOR2 nSplit,
-	ANIMPATTERN AnimPattern)
+	ANIMPATTERN AnimPattern,
+	D3DXVECTOR3 pos)
 {
-	CPlane::Init(Size, D3DXVECTOR3(0.0f, 0.0f, 0.0f), TexNum);
+	CPlane::Init();
 	SetTexture(nTex);
+
+	m_Oliginpos = pos;
+	m_OliginTex = TexNum;
+	m_Oliginsize = Size;
 
 
 	m_Size = Size;			//‘å‚«‚³

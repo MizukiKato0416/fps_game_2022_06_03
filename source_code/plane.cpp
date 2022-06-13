@@ -25,12 +25,12 @@ CPlane::~CPlane()
 }
 
 //初期化処理
-HRESULT CPlane::Init(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex)
+HRESULT CPlane::Init(/*D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex*/)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
 	pDevice = CManager::GetRenderer()->GetDevice();     //デバイスを取得する
 
-	SetPos(pos);
+	SetPos(m_Oliginpos);
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * 4,
@@ -41,20 +41,17 @@ HRESULT CPlane::Init(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex)
 		NULL);
 
 
-	m_TexNum = Tex;
 
-	m_size = size;
-	SetSize(size);
 	//SetVtxMin(-size);
 
 	VERTEX_3D *pVtx; //頂点情報へのポインタ
 					 //頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void **)&pVtx, 0);
 	//頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(-size.x, size.y, size.z);
-	pVtx[1].pos = D3DXVECTOR3(size.x, size.y, size.z);
-	pVtx[2].pos = D3DXVECTOR3(-size.x, -size.y, -size.z);
-	pVtx[3].pos = D3DXVECTOR3(size.x, -size.y, -size.z);
+	pVtx[0].pos = D3DXVECTOR3(-m_Oliginsize.x, m_Oliginsize.y, m_Oliginsize.z);
+	pVtx[1].pos = D3DXVECTOR3(m_Oliginsize.x, m_Oliginsize.y, m_Oliginsize.z);
+	pVtx[2].pos = D3DXVECTOR3(-m_Oliginsize.x, -m_Oliginsize.y, -m_Oliginsize.z);
+	pVtx[3].pos = D3DXVECTOR3(m_Oliginsize.x, -m_Oliginsize.y, -m_Oliginsize.z);
 
 	//法線ベクトルの設定
 	pVtx[0].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
@@ -70,9 +67,9 @@ HRESULT CPlane::Init(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex)
 
 	//テクスチャ座標
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(Tex.x, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, Tex.y);
-	pVtx[3].tex = D3DXVECTOR2(Tex.x, Tex.y);
+	pVtx[1].tex = D3DXVECTOR2(m_OliginTex.x, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f, m_OliginTex.y);
+	pVtx[3].tex = D3DXVECTOR2(m_OliginTex.x, m_OliginTex.y);
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
 	return S_OK;
@@ -165,7 +162,7 @@ CPlane *CPlane::Create(D3DXVECTOR3 size, D3DXVECTOR3 pos, D3DXVECTOR2 Tex)
 	pPlane = new CPlane(CObject::PRIORITY::EFFECT3D);
 	if (pPlane != NULL)
 	{
-		pPlane->Init(size, pos, Tex);
+		pPlane->Init();
 	}
 	return pPlane;
 }
