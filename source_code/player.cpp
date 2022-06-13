@@ -94,7 +94,7 @@ HRESULT CPlayer::Init(void)
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
 	//ニュートラルモーションにする
-	m_pAnimModel->ChangeAnimation("nutral", 60.0f / 4800.0f);
+	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -154,6 +154,9 @@ void CPlayer::Update(void)
 
 	//1フレーム前の位置設定
 	SetPosOld(m_posOld);
+
+	//腰の処理
+	Chest();
 
 	//射撃処理
 	Shoot();
@@ -267,9 +270,26 @@ void CPlayer::Draw(void)
 		rot = m_rot;
 	}
 
-	//プレイヤーの向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	//cameraのポインタ配列1番目のアドレス取得
+	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	{
+		//cameraの取得
+		CCamera *pCamera = &**pCameraAddress;
+		if (pCamera != nullptr)
+		{
+			D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			//cameraの向き取得
+			rotCamera = pCamera->GetRotV();
+
+			rotCamera.x -= D3DX_PI / 2.0f;
+
+			//プレイヤーの向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, -rotCamera.x, rot.z);
+			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+		}
+	}
 
 	//プレイヤーの位置を反映
 	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
@@ -359,11 +379,11 @@ void CPlayer::Move(void)
 		pInputKeyboard->GetPress(DIK_S) == true || pInputKeyboard->GetPress(DIK_D) == true)
 	{
 		//歩きモーションでなかったら
-		if (m_pAnimModel->GetAnimation() != "work")
+		if (m_pAnimModel->GetAnimation() != "walk")
 		{
 			//歩きモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation("work", m_fAnimSpeed);
+			m_pAnimModel->ChangeAnimation("walk", m_fAnimSpeed);
 		}
 
 		//目的の向きを設定
@@ -448,10 +468,10 @@ void CPlayer::Move(void)
 		m_move.z = 0.0f;
 
 		//ニュートラルモーションでなかったら且つ撃つモーションじゃなかったら
-		if (m_pAnimModel->GetAnimation() != 3 && m_pAnimModel->GetAnimation() != 1)
+		if (m_pAnimModel->GetAnimation() != "neutral" && m_pAnimModel->GetAnimation() != "fireneutral")
 		{
 			//ニュートラルモーションにする
-			m_pAnimModel->ChangeAnimation(3, 60.0f / 4800.0f);
+			m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 			m_fAnimSpeed = 60.0f / 4800.0f;
 		}
 	}
@@ -517,11 +537,11 @@ void CPlayer::Shoot(void)
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
 		//撃つアニメーションでなかったら
-		if (m_pAnimModel->GetAnimation() != 1)
+		if (m_pAnimModel->GetAnimation() != "fireneutral")
 		{
 			//撃つモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation(1, m_fAnimSpeed);
+			m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
 		}
 
 		//カウンターを減算
@@ -539,11 +559,11 @@ void CPlayer::Shoot(void)
 	else
 	{
 		//撃つアニメーションだったら
-		if (m_pAnimModel->GetAnimation() == 1)
+		if (m_pAnimModel->GetAnimation() == "fireneutral")
 		{
 			//ニュートラルモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation(3, m_fAnimSpeed);
+			m_pAnimModel->ChangeAnimation("neutral", m_fAnimSpeed);
 		}
 
 		//既定の値より小さかったら
@@ -558,6 +578,41 @@ void CPlayer::Shoot(void)
 				//0にする
 				m_nCounter = 0;
 			}
+		}
+	}
+}
+
+//================================================
+//腰の処理
+//================================================
+void CPlayer::Chest(void)
+{
+	//cameraのポインタ配列1番目のアドレス取得
+	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	{
+		//cameraの取得
+		CCamera *pCamera = &**pCameraAddress;
+		if (pCamera != nullptr)
+		{
+			D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			//cameraの向き取得
+			rotCamera = pCamera->GetRotV();
+
+			D3DXMATRIX cameraMtx;
+			D3DXMatrixIdentity(&cameraMtx);
+			D3DXMatrixRotationYawPitchRoll(&cameraMtx, 0.0f, rotCamera.x, 0.0f);
+
+			//マトリックスを取得
+			D3DXMATRIX *chest = nullptr;
+			chest = m_pAnimModel->GetMatrix("chest");
+
+			//chest->_11 = 10050.0f;
+
+			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &cameraMtx);
+
+			m_pAnimModel->SetMatrix("chest", chest);
 		}
 	}
 }

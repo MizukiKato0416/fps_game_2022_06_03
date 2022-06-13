@@ -231,6 +231,7 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 				{
 					// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 					matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
+
 					pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 				}
 			}
@@ -554,4 +555,12 @@ D3DXMATRIX *CXanimModel::GetMatrix(string name)
 	CheckContainer(m_root_frame, buf, name);
 
 	return buf;
+}
+
+//=============================================================================
+// 指定オブジェクトのマトリックス設定
+//=============================================================================
+void CXanimModel::SetMatrix(string name, D3DXMATRIX * mtx)
+{
+
 }

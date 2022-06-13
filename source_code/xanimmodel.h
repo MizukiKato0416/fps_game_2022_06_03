@@ -43,6 +43,7 @@ public:
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
 	D3DXMATRIX *GetMatrix(string name);	// ゲッダー
+	void SetMatrix(string name, D3DXMATRIX *mtx);	// セッター
 	LPD3DXFRAME GetRootFrame(void) { return m_root_frame; }	// ゲッダー
 	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター

@@ -56,7 +56,7 @@ HRESULT CGame01::Init(void)
 
 	//プレイヤーの生成
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
-	CEnemy *enemy;
+	//CEnemy *enemy;
 	//enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//メッシュフィールド生成
