@@ -49,7 +49,11 @@ HRESULT CRotate3D::Init(D3DXVECTOR3 SetSize,
 	EFFECT_TYPE EffectType,
 	MOVE_TYPE MoveType)
 {
-	CPlane::Init(SetSize, pos, Tex);
+	CPlane::Init();
+
+	m_Oliginpos = pos;
+	m_OliginTex = Tex;
+	m_Oliginsize = SetSize;
 
 	m_EffectTime = START;
 	m_Size = Size;

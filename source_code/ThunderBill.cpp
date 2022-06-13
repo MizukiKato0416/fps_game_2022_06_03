@@ -43,7 +43,7 @@ HRESULT CThunderBill::Init(D3DXVECTOR3 pos,
 	int Synthetic,
 	ANIMPATTERN AnimPattern)
 {
-	CBillEffect::Init(Size, MinSize, color, Mincolor, nTex, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
+	CBillEffect::Init(Size, MinSize, color, Mincolor, nTex, nLife, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern, pos);
 	int fDistance = (int)Destance;
 	float fRandAngle = CIRCLE2;
 	float fRandAngle2 = CIRCLE2;

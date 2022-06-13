@@ -199,7 +199,7 @@ public:
 	static void ResetPattern() { m_nEffectPattern = 0; }
 	static void ResetOrder() { m_nMaxOrderCount = 0; }
 
-	HRESULT Init(D3DXVECTOR3 pos);
+	HRESULT Init();
 	void Uninit();
 	void Update();
 	void Draw();
