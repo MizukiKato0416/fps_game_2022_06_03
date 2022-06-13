@@ -509,7 +509,7 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 				}
 
 				m_size.x = m_vtx_max.x - m_vtx_min.x;
-				m_size.y = m_vtx_max.y - m_vtx_min.y;
+				m_size.y += m_vtx_max.y - m_vtx_min.y;
 				m_size.z = m_vtx_max.z - m_vtx_min.z;
 
 				vtx_buf += size_fvf;		//頂点フォーマットのサイズ分ポインタを進める

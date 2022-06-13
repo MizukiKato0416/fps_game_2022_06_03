@@ -4,7 +4,7 @@
 //-----------------------------------------------
 SET_MODEL
 pas = box.x
-pos = -518.63 50.00 -891.03
+pos = -518.63 160.00 -891.03
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
@@ -16,7 +16,7 @@ coll = 1
 END_SET_MODEL
 SET_MODEL
 pas = leaf.x
-pos = 1181.73 155.00 -514.40
+pos = 1181.73 80.00 -514.40
 rot = 0.00 0.00 0.00
 coll = 0
 END_SET_MODEL

@@ -128,8 +128,10 @@ void CGame01::Draw(void)
 //================================================
 //ƒ}ƒbƒv‚ÌˆÚ“®§ŒÀ
 //================================================
-void CGame01::MapLimit(CObject* pObj)
+bool CGame01::MapLimit(CObject* pObj)
 {
+	bool bHit = false;
+
 	D3DXVECTOR3 objPos = pObj->GetPos();
 	D3DXVECTOR3 size = m_pMeshField->GetSize();
 	D3DXVECTOR3 pos = m_pMeshField->GetPos();
@@ -138,22 +140,31 @@ void CGame01::MapLimit(CObject* pObj)
 	{
 		objPos.x = pos.x + size.x / 2.0f;
 		pObj->SetPos(objPos);
+		bHit = true;
 	}
 	else if (objPos.x <= pos.x - size.x / 2.0f)
 	{
 		objPos.x = pos.x - size.x / 2.0f;
 		pObj->SetPos(objPos);
+		bHit = true;
 	}
+
+	objPos = pObj->GetPos();
+
 	if (objPos.z >= pos.z + size.z / 2.0f)
 	{
 		objPos.z = pos.z + size.z / 2.0f;
 		pObj->SetPos(objPos);
+		bHit = true;
 	}
 	else if (objPos.z <= pos.z - size.z / 2.0f)
 	{
 		objPos.z = pos.z - size.z / 2.0f;
 		pObj->SetPos(objPos);
+		bHit = true;
 	}
+
+	return bHit;
 }
 
 //================================================

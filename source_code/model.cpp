@@ -299,6 +299,11 @@ void CModel::Draw(void)
 	pDevice->SetMaterial(&matDef);
 	*/
 
+	//アルファテスト
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 50);
+
 	//カメラのポインタ配列1番目のアドレス取得
 	CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
 	//cameraの取得
@@ -356,6 +361,11 @@ void CModel::Draw(void)
 			nCnt++;
 		}
 	}
+
+	//アルファテスト元に戻す
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 0x00);
 	
 
 	//8頂点の設定
