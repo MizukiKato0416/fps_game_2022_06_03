@@ -44,11 +44,17 @@ HRESULT CXanimModel::Init(void)
 		for (int nCntAnim = 0; nCntAnim < nMaxAnim; nCntAnim++)
 		{
 			LPD3DXANIMATIONSET Anim;
+			pair<string, int> buf;
 			m_anim_set.push_back(Anim);
 			m_anim_controller->GetAnimationSet(nCntAnim, &m_anim_set[nCntAnim]);
+			m_anim_name.push_back(m_anim_set[nCntAnim]->GetName());
+			buf.first = m_anim_name[nCntAnim];
+			buf.second = nCntAnim;
+			m_anim_type.push_back(buf);
 		}
 		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[0]);
-		m_now_anim = 0;
+		m_anim_now_type.first = m_anim_name[0];
+		m_anim_now_type.second = 0;
 	}
 
 	return S_OK;
@@ -343,15 +349,22 @@ void CXanimModel::Load(void)
 //=============================================================================
 // アニメーション変更
 //=============================================================================
-void CXanimModel::ChangeAnimation(int anim_num, float speed)
+void CXanimModel::ChangeAnimation(string anim_name, float speed)
 {
 	if (m_anim_controller != NULL)
 	{
-		m_anim_controller->SetTrackSpeed(0, speed);
-		m_anim_controller->SetTrackAnimationSet(0, m_anim_set[anim_num]);
-		m_anim_controller->SetTrackAnimationSet(1, m_anim_set[m_now_anim]);
-		m_anim_controller->SetTrackPosition(0, 0);
-		m_now_anim = anim_num;
+		int max_anim = m_anim_type.size();
+		for (int count_anim = 0; count_anim < max_anim; count_anim++)
+		{
+			if (m_anim_type[count_anim].first == anim_name)
+			{
+				m_anim_controller->SetTrackSpeed(0, speed);
+				m_anim_controller->SetTrackAnimationSet(0, m_anim_set[m_anim_type[count_anim].second]);
+				m_anim_controller->SetTrackAnimationSet(1, m_anim_set[m_anim_now_type.second]);
+				m_anim_controller->SetTrackPosition(0, 0);
+				m_anim_now_type = m_anim_type[count_anim];
+			}
+		}
 	}
 }
 

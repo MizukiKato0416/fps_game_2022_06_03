@@ -49,7 +49,7 @@ HRESULT CEnemy::Init(void)
 	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 	{
 		m_model[count_enemy] = CXanimModel::Create("data/motion.x");
-		m_model[count_enemy]->ChangeAnimation(1, 60.0f / 4800.0f);
+		m_model[count_enemy]->ChangeAnimation("nutral", 60.0f / 4800.0f);
 		m_pGunModel[count_enemy] = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
 	}
 
@@ -192,15 +192,15 @@ void CEnemy::Move(void)
 	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 	{
 		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
-		int now_motion = -1;
+		string now_motion;
 
 		m_pos[count_enemy] = pData->Player.Pos;
 		m_rot[count_enemy] = pData->Player.Rot;
 		
 		now_motion = m_model[count_enemy]->GetAnimation();
-		if (now_motion != pData->Player.nMotion && pData->bConnect == true)
+		if (now_motion != pData->Player.Motion && pData->bConnect == true)
 		{
-			m_model[count_enemy]->ChangeAnimation(pData->Player.nMotion, pData->Player.fMotionSpeed);
+			m_model[count_enemy]->ChangeAnimation(pData->Player.Motion, pData->Player.fMotionSpeed);
 		}
 	}
 }
