@@ -41,6 +41,8 @@ public:
 		bool m_bMousePos;
 		int Synthetic;	//合成
 		string nTexture;	//テクスチャ
+		float m_Distance;	//距離
+
 	} EFFECT_STATE2D;
 
 	//3Dの情報
@@ -110,7 +112,7 @@ public:
 		int Diffusion,
 		int Destroyvec,
 		float fSize,
-		float m_fAddSize,
+		float fAddSize,
 		D3DCOLORVALUE col,
 		D3DCOLORVALUE Changecolor,
 		int nLife,
@@ -120,7 +122,8 @@ public:
 		bool bColorRandB,
 		bool bMousePos,
 		int Synthetic,
-		string Texture);
+		string Texture,
+		float Distance);
 
 	//読み込んだエフェクトの情報を格納するやつ3D
 	static void SetEffectState3D(

@@ -94,7 +94,7 @@ HRESULT CPlayer::Init(void)
 	// アニメーション付きXファイルの生成
 	m_pAnimModel = CXanimModel::Create("data/motion.x");
 	//ニュートラルモーションにする
-	m_pAnimModel->ChangeAnimation(0, 20.0f / 4800.0f);
+	m_pAnimModel->ChangeAnimation("nutral", 60.0f / 4800.0f);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -359,11 +359,11 @@ void CPlayer::Move(void)
 		pInputKeyboard->GetPress(DIK_S) == true || pInputKeyboard->GetPress(DIK_D) == true)
 	{
 		//歩きモーションでなかったら
-		if (m_pAnimModel->GetAnimation() != 0)
+		if (m_pAnimModel->GetAnimation() != "work")
 		{
 			//歩きモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation(0, m_fAnimSpeed);
+			m_pAnimModel->ChangeAnimation("work", m_fAnimSpeed);
 		}
 
 		//目的の向きを設定
@@ -470,6 +470,7 @@ void CPlayer::Rotate(void)
 		//cameraの取得
 		CCamera *pCamera = &**pCameraAddress;
 		if (pCamera != nullptr)
+
 		{
 			//cameraの向き取得
 			m_rot.y = pCamera->GetRotV().y + D3DX_PI;

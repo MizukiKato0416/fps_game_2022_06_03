@@ -30,9 +30,9 @@ public:
 	//---------------------------
 	typedef struct
 	{
-		int nNumber;		// プレイヤーのインデックス
-		int nMotion;		// モーションの種類
+		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピード
+		string Motion;	// モーションの種類
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 	} PLAYUER_DATA;

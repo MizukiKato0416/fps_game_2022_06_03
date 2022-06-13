@@ -6786,7 +6786,7 @@ Frame Root {
 AnimTicksPerSecond {
   24;
 }
-AnimationSet {
+AnimationSet nutral{
   Animation Test{
     {Armature}
     AnimationKey { //Position
@@ -10653,7 +10653,7 @@ AnimationSet {
   }
 } //End of AnimationSet
 
-AnimationSet {
+AnimationSet work{
   Animation {
     {Armature}
     AnimationKey { //Position
