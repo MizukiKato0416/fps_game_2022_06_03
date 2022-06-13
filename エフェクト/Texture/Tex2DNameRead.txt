@@ -1,0 +1,20 @@
+#*********************************************************
+#テクスチャのパス読み込む(主にUIだったりの2D方面の画像)
+#*********************************************************
+
+#*********************************************************
+#最大テクスチャ数
+#*********************************************************
+NUM_TEXTURE = 4
+
+#*********************************************************
+# テクスチャファイル名
+#*********************************************************
+TEXTURE_FILENAME = data/Texture/2D/UIback.png				//０フェード用
+TEXTURE_FILENAME = data/Texture/2D/Effect000.jpg			//１エフェクト
+TEXTURE_FILENAME = data/Texture/2D/CycleEffect00.png		//２わっか
+TEXTURE_FILENAME = data/Texture/2D/squea.png				//３四角
+TEXTURE_FILENAME = data/Texture/2D/star.png					//４星
+TEXTURE_FILENAME = data/Texture/2D/HitDamage.png					//４星
+
+END_SCRIPT
