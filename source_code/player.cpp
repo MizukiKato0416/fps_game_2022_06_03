@@ -23,6 +23,7 @@
 #include "communicationdata.h"
 #include "game01.h"
 #include <thread>
+#include "PresetSetEffect.h"
 
 //================================================
 //マクロ定義
@@ -286,7 +287,7 @@ void CPlayer::Draw(void)
 			rotCamera.x -= D3DX_PI / 2.0f;
 
 			//プレイヤーの向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, -rotCamera.x, rot.z);
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 		}
 	}
@@ -553,7 +554,14 @@ void CPlayer::Shoot(void)
 			//既定の値にする
 			m_nCounter = PLAYER_SHOOT_COUNTER;
 
+			//銃の位置を取得
+			D3DXMATRIX gunMtx = m_pGunModel->GetModel()->GetMtx();
+			//オフセット位置設定
+			D3DXVECTOR3 pos = { gunMtx._41 + -sinf(m_rot.y + D3DX_PI) * 70.0f, gunMtx._42 + 20.0f, gunMtx._43 + -cosf(m_rot.y + D3DX_PI) * 70.0f };
 
+			//マズルフラッシュエフェクトの生成
+			CPresetEffect::SetEffect3D(0, pos, {});
+			CPresetEffect::SetEffect3D(1, pos, {});
 		}
 	}
 	else
