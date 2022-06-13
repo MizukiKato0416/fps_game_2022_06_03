@@ -76,7 +76,6 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 	m_TrajectLife = TrajectLife;
 
 	float randCont = float(rand() % (int)m_ControlBezier.x) - float(rand() % (int)m_ControlBezier.x);
-	float randCont2 = float(rand() % (int)m_ControlBezier.x) - float(rand() % (int)m_ControlBezier.x);
 
 	if (DistanceTarget <= 0)
 	{
@@ -92,8 +91,8 @@ HRESULT CBezierBill::Init(D3DXVECTOR3 Size,
 
 	m_XZr = (float)atan2(a.x, a.z);		//角度ｘｚ
 
-	float sx = (1.0 - m_ControlBezier.z) * pos.x + m_ControlBezier.z * m_Target.x;
-	float sz = (1.0 - m_ControlBezier.z) * pos.z + m_ControlBezier.z * m_Target.z;
+	float sx = (1.0f - m_ControlBezier.z) * pos.x + m_ControlBezier.z * m_Target.x;
+	float sz = (1.0f - m_ControlBezier.z) * pos.z + m_ControlBezier.z * m_Target.z;
 
 	//ベジェ計算
 	//制御点

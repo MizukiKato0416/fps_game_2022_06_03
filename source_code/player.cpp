@@ -124,6 +124,14 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
+	//マトリックスを取得
+	D3DXMATRIX *handR = nullptr;
+	handR = m_pAnimModel->GetMatrix("handR");
+
+	//newしたので消す
+	delete handR;
+	handR = nullptr;
+
 	m_pAnimModel->Uninit();
 	Release();
 }
@@ -146,6 +154,9 @@ void CPlayer::Update(void)
 
 	//1フレーム前の位置設定
 	SetPosOld(m_posOld);
+
+	//射撃処理
+	Shoot();
 
 	//移動処理
 	Move();
@@ -225,6 +236,7 @@ void CPlayer::Update(void)
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
+
 }
 
 //================================================
@@ -277,14 +289,11 @@ void CPlayer::Draw(void)
 	m_pAnimModel->Draw();
 
 	//マトリックスを取得
-	D3DXMATRIX *handL = nullptr;
-	handL = m_pAnimModel->GetMatrix("handL");
+	D3DXMATRIX *handR = nullptr;
+	handR = m_pAnimModel->GetMatrix("handR");
 	//銃と親子関係をつける
-	m_pGunModel->GetModel()->SetMtxParent(handL);
+	m_pGunModel->GetModel()->SetMtxParent(handR);
 	m_pGunModel->GetModel()->SetObjParent(true);
-
-	delete handL;
-	handL = nullptr;
 }
 
 //================================================
@@ -438,11 +447,11 @@ void CPlayer::Move(void)
 		m_move.x = 0.0f;
 		m_move.z = 0.0f;
 
-		//ニュートラルモーションでなかったら
-		if (m_pAnimModel->GetAnimation() != 1)
+		//ニュートラルモーションでなかったら且つ撃つモーションじゃなかったら
+		if (m_pAnimModel->GetAnimation() != 3 && m_pAnimModel->GetAnimation() != 1)
 		{
 			//ニュートラルモーションにする
-			m_pAnimModel->ChangeAnimation(0, 60.0f / 4800.0f);
+			m_pAnimModel->ChangeAnimation(3, 60.0f / 4800.0f);
 			m_fAnimSpeed = 60.0f / 4800.0f;
 		}
 	}
@@ -506,6 +515,14 @@ void CPlayer::Shoot(void)
 
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
+		//撃つアニメーションでなかったら
+		if (m_pAnimModel->GetAnimation() != 1)
+		{
+			//撃つモーションにする
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+			m_pAnimModel->ChangeAnimation(1, m_fAnimSpeed);
+		}
+
 		//カウンターを減算
 		m_nCounter--;
 
@@ -520,6 +537,13 @@ void CPlayer::Shoot(void)
 	}
 	else
 	{
+		//撃つアニメーションだったら
+		if (m_pAnimModel->GetAnimation() == 1)
+		{
+			//ニュートラルモーションにする
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+			m_pAnimModel->ChangeAnimation(3, m_fAnimSpeed);
+		}
 
 		//既定の値より小さかったら
 		if (m_nCounter > 0 && m_nCounter < PLAYER_SHOOT_COUNTER)
