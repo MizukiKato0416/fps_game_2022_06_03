@@ -158,12 +158,6 @@ void CPlayer::Update(void)
 	//位置反映
 	SetPos(m_pos);
 
-	//マップの移動制限
-	if (CManager::GetInstance()->GetGame01() != nullptr)
-	{
-		CManager::GetInstance()->GetGame01()->MapLimit(this);
-	}
-
 	//床との当たり判定
 	if (CFloor::Collision(this, m_size.x) == true)
 	{
@@ -181,8 +175,25 @@ void CPlayer::Update(void)
 		m_pos = pos;
 	}
 
+	//メッシュフィールドとの当たり判定
+	if (CMeshField::Collision(this, m_size.x * 15.0f) == true)
+	{
+		//重力を0にする
+		m_move.y = 0.0f;
+
+		//ジャンプをしていない状態にする
+		m_bJump = false;
+
+		//ジャンプ処理
+		Jump();
+
+		//位置取得
+		pos = GetPos();
+		m_pos = pos;
+	}
+
 	//モデルとの当たり判定
-	int nHit = CModelSingle::Collision(this);
+	int nHit = CModelSingle::Collision(this, m_size.x / 2.0f, 100.0f);
 	//上からあたったとき
 	if (nHit == 1)
 	{
@@ -204,23 +215,6 @@ void CPlayer::Update(void)
 	//位置取得
 	pos = GetPos();
 	m_pos = pos;
-
-	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 15.0f) == true)
-	{
-		//重力を0にする
-		m_move.y = 0.0f;
-
-		//ジャンプをしていない状態にする
-		m_bJump = false;
-
-		//ジャンプ処理
-		Jump();
-
-		//位置取得
-		pos = GetPos();
-		m_pos = pos;
-	}
 
 	m_pAnimModel->Update();
 

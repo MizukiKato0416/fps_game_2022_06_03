@@ -33,7 +33,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void MapLimit(CObject* pObj);		//マップの移動制限
+	bool MapLimit(CObject* pObj);		//マップの移動制限
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理
