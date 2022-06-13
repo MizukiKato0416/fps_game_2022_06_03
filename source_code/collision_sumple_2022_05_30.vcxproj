@@ -154,17 +154,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\サーバー\リンゴ\communication.cpp" />
-    <ClCompile Include="ActiveBillboard.cpp" />
-    <ClCompile Include="BezierBill.cpp" />
     <ClCompile Include="billboard.cpp" />
-    <ClCompile Include="billeffect.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
     <ClCompile Include="effect2D.cpp" />
     <ClCompile Include="effect3D.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="fade.cpp" />
-    <ClCompile Include="FieldEffect.cpp" />
     <ClCompile Include="fileload.cpp" />
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="game01.cpp" />
@@ -175,10 +171,8 @@
     <ClCompile Include="input_pad_d.cpp" />
     <ClCompile Include="input_pad_x.cpp" />
     <ClCompile Include="light.cpp" />
-    <ClCompile Include="LoadEffect.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="manager.cpp" />
-    <ClCompile Include="MeshEffect.cpp" />
     <ClCompile Include="mesh_field.cpp" />
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="model.cpp" />
@@ -186,40 +180,27 @@
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
-    <ClCompile Include="plane.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="play_data.cpp" />
-    <ClCompile Include="PresetSetEffect.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
-    <ClCompile Include="Rotate3d.cpp" />
-    <ClCompile Include="SetMesh.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="sound.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="SphereEffect.cpp" />
-    <ClCompile Include="straight3d.cpp" />
     <ClCompile Include="tcp_client.cpp" />
     <ClCompile Include="texture.cpp" />
-    <ClCompile Include="ThunderBill.cpp" />
     <ClCompile Include="title.cpp" />
-    <ClCompile Include="Trajectory.cpp" />
     <ClCompile Include="xanimmodel.cpp" />
     <ClCompile Include="x_load.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\サーバー\リンゴ\communication.h" />
-    <ClInclude Include="ActiveBillboard.h" />
-    <ClInclude Include="BezierBillh.h" />
     <ClInclude Include="billboard.h" />
-    <ClInclude Include="billeffect.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />
     <ClInclude Include="effect2D.h" />
     <ClInclude Include="effect3D.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="fade.h" />
-    <ClInclude Include="FieldEffect.h" />
     <ClInclude Include="fileload.h" />
     <ClInclude Include="floor.h" />
     <ClInclude Include="game01.h" />
@@ -230,10 +211,8 @@
     <ClInclude Include="input_pad_d.h" />
     <ClInclude Include="input_pad_x.h" />
     <ClInclude Include="light.h" />
-    <ClInclude Include="LoadEffect.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="manager.h" />
-    <ClInclude Include="MeshEffect.h" />
     <ClInclude Include="mesh_field.h" />
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="model.h" />
@@ -241,24 +220,15 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
-    <ClInclude Include="plane.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="play_data.h" />
-    <ClInclude Include="PresetSetEffect.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
-    <ClInclude Include="Rotate3d.h" />
-    <ClInclude Include="SetMesh.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="sound.h" />
-    <ClInclude Include="Sphere.h" />
-    <ClInclude Include="SphereEffect.h" />
-    <ClInclude Include="straight3d.h" />
     <ClInclude Include="tcp_client.h" />
     <ClInclude Include="texture.h" />
-    <ClInclude Include="ThunderBill.h" />
     <ClInclude Include="title.h" />
-    <ClInclude Include="Trajectory.h" />
     <ClInclude Include="xanimmodel.h" />
     <ClInclude Include="x_load.h" />
   </ItemGroup>
