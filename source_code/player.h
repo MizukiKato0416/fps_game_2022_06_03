@@ -55,6 +55,7 @@ private:
 	void Rotate(void);								//回転処理
 	void Jump(void);								//ジャンプ処理
 	void Shoot(void);								//射撃処理
+	void Chest(void);								//腰の処理
 
 	//メンバ変数
 	CCommunicationData m_commu_data;	// 通信データ
