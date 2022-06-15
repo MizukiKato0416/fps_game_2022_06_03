@@ -36,7 +36,8 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	int UninitVectl,
 	int Synthetic,
 	int Distance,
-	D3DXVECTOR3 Playerpos)
+	D3DXVECTOR3 Playerpos,
+	D3DXVECTOR3 rot)
 {
 
 	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, Synthetic);
@@ -46,6 +47,7 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	m_PlayerPos = Playerpos;
 
 	m_UninitVectl = UninitVectl;
+	m_SerectRot = rot;
 
 	//最低保障
 	int Lowest = Diffusion;
@@ -60,9 +62,9 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	m_fAngle = (float)atan2(m_Vec.x, m_Vec.y);		//角度
 
 	m_fAngle += randAngle;
-	m_pos = D3DXVECTOR3(pos.x + sinf(m_fAngle) * -Distance, pos.y + cosf(m_fAngle) * -Distance, 0.0f);
-
+	m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 	SetPosition(m_pos);
+	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
 
 	return S_OK;
 }
@@ -90,11 +92,11 @@ void CMouseTracking::Update()
 		m_bUninit = true;
 	}
 
-	m_pos += D3DXVECTOR3(sinf(m_fAngle) * - m_move.x, cosf(m_fAngle) * -m_move.x, 0.0f);
+	//m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 
 
 	SetPosition(m_pos);
-	CScene2D::SetRotate(m_pos, m_fAngle + D3DX_PI / 4, {}, m_Size.x);
+	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
 
 	CEffect::Update();
 
@@ -123,14 +125,15 @@ CMouseTracking *CMouseTracking::Create(D3DXVECTOR3 pos,
 	int UninitVectl,
 	int Synthetic,
 	int Distance,
-	D3DXVECTOR3 Playerpos)
+	D3DXVECTOR3 Playerpos,
+	D3DXVECTOR3 rot)
 {
 	CMouseTracking *pMouseTracking = NULL;
 	pMouseTracking = new CMouseTracking(CManager::PRIORITY_EFFECT);		//メモリ確保
 										//NULLチェック
 	if (pMouseTracking != NULL)
 	{
-		pMouseTracking->Init(pos, move, color, Mincolor, Size, MinSize, nLife, nType, Endpos, Diffusion, UninitVectl, Synthetic, Distance, Playerpos);
+		pMouseTracking->Init(pos, move, color, Mincolor, Size, MinSize, nLife, nType, Endpos, Diffusion, UninitVectl, Synthetic, Distance, Playerpos, rot);
 	}
 
 	return pMouseTracking;

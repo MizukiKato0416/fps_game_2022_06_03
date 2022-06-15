@@ -24,6 +24,7 @@
 #include "game01.h"
 #include <thread>
 #include "PresetSetEffect.h"
+#include "bullet.h"
 
 //================================================
 //マクロ定義
@@ -33,7 +34,7 @@
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
 #define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
-#define PLAYER_SHOOT_COUNTER				(30)			//次の弾が出るまでのカウンター
+#define PLAYER_SHOOT_COUNTER				(5)			//次の弾が出るまでのカウンター
 
 //================================================
 //デフォルトコンストラクタ
@@ -562,6 +563,9 @@ void CPlayer::Shoot(void)
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {});
 			CPresetEffect::SetEffect3D(1, pos, {});
+
+			//弾の生成
+			CBullet::Create();
 		}
 	}
 	else

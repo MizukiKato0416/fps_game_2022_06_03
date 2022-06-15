@@ -129,7 +129,7 @@ CModelSingle *CModelSingle::Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &ro
 			pModelSingle->m_pParent = pParent;
 			pModelSingle->m_pos = pos;
 			//ƒ‚ƒfƒ‹‚Ì¶¬
-			pModelSingle->m_pModel = CModel::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rot, sPas);
+			pModelSingle->m_pModel = CModel::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), sPas);
 			pModelSingle->Init();
 		}
 	}

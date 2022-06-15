@@ -363,12 +363,6 @@ void CManager::Update(void)
 		m_pInputPadX->Update();
 	}
 
-	//レンダラー
-	if (m_pRenderer != nullptr)
-	{
-		m_pRenderer->Update();
-	}
-
 	//カメラの更新処理
 	for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++)
 	{
@@ -376,6 +370,12 @@ void CManager::Update(void)
 		{
 			m_apCamera[nCntCamera]->Update();
 		}
+	}
+
+	//レンダラー
+	if (m_pRenderer != nullptr)
+	{
+		m_pRenderer->Update();
 	}
 }
 

@@ -1,9 +1,9 @@
 //===========================================
-//射撃処理
+//弾処理
 //Author:加藤瑞葵
 //===========================================
-#ifndef _SHOOT_H_
-#define _SHOOT_H_
+#ifndef _BULLET_H_
+#define _BULLET_H_
 
 #include "object.h"
 
@@ -23,11 +23,11 @@
 //クラスの定義
 //================================================
 //クラスの定義
-class CShoot : public CObject
+class CBullet : public CObject
 {
 public:
-	CShoot(PRIORITY priorty = PRIORITY::NONE);				//コンストラクタ
-	~CShoot();				//デストラクタ
+	CBullet(PRIORITY priorty = PRIORITY::NONE);				//コンストラクタ
+	~CBullet();				//デストラクタ
 
 	//メンバ関数
 	HRESULT Init(void);
@@ -35,10 +35,11 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	static CBullet *Create(void);		//生成処理
+
 private:
-	int m_nCounter;			//次の弾が出るまでのカウンター
 };
 //================================================
 //プロトタイプ宣言
 //================================================
-#endif // !_SHOOT_H_
+#endif // !_BULLET_H_

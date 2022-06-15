@@ -49,6 +49,7 @@ public:
 	void SetMtxWorldPos(void);														//ワールドマトリックスの位置設定処理
 	void SetObjParent(const bool bObjeParent) { m_bObjParent = bObjeParent; }		//オブジェクトとの親子関係設定処理
 	bool GetObjParent(void) { return m_bObjParent; }								//オブジェクトとの親子関係取得処理
+	LPD3DXMESH GetMesh(void) { return m_pMesh; }									//メッシュ取得処理
 
 private:
 	//メンバ関数

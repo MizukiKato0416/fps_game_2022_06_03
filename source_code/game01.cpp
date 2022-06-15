@@ -13,6 +13,7 @@
 #include "model_single.h"
 #include "tcp_client.h"
 #include "enemy.h"
+#include "object3D.h"
 
 //================================================
 //ƒ}ƒNƒ’è‹`
@@ -70,9 +71,10 @@ HRESULT CGame01::Init(void)
 	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, 0.0f, GAME01_FIELD_SIZE), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
-	CModelSingle::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "01_body.x", NULL, true);
-	CModelSingle::Create(D3DXVECTOR3(50.0f, 40.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "fan.x", NULL, true);
 	LoadModelTxt("data/model_set.txt");
+
+	pObject3D = CObject3D::Create({ 0.0f, 200.0f, -1000.0f }, { 200.0f, 200.0f, 0.0f }, {0.0f, D3DX_PI, 0.0f});
+	pObject3D->SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
 
 	return S_OK;
 }
