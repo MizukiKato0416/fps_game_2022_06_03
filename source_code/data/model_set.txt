@@ -3,50 +3,8 @@
 //Author: â¡ì°êêà®
 //-----------------------------------------------
 SET_MODEL
-pas = box.x
-pos = -518.63 160.00 -891.03
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
 pas = container_000.x
-pos = -797.16 0.00 -627.41
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = leaf.x
-pos = 1181.73 80.00 -514.40
-rot = 0.00 0.00 0.00
-coll = 0
-END_SET_MODEL
-SET_MODEL
-pas = container_001.x
-pos = -991.39 0.00 -622.80
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = container_001.x
-pos = -979.24 710.00 -630.44
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = container_000.x
-pos = -1179.58 0.00 -625.71
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = container_000.x
-pos = -1180.63 355.00 -625.51
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = container_000.x
-pos = -800.01 360.00 -630.57
-rot = 0.00 0.00 0.00
+pos = 1000.00 0.00 -1000.00
+rot = 0.00 1.00 0.00
 coll = 1
 END_SET_MODEL
