@@ -82,6 +82,8 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
+	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
+	pClient->Uninit();
 	//オブジェクトの破棄
 	Release();
 }
