@@ -40,10 +40,11 @@ public:
 
 	typedef struct
 	{
-		D3DXVECTOR3 Pos;	// ’e‚ÌˆÊ’u
-		D3DXVECTOR3 Rot;	// ’e‚ÌŠp“x
-		int nCollPlayer;	// “–‚Ä‚½‘Šè‚Ì”Ô†
-		bool bHit;			// “–‚½‚Á‚½‚Ç‚¤‚©
+		D3DXVECTOR3 bigenPos;	// ’e‚ÌˆÊ’u
+		D3DXVECTOR3 endPos;	// ’e‚ÌˆÊ’u
+		int nCollEnemy;	// “–‚Ä‚½‘Šè‚Ì”Ô†
+		bool bEnemyHit;	// “–‚½‚Á‚½‚Ç‚¤‚©
+		bool bObjectHit;	// “–‚½‚Á‚½‚Ç‚¤‚©
 	} BULLET_DATA;
 
 	typedef struct
