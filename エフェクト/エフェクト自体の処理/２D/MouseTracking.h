@@ -25,7 +25,8 @@ public:
 		int UninitVectl,
 		int Synthetic,
 		int Distance,
-		D3DXVECTOR3 Playerpos);
+		D3DXVECTOR3 Playerpos,
+		D3DXVECTOR3 rot);
 
 	void Uninit();
 	void Update();
@@ -43,7 +44,8 @@ public:
 		int UninitVectl,
 		int Synthetic,
 		int Distance,
-		D3DXVECTOR3 Playerpos);
+		D3DXVECTOR3 Playerpos,
+		D3DXVECTOR3 rot);
 
 private:
 	D3DXVECTOR3 m_pos;
@@ -51,6 +53,7 @@ private:
 	D3DXVECTOR3 m_Vec;
 	D3DXVECTOR3 m_Endpos;
 	D3DXVECTOR3 m_PlayerPos;
+	D3DXVECTOR3 m_SerectRot;
 
 	float m_fAngle;
 	float m_Vectl;

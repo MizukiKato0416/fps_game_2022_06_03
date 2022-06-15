@@ -120,7 +120,8 @@ public:
 		bool bColorRandB,
 		bool bMousePos,
 		int Synthetic,
-		int Texture);
+		int Texture,
+		float Distance);
 
 	//読み込んだエフェクトの情報を格納するやつ3D
 	static void SetEffectState3D(
