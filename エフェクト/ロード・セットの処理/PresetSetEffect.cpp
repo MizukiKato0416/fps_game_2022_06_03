@@ -79,7 +79,8 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	bool bColorRandB,
 	bool bMousePos,
 	int Synthetic,
-	int Texture)
+	int Texture,
+	float Distance)
 {
 	m_EffectState2D[m_nEffectPattern].m_nPattern = nPattern;
 	m_EffectState2D[m_nEffectPattern].m_pos = pos;
@@ -100,6 +101,7 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	m_EffectState2D[m_nEffectPattern].m_bMousePos = bMousePos;
 	m_EffectState2D[m_nEffectPattern].Synthetic = Synthetic;
 	m_EffectState2D[m_nEffectPattern].nTexture = Texture;
+	m_EffectState2D[m_nEffectPattern].m_Distance = Distance;
 
 	m_nEffectPattern++;
 }
@@ -215,7 +217,7 @@ void CPresetEffect::SetEffectState3D(
 //=============================================================================
 // åƒÇŒÇÍÇΩï®ÇåƒÇ—èoÇ∑Ç‚Ç¬2D
 //=============================================================================
-void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos)
+void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos, D3DXVECTOR3 PlayerPos, D3DXVECTOR3 rot)
 {
 	switch (m_EffectState2D[nPattern].m_nPattern)
 	{
@@ -285,7 +287,10 @@ void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 				m_EffectState2D[nPattern].m_nLife, m_EffectState2D[nPattern].nTexture,
 				Endpos, m_EffectState2D[nPattern].m_nDiffusion,
 				m_EffectState2D[nPattern].m_nDestroyvec,
-				m_EffectState2D[nPattern].Synthetic);
+				m_EffectState2D[nPattern].Synthetic,
+				m_EffectState2D[nPattern].m_Distance,
+				PlayerPos,
+				rot);
 		}
 		break;
 	case(3):
