@@ -10,6 +10,7 @@
 #include "gunmodel.h"
 #include "manager.h"
 #include "renderer.h"
+#include "model_single.h"
 #include "model.h"
 
 //=============================================================================
@@ -33,7 +34,7 @@ CGunModel::~CGunModel()
 //=============================================================================
 HRESULT CGunModel::Init(void)
 {
-	m_model = CModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, m_type);
+	m_model = CModelSingle::Create(m_pos, m_rot, m_type, NULL, false);
 
 	return S_OK;
 }
@@ -44,7 +45,6 @@ HRESULT CGunModel::Init(void)
 void CGunModel::Uninit(void)
 {
 	Release();
-	m_model->Uninit();
 }
 
 //=============================================================================
@@ -52,7 +52,7 @@ void CGunModel::Uninit(void)
 //=============================================================================
 void CGunModel::Update(void)
 {
-	m_model->Update();
+
 }
 
 //=============================================================================
@@ -67,34 +67,6 @@ void CGunModel::Draw(void)
 	//プレイヤー(原点)のマトリックスの設定
 	//--------------------------------------
 	D3DXMATRIX mtx_rot, mtx_trans, mtx_parent;	//計算用マトリックス
-
-	D3DXMatrixIdentity(&m_mtx_world);	//マトリックス初期化
-
-	//向きの設定
-	D3DXMatrixRotationYawPitchRoll(	&mtx_rot,
-									m_rot.y,
-									m_rot.x,
-									m_rot.z);
-
-	D3DXMatrixMultiply(	&m_mtx_world,
-						&m_mtx_world,
-						&mtx_rot);
-	//位置
-	D3DXMatrixTranslation(	&mtx_trans,
-							m_pos.x,
-							m_pos.y,
-							m_pos.z);
-
-	D3DXMatrixMultiply(	&m_mtx_world,
-						&m_mtx_world,
-						&mtx_trans);
-	//マトリックスの設定
-	pDevice->SetTransform(	D3DTS_WORLD,
-							&m_mtx_world);
-	m_model->Draw();
-
-	pDevice->GetTransform(	D3DTS_WORLD,
-							&mtx_parent);
 
 	D3DXMatrixIdentity(&m_mtx_muzzle_world);	//マトリックス初期化
 
@@ -116,15 +88,15 @@ void CGunModel::Draw(void)
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
 						&mtx_trans);
-
-	//算出したパーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
-	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
-						&m_mtx_muzzle_world,
-						&mtx_parent);
-
 	//マトリックスの設定
 	pDevice->SetTransform(	D3DTS_WORLD,
 							&m_mtx_muzzle_world);
+
+	mtx_parent = m_model->GetModel()->GetMtx();
+
+	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
+						&m_mtx_muzzle_world,
+						&mtx_parent);
 }
 
 //=============================================================================

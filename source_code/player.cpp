@@ -315,8 +315,8 @@ void CPlayer::Draw(void)
 	D3DXMATRIX *handR = nullptr;
 	handR = m_pAnimModel->GetMatrix("handR");
 	//e‚ÆeŽqŠÖŒW‚ð‚Â‚¯‚é
-	m_pGunModel->GetModel()->SetMtxParent(handR);
-	m_pGunModel->GetModel()->SetObjParent(true);
+	m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
+	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 }
 
 //================================================
