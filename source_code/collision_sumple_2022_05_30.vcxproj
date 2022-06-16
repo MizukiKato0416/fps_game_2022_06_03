@@ -168,7 +168,7 @@
     <ClCompile Include="fileload.cpp" />
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="game01.cpp" />
-    <ClCompile Include="ginmodel.cpp" />
+    <ClCompile Include="gunmodel.cpp" />
     <ClCompile Include="hierarchydata.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
