@@ -246,9 +246,7 @@ void CBillEffect::Draw()
 
 
 	//Zテスト関係
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
 	//アルファテスト関係
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);

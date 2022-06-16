@@ -33,8 +33,8 @@
 #define PLAYER_GRAVITY						(1.0f)			//重力の大きさ
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
-#define PLAYER_SIZE							(10.0f)			//プレイヤーのサイズ調整値
-#define PLAYER_SHOOT_COUNTER				(5)			//次の弾が出るまでのカウンター
+#define PLAYER_SIZE							(50.0f)			//プレイヤーのサイズ調整値
+#define PLAYER_SHOOT_COUNTER				(5)				//次の弾が出るまでのカウンター
 
 //================================================
 //デフォルトコンストラクタ

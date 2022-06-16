@@ -85,10 +85,15 @@ HRESULT HierarchyData::CreateMeshContainer(THIS_ LPCSTR name, CONST D3DXMESHDATA
 		for (int nCntMat = 0; nCntMat < (int)material_num; nCntMat++)
 		{
 			container->pMaterials[nCntMat].MatD3D = material_data[nCntMat].MatD3D;
+
+			//‚±‚±’¼‚·
 			container->pMaterials[nCntMat].MatD3D.Diffuse.a = 1.0f;
 			container->pMaterials[nCntMat].MatD3D.Ambient = container->pMaterials[nCntMat].MatD3D.Diffuse;
 			container->pMaterials[nCntMat].MatD3D.Specular = container->pMaterials[nCntMat].MatD3D.Diffuse;
 			container->pMaterials[nCntMat].MatD3D.Emissive = container->pMaterials[nCntMat].MatD3D.Diffuse;
+
+
+
 			container->pMaterials[nCntMat].pTextureFilename = material_data[nCntMat].pTextureFilename;
 
 			if (container->pMaterials[nCntMat].pTextureFilename != NULL)

@@ -5,6 +5,12 @@
 SET_MODEL
 pas = container_000.x
 pos = 1000.00 0.00 -1000.00
-rot = 0.00 1.00 0.00
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = 1500.00 0.00 -1000.00
+rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL

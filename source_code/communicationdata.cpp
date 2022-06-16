@@ -18,7 +18,7 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	for (int nCnt = 0; nCnt < MAX_BULLET; nCnt++)
 	{
-		m_CommuData.Bullet[nCnt].Rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		//m_CommuData.Bullet[nCnt].Rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	}
 }
 

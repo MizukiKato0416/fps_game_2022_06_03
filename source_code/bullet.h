@@ -38,6 +38,8 @@ public:
 	static CBullet *Create(void);		//生成処理
 
 private:
+	D3DXVECTOR3 m_bigenPos;				//弾の始点
+	D3DXVECTOR3 m_endPos;				//弾の終点
 };
 //================================================
 //プロトタイプ宣言
