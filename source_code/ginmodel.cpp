@@ -66,58 +66,61 @@ void CGunModel::Draw(void)
 	//--------------------------------------
 	//プレイヤー(原点)のマトリックスの設定
 	//--------------------------------------
-	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	D3DXMATRIX mtx_rot, mtx_trans, mtx_parent;	//計算用マトリックス
 
 	D3DXMatrixIdentity(&m_mtx_world);	//マトリックス初期化
 
 	//向きの設定
-	D3DXMatrixRotationYawPitchRoll(	&mtxRot,
+	D3DXMatrixRotationYawPitchRoll(	&mtx_rot,
 									m_rot.y,
 									m_rot.x,
 									m_rot.z);
 
 	D3DXMatrixMultiply(	&m_mtx_world,
 						&m_mtx_world,
-						&mtxRot);
+						&mtx_rot);
 	//位置
-	D3DXMatrixTranslation(	&mtxTrans,
+	D3DXMatrixTranslation(	&mtx_trans,
 							m_pos.x,
 							m_pos.y,
 							m_pos.z);
 
 	D3DXMatrixMultiply(	&m_mtx_world,
 						&m_mtx_world,
-						&mtxTrans);
+						&mtx_trans);
 	//マトリックスの設定
 	pDevice->SetTransform(	D3DTS_WORLD,
 							&m_mtx_world);
 	m_model->Draw();
 
+	pDevice->GetTransform(	D3DTS_WORLD,
+							&mtx_parent);
+
 	D3DXMatrixIdentity(&m_mtx_muzzle_world);	//マトリックス初期化
 
 	//向きの設定
-	D3DXMatrixRotationYawPitchRoll(	&mtxRot,
+	D3DXMatrixRotationYawPitchRoll(	&mtx_rot,
 									0.0f,
 									0.0f,
 									0.0f);
 
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
-						&mtxRot);
+						&mtx_rot);
 	//位置
-	D3DXMatrixTranslation(	&mtxTrans,
+	D3DXMatrixTranslation(	&mtx_trans,
 							m_muzzle_pos.x,
 							m_muzzle_pos.y,
 							m_muzzle_pos.z);
 
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
-						&mtxTrans);
+						&mtx_trans);
 
 	//算出したパーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
-						&m_mtx_world);
+						&mtx_parent);
 
 	//マトリックスの設定
 	pDevice->SetTransform(	D3DTS_WORLD,

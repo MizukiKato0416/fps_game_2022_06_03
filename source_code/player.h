@@ -8,7 +8,7 @@
 #include "communicationdata.h"
 
 //前方宣言
-class CModelSingle;
+class CGunModel;
 class CSparkle;
 class CWind;
 class CXanimModel;
@@ -65,7 +65,7 @@ private:
 	D3DXVECTOR3 m_move;								//ポリゴンの移動量
 	D3DXVECTOR3	m_size;								//サイズ
 	D3DXVECTOR3 m_rot;								//向き
-	CModelSingle *m_pGunModel;						//銃モデルのポインタ
+	CGunModel *m_pGunModel;						//銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	float m_fObjectiveRot;							//目的の向き
 	float m_fNumRot;								//向きを変える量

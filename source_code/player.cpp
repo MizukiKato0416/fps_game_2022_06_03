@@ -25,6 +25,7 @@
 #include <thread>
 #include "PresetSetEffect.h"
 #include "bullet.h"
+#include "gunmodel.h"
 
 //================================================
 //マクロ定義
@@ -84,7 +85,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 
 	//銃モデルの生成
-	m_pGunModel = CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, "asult_gun.x", nullptr, false);
+	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 100.0f }, "asult_gun.x");
 
 	//位置の設定
 	SetPos(m_pos);
@@ -555,10 +556,8 @@ void CPlayer::Shoot(void)
 			//既定の値にする
 			m_nCounter = PLAYER_SHOOT_COUNTER;
 
-			//銃の位置を取得
-			D3DXMATRIX gunMtx = m_pGunModel->GetModel()->GetMtx();
 			//オフセット位置設定
-			D3DXVECTOR3 pos = { gunMtx._41 + -sinf(m_rot.y + D3DX_PI) * 70.0f, gunMtx._42 + 20.0f, gunMtx._43 + -cosf(m_rot.y + D3DX_PI) * 70.0f };
+			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
 
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {});

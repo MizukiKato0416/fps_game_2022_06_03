@@ -35,6 +35,7 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }											//ˆÊ’uæ“¾ˆ—
 	void SetRot(const D3DXVECTOR3 &rot) { m_rot = rot; }								//‰ñ“]İ’èˆ—
 	D3DXVECTOR3 GetRot(void) { return m_rot; }											//‰ñ“]æ“¾ˆ—
+	D3DXMATRIX GetMuzzleMtx(void) { return m_mtx_muzzle_world; }
 	CModel *GetModel(void) { return m_model; }											//ƒ‚ƒfƒ‹æ“¾ˆ—
 private:
 	D3DXVECTOR3 m_pos;
