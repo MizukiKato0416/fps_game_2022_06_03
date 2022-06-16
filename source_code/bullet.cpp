@@ -15,6 +15,9 @@
 //================================================
 //マクロ定義
 //================================================
+#define BULLET_MOVE_SPEED		(100.0f)		//軌道の速さ
+#define BULLET_SIZE_X			(200.0f)			//軌道のサイズ
+#define BULLET_SIZE_Y			(5.0f)			//軌道のサイズ
 
 //================================================
 //静的メンバ変数宣言
@@ -26,7 +29,8 @@
 CBullet::CBullet(CObject::PRIORITY Priority) :CObject(Priority)
 {
 	m_bigenPos = {0.0f, 0.0f, 0.0f};
-	m_endPos = { 0.0f, 0.0f, 0.0f };
+	m_rayVec = { 0.0f, 0.0f, 0.0f };
+	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BULLET_MAX_ORBIT]));
 }
 
 //================================================
@@ -50,10 +54,10 @@ HRESULT CBullet::Init(void)
 	//カメラの位置保存用
 	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
-	//レイを飛ばす方向
-	D3DXVECTOR3 rayVec = { 0.0f, 0.0f, 0.0f };
-	D3DXVECTOR3 rayVecHit = { 0.0f, 0.0f, 0.0f };
+	//カメラの向き保存
 	D3DXVECTOR3 rotCamera = { 0.0f, 0.0f, 0.0f };
+	//レイを飛ばす方向
+	D3DXVECTOR3 rayVecHit = { 0.0f, 0.0f, 0.0f };
 	//レイの当たり判定結果保存用
 	BOOL bHit = false;
 	//当たった場所までの距離保存用
@@ -79,11 +83,13 @@ HRESULT CBullet::Init(void)
 			//カメラの位置取得
 			posCameraV = pCamera->GetPosV();
 			posCameraR = pCamera->GetPosR();
+			//カメラの向き取得
+			rotCamera = pCamera->GetRotV();
 
 			//レイを飛ばす方向を算出
-			rayVec = posCameraR - posCameraV;
+			m_rayVec = posCameraR - posCameraV;
 			//ベクトルを正規化
-			D3DXVec3Normalize(&rayVec, &rayVec);
+			D3DXVec3Normalize(&m_rayVec, &m_rayVec);
 
 			//始点を設定
 			m_bigenPos = posCameraV;
@@ -108,12 +114,13 @@ HRESULT CBullet::Init(void)
 			if (pModel->GetColl() == true)
 			{
 				D3DXMATRIX modelInvMtx;
+				D3DXMATRIX modelMtx = pModel->GetModel()->GetMtx();
 				D3DXMatrixIdentity(&modelInvMtx);
-				D3DXMatrixInverse(&modelInvMtx, NULL, &pModel->GetModel()->GetMtx());
+				D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
 
 				D3DXVECTOR3 posV = posCameraV;
 
-				D3DXVECTOR3 endPos = posV + rayVec;
+				D3DXVECTOR3 endPos = posV + m_rayVec;
 				D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
 				D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
 
@@ -155,12 +162,22 @@ HRESULT CBullet::Init(void)
 
 		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
 		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
-		D3DXVec3TransformCoord(&HitPos, &HitPos, &pHitModel->GetModel()->GetMtx());
+		D3DXMATRIX hitModelMtx = pHitModel->GetModel()->GetMtx();
+		D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
 
 		//当たった位置にエフェクトを出す
 		CPresetEffect::SetEffect3D(2, HitPos, {});
 		CPresetEffect::SetEffect3D(3, HitPos, {});
 	}
+
+	//弾の軌道エフェクトを生成
+	m_apOrbit[0] = CObject3D::Create(posCameraV, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, { 0.0f, rotCamera.y + D3DX_PI / 2.0f, rotCamera.x + D3DX_PI / 2.0f });
+	m_apOrbit[0]->BindTexture(CManager::GetTexture()->GetTexture("bullet_00.png"));
+	m_apOrbit[1] = CObject3D::Create(posCameraV, { BULLET_SIZE_Y, BULLET_SIZE_X, 0.0f }, { rotCamera.x, rotCamera.y, 0.0f });
+	m_apOrbit[1]->BindTexture(CManager::GetTexture()->GetTexture("bullet_01.png"));
+	//カリングをオフにする
+	m_apOrbit[0]->SetCulling(false);
+	m_apOrbit[1]->SetCulling(false);
 
 	return S_OK;
 }
@@ -179,7 +196,17 @@ void CBullet::Uninit(void)
 //================================================
 void CBullet::Update(void)
 {
-	
+	for (int nCntOrbit = 0; nCntOrbit < BULLET_MAX_ORBIT; nCntOrbit++)
+	{
+		//位置とサイズを取得
+		D3DXVECTOR3 pos = m_apOrbit[nCntOrbit]->GetPos();
+		D3DXVECTOR3 size = m_apOrbit[nCntOrbit]->GetSize();
+		//移動量を設定
+		D3DXVECTOR3 move = m_rayVec * BULLET_MOVE_SPEED;
+		pos += move;
+		//位置を設定
+		m_apOrbit[nCntOrbit]->SetPos(pos, size);
+	}
 }
 
 //================================================

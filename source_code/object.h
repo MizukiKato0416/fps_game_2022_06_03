@@ -33,9 +33,9 @@ public:
 		NONE = 0,			// なし
 		PLAYER,				// プレイヤー
 		MODEL,				// モデル
+		MESH_FIELD,			// メッシュフィールド
 		POLYGON_3D,			// 3Dポリゴン
 		SHADOW,				// 影
-		MESH_FIELD,			// メッシュフィールド
 		EFFECT3D,			// パーティクル
 		EFFECT2D,			// パーティクル
 		UI,					// UI
