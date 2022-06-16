@@ -94,21 +94,19 @@ HRESULT HierarchyData::CreateMeshContainer(THIS_ LPCSTR name, CONST D3DXMESHDATA
 
 			if (container->pMaterials[nCntMat].pTextureFilename != NULL)
 			{
-				/*string *Pas = CManager::GetInstance()->GetTexture()->GetPas();
-				string TexPas = "data/Texture/Model/";
-				int nTexNum = CTexture::GetTexNum();
+				int nTexNum = CManager::GetInstance()->GetTexture()->GetNum();
+				string TexPas = "data\\TEXTURE\\MESH\\";
 				TexPas += container->pMaterials[nCntMat].pTextureFilename;
-				for (int nCnt = 0; nCnt < nTexNum; nCnt++, Pas++)
+				for (int nCnt = 0; nCnt < nTexNum; nCnt++)
 				{
-					if (strcmp(TexPas.c_str(), Pas->c_str()) == 0)
+					string Pas = CManager::GetInstance()->GetTexture()->GetPas(nCnt);
+					if (strcmp(TexPas.c_str(), Pas.c_str()) == 0)
 					{
-						string Enum = CTexture::GetEnumName(nCnt);
-						m_TextureList[TexPas.c_str()] = (CTexture::GetTexture(Enum));
+						m_TextureList[TexPas.c_str()] = (CManager::GetInstance()->GetTexture()->GetTexture(TexPas));
 						container->m_TextureList.push_back(m_TextureList[TexPas.c_str()]);
 						break;
 					}
-				}*/
-				container->m_TextureList.push_back(NULL);
+				}
 			}
 			else 
 			{
