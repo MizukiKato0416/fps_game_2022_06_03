@@ -34,7 +34,7 @@
 #define PLAYER_GRAVITY						(1.0f)			//重力の大きさ
 #define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
-#define PLAYER_SIZE							(50.0f)			//プレイヤーのサイズ調整値
+#define PLAYER_SIZE							(75.0f)			//プレイヤーのサイズ調整値
 #define PLAYER_SHOOT_COUNTER				(5)				//次の弾が出るまでのカウンター
 
 //================================================
@@ -85,7 +85,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 
 	//銃モデルの生成
-	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 150.0f, -5.0f, -80.0f }, "asult_gun_white.x");
+	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 
 	//位置の設定
 	SetPos(m_pos);
@@ -314,9 +314,12 @@ void CPlayer::Draw(void)
 	//マトリックスを取得
 	D3DXMATRIX *handR = nullptr;
 	handR = m_pAnimModel->GetMatrix("handR");
+	m_pGunModel->SetMtxParent(handR);
 	//銃と親子関係をつける
 	m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
 	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+	
+
 }
 
 //================================================

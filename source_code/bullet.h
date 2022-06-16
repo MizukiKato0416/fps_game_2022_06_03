@@ -41,8 +41,10 @@ public:
 
 private:
 	D3DXVECTOR3 m_bigenPos;						//弾の始点
+	D3DXVECTOR3 m_endPos;						//弾の終点
 	D3DXVECTOR3 m_rayVec;						//レイの方向
 	CObject3D *m_apOrbit[BULLET_MAX_ORBIT];		//軌道エフェクトのポインタ
+	float m_fDiffer;							//終点までの距離
 };
 //================================================
 //プロトタイプ宣言

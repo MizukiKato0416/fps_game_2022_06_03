@@ -48,6 +48,7 @@ public:
 	bool GetObjParent(void) { return m_bObjParent; }										//オブジェクトとの親子関係取得処理
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
+	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
 
 private:
 	//メンバ関数

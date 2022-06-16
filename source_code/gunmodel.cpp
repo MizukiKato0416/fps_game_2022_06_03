@@ -92,7 +92,7 @@ void CGunModel::Draw(void)
 	pDevice->SetTransform(	D3DTS_WORLD,
 							&m_mtx_muzzle_world);
 
-	mtx_parent = m_model->GetModel()->GetMtx();
+	mtx_parent = *m_mtxParent;
 
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,

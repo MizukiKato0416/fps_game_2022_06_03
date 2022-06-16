@@ -54,8 +54,7 @@ HRESULT CGame01::Init(void)
 	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
 	pClient->Connect();
 
-	//プレイヤーの生成
-	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, -D3DX_PI / 2.0f, 0.0f));
+	
 	//CEnemy *enemy;
 	//enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
@@ -72,6 +71,9 @@ HRESULT CGame01::Init(void)
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
 	LoadModelTxt("data/model_set.txt");
+
+	//プレイヤーの生成
+	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	pObject3D = CObject3D::Create({ 0.0f, 200.0f, -1000.0f }, { 200.0f, 200.0f, 0.0f }, {0.0f, D3DX_PI, 0.0f});
 	pObject3D->SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));

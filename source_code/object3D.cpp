@@ -31,6 +31,7 @@ CObject3D::CObject3D(CObject::PRIORITY Priority) :CObject(Priority)
 	m_bAlphaTest = false;
 	m_bLighting = false;
 	SetObjType(CObject::OBJTYPE::POLYGON_3D);
+	m_OriginType = ORIGIN_TYPE::CENTER;
 }
 
 //================================================
@@ -60,6 +61,7 @@ HRESULT CObject3D::Init(void)
 	m_bAlphaBlend = false;
 	m_bAlphaTest = false;
 	m_bLighting = true;
+	m_OriginType = ORIGIN_TYPE::CENTER;
 
 	//位置・サイズ設定処理
 	CObject::SetPos(m_pos);
@@ -77,11 +79,47 @@ HRESULT CObject3D::Init(void)
 	//頂点バッファをロックし、頂点データのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//頂点座標
-	pVtx[0].pos = D3DXVECTOR3(- m_size.x / 2.0f, + m_size.y / 2.0f, + m_size.z / 2.0f);
-	pVtx[1].pos = D3DXVECTOR3(+ m_size.x / 2.0f, + m_size.y / 2.0f, + m_size.z / 2.0f);
-	pVtx[2].pos = D3DXVECTOR3(- m_size.x / 2.0f, - m_size.y / 2.0f, - m_size.z / 2.0f);
-	pVtx[3].pos = D3DXVECTOR3(+ m_size.x / 2.0f, - m_size.y / 2.0f, - m_size.z / 2.0f);
+	switch (m_OriginType)
+	{
+	case CObject3D::ORIGIN_TYPE::CENTER:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::LEFT:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(0.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(m_size.x, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(0.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(m_size.x, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::RIGHT:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(0.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(0.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::TOP:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, 0.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, 0.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, -m_size.y, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, -m_size.y, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::LOWER:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, +m_size.y, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, +m_size.y, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, 0.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, 0.0f, -m_size.z / 2.0f);
+		break;
+	default:
+		break;
+	}
+	
 
 	for (int nCntVtx = 0; nCntVtx < VERTEX_3D_NUM; nCntVtx++)
 	{
@@ -336,11 +374,46 @@ void CObject3D::SetPos(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &size)
 						//頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//頂点座標
-	pVtx[0].pos = D3DXVECTOR3( - m_size.x / 2.0f, + m_size.y / 2.0f,  + m_size.z / 2.0f);
-	pVtx[1].pos = D3DXVECTOR3( + m_size.x / 2.0f, + m_size.y / 2.0f,  + m_size.z / 2.0f);
-	pVtx[2].pos = D3DXVECTOR3( - m_size.x / 2.0f, - m_size.y / 2.0f,  - m_size.z / 2.0f);
-	pVtx[3].pos = D3DXVECTOR3( + m_size.x / 2.0f, - m_size.y / 2.0f,  - m_size.z / 2.0f);
+	switch (m_OriginType)
+	{
+	case CObject3D::ORIGIN_TYPE::CENTER:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::LEFT:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(0.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(m_size.x, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(0.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(m_size.x, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::RIGHT:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(0.0f, +m_size.y / 2.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(0.0f, -m_size.y / 2.0f, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::TOP:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, 0.0f, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, 0.0f, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, -m_size.y, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, -m_size.y, -m_size.z / 2.0f);
+		break;
+	case CObject3D::ORIGIN_TYPE::LOWER:
+		//頂点座標
+		pVtx[0].pos = D3DXVECTOR3(-m_size.x / 2.0f, +m_size.y, +m_size.z / 2.0f);
+		pVtx[1].pos = D3DXVECTOR3(+m_size.x / 2.0f, +m_size.y, +m_size.z / 2.0f);
+		pVtx[2].pos = D3DXVECTOR3(-m_size.x / 2.0f, 0.0f, -m_size.z / 2.0f);
+		pVtx[3].pos = D3DXVECTOR3(+m_size.x / 2.0f, 0.0f, -m_size.z / 2.0f);
+		break;
+	default:
+		break;
+	}
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
