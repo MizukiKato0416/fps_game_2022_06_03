@@ -85,7 +85,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 
 	//eƒ‚ƒfƒ‹‚Ì¶¬
-	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 100.0f }, "asult_gun.x");
+	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 150.0f, -5.0f, -80.0f }, "asult_gun.x");
 
 	//ˆÊ’u‚Ìİ’è
 	SetPos(m_pos);
