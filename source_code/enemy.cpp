@@ -142,7 +142,7 @@ void CEnemy::Draw(void)
 //=============================================================================
 // ƒ‚ƒfƒ‹‚Ì¶¬
 //=============================================================================
-CEnemy *CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+CEnemy *CEnemy::Create(void)
 {
 	CEnemy *pEnemy = NULL;
 	if (pEnemy == NULL)
@@ -180,7 +180,9 @@ void CEnemy::Recv(void)
 			}
 			else
 			{
+#ifdef _DEBUG
 				m_debug_cennect = true;
+#endif //_DEBUG
 				memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			}
 		}
@@ -190,7 +192,9 @@ void CEnemy::Recv(void)
 		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
 		pData->bConnect = false;
 	}
+#ifdef _DEBUG
 	m_debug_cennect = false;
+#endif //_DEBUG
 }
 
 //=============================================================================
@@ -219,6 +223,7 @@ void CEnemy::Move(void)
 		{
 			m_model[count_enemy]->ChangeAnimation(pData->Player.Motion, pData->Player.fMotionSpeed);
 		}
+#ifdef _DEBUG
 		if (m_debug_cennect)
 		{
 			int n = 0;
@@ -227,5 +232,6 @@ void CEnemy::Move(void)
 		{
 			int n = 0;
 		}
+#endif //_DEBUG
 	}
 }

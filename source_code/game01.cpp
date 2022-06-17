@@ -55,7 +55,7 @@ HRESULT CGame01::Init(void)
 	pClient->Connect();
 
 	CEnemy *enemy;
-	enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	enemy = CEnemy::Create();
 
 	//メッシュフィールド生成
 	m_pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");

@@ -33,7 +33,7 @@ public:
 	void Update(void);	// ポリゴンの更新
 	void Draw(void);	// ポリゴンの描画
 	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int index) { return m_commu_data[index].GetCmmuData(); }	// ゲッダー
-	static CEnemy *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 生成
+	static CEnemy *Create(void);	// 生成
 	static void Recv(void);	// レシーブスレッド
 private:
 	void Attack(void);	// 攻撃
