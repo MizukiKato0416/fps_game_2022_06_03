@@ -552,10 +552,6 @@ bool CMeshField::Collision(CObject *pSubjectObject, const float &fRadius)
 //================================================
 bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, const D3DXVECTOR3 &beginPos, const D3DXVECTOR3 &endPos)
 {
-	//始点から終点までのベクトル
-	D3DXVECTOR3 vec = endPos - beginPos;
-	//距離を計算
-	float fDifferVec = D3DXVec3Length(&vec);
 	float fDifferNear = 100000.0f;
 
 	//当たったかどうか
