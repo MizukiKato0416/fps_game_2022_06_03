@@ -185,6 +185,11 @@ void CEnemy::Recv(void)
 			}
 		}
 	}
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+		pData->bConnect = false;
+	}
 	m_debug_cennect = false;
 }
 
