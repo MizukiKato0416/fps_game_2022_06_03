@@ -20,6 +20,9 @@
 // 静的メンバ変数宣言
 //=============================================================================
 CCommunicationData CEnemy::m_commu_data[MAX_PLAYER];
+#ifdef _DEBUG
+bool CEnemy::m_debug_cennect = false;	// デバッグ用
+#endif //_DEBUG
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -161,7 +164,7 @@ void CEnemy::Recv(void)
 {
 	int size = 1;
 
-	while (size > 0)
+	while (size >= 0)
 	{
 		CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
 		char recv[MAX_COMMU_DATA];
@@ -171,9 +174,23 @@ void CEnemy::Recv(void)
 			CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
 
 			size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			if (size <= 0)
+			{
+				break;
+			}
+			else
+			{
+				m_debug_cennect = true;
+				memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			}
 		}
 	}
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+		pData->bConnect = false;
+	}
+	m_debug_cennect = false;
 }
 
 //=============================================================================
@@ -191,7 +208,7 @@ void CEnemy::Move(void)
 {
 	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 	{
-		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData(); 
 		string now_motion;
 
 		m_pos[count_enemy] = pData->Player.Pos;
@@ -201,6 +218,14 @@ void CEnemy::Move(void)
 		if (now_motion != pData->Player.Motion && pData->bConnect == true)
 		{
 			m_model[count_enemy]->ChangeAnimation(pData->Player.Motion, pData->Player.fMotionSpeed);
+		}
+		if (m_debug_cennect)
+		{
+			int n = 0;
+		}
+		else if (!m_debug_cennect)
+		{
+			int n = 0;
 		}
 	}
 }

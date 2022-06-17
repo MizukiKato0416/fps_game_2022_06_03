@@ -45,6 +45,9 @@ private:
 	D3DXVECTOR3 m_rot[MAX_PLAYER];		// 向き
 	D3DXMATRIX m_mtx_wld[MAX_PLAYER];	// ワールドマトリックス
 	int m_my_index[MAX_PLAYER];	// 自分のプレイヤー番号
+#ifdef _DEBUG
+	static bool m_debug_cennect;	// デバッグ用
+#endif //_DEBUG
 };
 
 #endif

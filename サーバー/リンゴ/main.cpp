@@ -11,17 +11,25 @@
 
 #include <iostream>
 #include <thread>
+#include <vector>
 #include "main.h"
 #include "tcp_listener.h"
 #include "communication.h"
 #include "communicationdata.h"
 
+using namespace std;
+
+//------------------------
+// マクロ定義
+//------------------------
+#define MAX_ROOM (5)	// 最大部屋数
+
 //------------------------
 // グローバル変数
 //------------------------
-int g_stop = 1;
-int g_accept_count = 1;
-bool g_accept = false;
+int g_stop = 0;	// サーバストップ判定用
+int g_accept_count = 1;	// アクセプトした数
+bool g_accept = false;	// 次のアクセプトにいけるかどうか
 
 //------------------------
 // メイン関数
@@ -29,10 +37,11 @@ bool g_accept = false;
 void main(void)
 {
 #ifdef _DEBUG
-	int size = sizeof(CCommunicationData::COMMUNICATION_DATA);
+	// デバッグ用サイズ確認
+	int debug_size = sizeof(CCommunicationData::COMMUNICATION_DATA);
 #endif // _DEBUG
 	//------------------------
-	// 初期化
+	// WSAの初期化
 	//------------------------
 	WSADATA  wsaData;
 	int nErr = WSAStartup(WINSOCK_VERSION, &wsaData);
@@ -42,30 +51,73 @@ void main(void)
 		cout << "初期化に失敗しました" << endl;
 	}
 
-	CTcpListener *pListenner = new CTcpListener;
+	// サーバの生成
+	vector<CTcpListener*> pListenner;
+	pListenner.push_back(new CTcpListener);
 
-	if (pListenner != NULL && pListenner->Init() == true)
+	// サーバ停止のキーボード判定用関数のスレッド分け
+	thread th(StopOrSurver);
+
+	th.detach();
+
+	while (g_stop != 1)
 	{
-		thread th(StopOrSurver);
-
-		th.detach();
-		while (g_stop == 1)
+		// サーバーのサイズを取得
+		int size = pListenner.size();
+		for (int count_listener = 0; count_listener < size; count_listener++)
 		{
-			if (g_accept_count <= 5 && g_accept == false)
+			// initしていなかったら
+			if (pListenner[count_listener]->GetIsInit() == false)
 			{
-				thread th(Accept, pListenner, g_accept);
-				g_accept = true;
+				// 何か入っててinitが成功したら
+				if (pListenner[count_listener] != nullptr && pListenner[count_listener]->Init() == true)
+				{
+					// 部屋が上限じゃない且アクセプト出来たら
+					if (g_accept_count <= MAX_ROOM && g_accept == false)
+					{
+						// アクセプトスレッド
+						thread th(Accept, pListenner[count_listener], g_accept_count);
 
-				th.detach();
-				g_accept_count++;
+						// アクセプトを出来なくする
+						g_accept = true;
+
+						th.detach();
+
+						// アクセプト数のカウント
+						g_accept_count++;
+
+						// サーバの生成
+						pListenner.push_back(new CTcpListener);
+					}
+				}
+			}
+			// initした後でuninitされていたら
+			else if (pListenner[count_listener]->GetIsInit() == true &&
+					 pListenner[count_listener]->GetIsUninit() == true)
+			{
+				// 生成されていて通信が切断されているlistenerを削除
+				pListenner.erase(pListenner.begin() + count_listener);
+				int re_size = pListenner.size();
+				for (int count_listener = 0; count_listener < re_size; count_listener++)
+				{
+					// 登録されている部屋番号を-1する
+					int listener_num = pListenner[count_listener]->GetNumber();
+					pListenner[count_listener]->SetNumber(listener_num - 1);
+				}
 			}
 		}
 	}
-	if (pListenner != NULL)
+	// サイズを取得
+	int size = pListenner.size();
+	// 全てのlistenerを削除
+	for (int count_listener = 0; count_listener < size; count_listener++)
 	{
-		pListenner->Uninit();
-		delete pListenner;
-		pListenner = NULL;
+		if (pListenner[count_listener] != nullptr)
+		{
+			pListenner[count_listener]->Uninit();
+			delete pListenner[count_listener];
+			pListenner[count_listener] = nullptr;
+		}
 	}
 
 	//------------------------
@@ -82,11 +134,17 @@ void main(void)
 //------------------------
 void Accept(CTcpListener *listener, int room_num)
 {
+	// ホスト用クラス
 	CCommunication *communication;
 
+	// 通信待ち
 	communication = listener->Accept();
 
-	thread th(CreateRoom, listener, communication, room_num);
+	// 部屋番号の設定
+	listener->SetNumber(room_num);
+
+	// 部屋事の処理のスレッド分け
+	thread th(CreateRoom, listener, communication);
 
 	th.detach();
 }
@@ -94,32 +152,39 @@ void Accept(CTcpListener *listener, int room_num)
 //------------------------
 // 部屋生成
 //------------------------
-void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
+void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 {
-	fd_set fds, readfds;
-	SOCKET maxfd, sock[MAX_PLAYER + 1];
-	CCommunication *communication[MAX_PLAYER];
-	CCommunicationData commu_data[MAX_PLAYER + 1];
-	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];
-	char recv_data[MAX_COMMU_DATA];
-	char send_data[MAX_COMMU_DATA];
-	int recv = 1;
+	fd_set fds, readfds;	// select用変数
+	SOCKET maxfd, sock[MAX_PLAYER + 1];	// 監視ソケット
+	CCommunication *communication[MAX_PLAYER];	// ホスト以外の通信クラス
+	CCommunicationData commu_data[MAX_PLAYER + 1];	// 全員分の通信データクラス
+	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];	// 全員分の通信データ
+	char recv_data[MAX_COMMU_DATA];	// レシーブ用
+	char send_data[MAX_COMMU_DATA];	// センド用
+	int recv = 1;	// 最初のループに入る為の初期化
 
+	// select用変数の初期化
 	FD_ZERO(&readfds);
 
+	// プレイヤー番号の振り分け
 	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 	{
 		data[count_playr] = commu_data[count_playr].GetCommuData();
 		data[count_playr]->Player.nNumber = count_playr + 1;
 	}
+
+	// ホストはもう接続しているのでtrueに
 	data[0] = commu_data[0].GetCommuData();
 	data[0]->bConnect = true;
+
+	// ホスト以外の通信待ち
 	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
 	{
 		communication[count_player] = listener->Accept();
 		data[count_player + 1]->bConnect = true;
 	}
 
+	// ホスト、ホスト以外の通信が確立したのでマルチスレッドで通信ができる状態へ
 	g_accept = false;
 
 	// ソケットの入手
@@ -159,12 +224,19 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 		maxfd = sock[3];
 	}
 
+	// レシーブでなんも来なかったら
 	while (recv > 0)
 	{
 		memcpy(&fds, &readfds, sizeof(fd_set));
 
 		// ソケットの監視
 		select(maxfd + 1, &fds, NULL, NULL, NULL);
+
+		// 終了命令が来たら
+		if (g_stop == 1)
+		{
+			break;
+		}
 
 		// プレイヤー1にsendされていたら
 		if (FD_ISSET(sock[0], &fds))
@@ -177,7 +249,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー2にsendされていたら
-		if (FD_ISSET(sock[1], &fds))
+		else if (FD_ISSET(sock[1], &fds))
 		{
 			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[1].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
@@ -187,7 +259,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー3にsendされていたら
-		if (FD_ISSET(sock[2], &fds))
+		else if (FD_ISSET(sock[2], &fds))
 		{
 			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[2].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
@@ -197,7 +269,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー4にsendされていたら
-		if (FD_ISSET(sock[3], &fds))
+		else if (FD_ISSET(sock[3], &fds))
 		{
 			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[3].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
@@ -206,16 +278,20 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
+
+		// スクリーン消去
 		system("cls");
 
+		// 情報表示の為の変数
 		CCommunicationData::COMMUNICATION_DATA *screen_info[MAX_PLAYER + 1];
 		
+		// 情報を取得
 		for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 		{
 			screen_info[count_playr] = commu_data[count_playr].GetCommuData();
 		}
 		cout << "=======================================================" << endl;
-		cout << "ルーム : " << room_num << endl;
+		cout << "ルーム : " << listener->GetNumber() << endl;
 		cout << "Player : 1->pos" << screen_info[0]->Player.Pos.x <<" : " << screen_info[0]->Player.Pos.y <<" : " << screen_info[0]->Player.Pos.z << endl;
 		cout << "Player : 1->rot" << screen_info[0]->Player.Rot.x <<" : " << screen_info[0]->Player.Rot.y <<" : " << screen_info[0]->Player.Rot.z << endl;
 		cout << "Player : 2->pos" << screen_info[1]->Player.Pos.x <<" : " << screen_info[1]->Player.Pos.y <<" : " << screen_info[1]->Player.Pos.z << endl;
@@ -226,11 +302,23 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 		cout << "Player : 4->rot" << screen_info[3]->Player.Rot.x <<" : " << screen_info[3]->Player.Rot.y <<" : " << screen_info[3]->Player.Rot.z << endl;
 		cout << "=======================================================" << endl;
 	}
-	player_01->Uninit();
+
+	// 終了処理
+	if (player_01 != nullptr)
+	{
+		player_01->Uninit();
+		delete player_01;
+	}
 	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
 	{
-		communication[count_player]->Uninit();
+		if (communication[count_player] != nullptr)
+		{
+			communication[count_player]->Uninit();
+			delete communication[count_player];
+		}
 	}
+
+	// アクセプト数を減らす
 	g_accept_count--;
 }
 
@@ -239,7 +327,10 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num)
 //------------------------
 void StopOrSurver(void)
 {
-	cin >> g_stop;
+	while (g_stop != 1)
+	{
+		cin >> g_stop;
+	}
 }
 
 //------------------------
