@@ -54,9 +54,8 @@ HRESULT CGame01::Init(void)
 	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
 	pClient->Connect();
 
-	
-	//CEnemy *enemy;
-	//enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CEnemy *enemy;
+	enemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//メッシュフィールド生成
 	m_pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
