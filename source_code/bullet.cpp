@@ -157,43 +157,6 @@ HRESULT CBullet::Init(void)
 		}
 	}
 
-	float fMeshDiffer = 0.0f;
-	D3DXVECTOR3 meshHitPos = {0.0f, 0.0f, 0.0f};
-
-	//メッシュフィールドに当たったら
-	if (CMeshField::Collision(meshHitPos, fMeshDiffer, m_bigenPos, m_endPos) == true)
-	{
-		//当たったメッシュフィールドまでの距離がモデルの距離より近いとき
-		if (fMeshDiffer < m_fDiffer)
-		{
-			//モデルに当たっていない状態にする
-			bHitAny = false;
-		}
-	}
-
-
-	if (bHitAny)
-	{
-		//modelSingleにキャスト
-		CModelSingle *pHitModel = (CModelSingle*)pHitObject;
-
-		D3DXVec3Normalize(&rayVecHit, &rayVecHit);
-		//レイのベクトルを算出した距離の分伸ばす
-		rayVecHit *= m_fDiffer;
-
-		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
-		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
-		D3DXMATRIX hitModelMtx = pHitModel->GetModel()->GetMtx();
-		D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
-
-		//当たった位置にエフェクトを出す
-		CPresetEffect::SetEffect3D(2, HitPos, {});
-		CPresetEffect::SetEffect3D(3, HitPos, {});
-
-		//終点を設定
-		m_endPos = HitPos;
-	}
-
 	//プレイヤーのポインタ
 	CPlayer *pPlayerObj = nullptr;
 
@@ -217,6 +180,52 @@ HRESULT CBullet::Init(void)
 	//銃口のマトリックス
 	D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
+
+	if (bHitAny)
+	{
+		//modelSingleにキャスト
+		CModelSingle *pHitModel = (CModelSingle*)pHitObject;
+
+		D3DXVec3Normalize(&rayVecHit, &rayVecHit);
+		//レイのベクトルを算出した距離の分伸ばす
+		rayVecHit *= m_fDiffer;
+
+		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
+		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
+		D3DXMATRIX hitModelMtx = pHitModel->GetModel()->GetMtx();
+		D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
+
+		//終点を設定
+		m_endPos = HitPos;
+	}
+
+	float fMeshDiffer = 0.0f;
+	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
+
+	//メッシュフィールドに当たったら
+	if (CMeshField::Collision(meshHitPos, fMeshDiffer, posCameraV, m_endPos) == true)
+	{
+		//当たったメッシュフィールドまでの距離がモデルの距離より遠いとき
+		if (fMeshDiffer > m_fDiffer)
+		{
+			//モデルの当たった位置にエフェクトを出す
+			CPresetEffect::SetEffect3D(2, m_endPos, {});
+			CPresetEffect::SetEffect3D(3, m_endPos, {});
+		}
+		else
+		{
+			//メッシュフィールドの当たった位置にエフェクトを出す
+			CPresetEffect::SetEffect3D(2, meshHitPos, {});
+			CPresetEffect::SetEffect3D(3, meshHitPos, {});
+		}
+	}
+	else
+	{
+		//モデルの当たった位置にエフェクトを出す
+		CPresetEffect::SetEffect3D(2, m_endPos, {});
+		CPresetEffect::SetEffect3D(3, m_endPos, {});
+	}
+
 
 	//弾の軌道エフェクトを生成
 	m_apOrbit[0] = CObject3D::Create(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, { 0.0f, rotCamera.y + D3DX_PI / 2.0f, rotCamera.x + D3DX_PI / 2.0f });
