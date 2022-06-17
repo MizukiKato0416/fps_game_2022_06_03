@@ -95,7 +95,7 @@ HRESULT CMeshField::Init(void)
 			//頂点座標
 			pVtx[nNum].pos = m_bufferPos[nNum];
 			//カラー
-			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 100);
 			//テクスチャ
 			pVtx[nNum].tex = D3DXVECTOR2(0.0f + (1.0f * nLine), 0.0f + (1.0f * nVertical));
 		}
@@ -147,7 +147,6 @@ HRESULT CMeshField::Init(void)
 			D3DXVec3Cross(&vecNor, &vecPos[0], &vecPos[1]);
 			//正規化する
 			D3DXVec3Normalize(&vecNor, &vecNor);
-			//vecNor = {0.0f, 1.0f, 0.0f};
 
 			//法線設定
 			pVtx[nNum].nor = vecNor;
@@ -553,12 +552,8 @@ bool CMeshField::Collision(CObject *pSubjectObject, const float &fRadius)
 //================================================
 bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, const D3DXVECTOR3 &beginPos, const D3DXVECTOR3 &endPos)
 {
-	//始点
-	D3DXVECTOR3 posBegin = beginPos;
-	//終点
-	D3DXVECTOR3 posEnd = endPos;
 	//始点から終点までのベクトル
-	D3DXVECTOR3 vec = posEnd - posBegin;
+	D3DXVECTOR3 vec = endPos - beginPos;
 	//距離を計算
 	float fDifferVec = D3DXVec3Length(&vec);
 	float fDifferNear = 100000.0f;
@@ -583,20 +578,24 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 
 			for (int nCnt1 = 0; nCnt1 < 2 * pMeshField->m_nLine * pMeshField->m_nVertical + (pMeshField->m_nVertical * 4) - 4; nCnt1++)
 			{
-				//対象の現在位置取得
-				D3DXVECTOR3 diff[VERTEX_3D_NUM - 1];
-				diff[0] = posBegin - pMeshField->m_indexPos[nCnt1];
-				diff[1] = posBegin - pMeshField->m_indexPos[nCnt1 + 1];
-				diff[2] = posBegin - pMeshField->m_indexPos[nCnt1 + 2];
+				////対象の現在位置取得
+				//D3DXVECTOR3 diff[VERTEX_3D_NUM - 1];
+				//diff[0] = beginPos - pMeshField->m_indexPos[nCnt1];
+				//diff[1] = beginPos - pMeshField->m_indexPos[nCnt1 + 1];
+				//diff[2] = beginPos - pMeshField->m_indexPos[nCnt1 + 2];
 
-				if (D3DXVec3LengthSq(&diff[0]) > fDifferVec && D3DXVec3LengthSq(&diff[1]) > fDifferVec && D3DXVec3LengthSq(&diff[2]) > fDifferVec)
-				{
-					continue;
-				}
+				//float fDiff[VERTEX_3D_NUM - 1];
+				//fDiff[0] = D3DXVec3Length(&diff[0]);
+				//fDiff[1] = D3DXVec3Length(&diff[1]);
+				//fDiff[2] = D3DXVec3Length(&diff[2]);
+
+				//if (fDiff[0] > fDifferVec && fDiff[1] > fDifferVec && fDiff[2] > fDifferVec)
+				//{
+				//	continue;
+				//}
 
 				//各頂点から各頂点のベクトルを算出
 				D3DXVECTOR3 vecVtx[VERTEX_3D_NUM - 1];
-
 				//偶数
 				if (nCnt1 % 2 == 0)
 				{
@@ -613,26 +612,22 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 
 				//法線保存用
 				D3DXVECTOR3 vecNor;
-
 				D3DXVECTOR3 vecVtxInv = -vecVtx[2];
-
 				//ポリゴンの法線を求める
 				D3DXVec3Cross(&vecNor, &vecVtx[0], &vecVtxInv);
-
 				//nCntが奇数の時
 				if (nCnt1 % 2 == 1)
 				{
 					vecNor *= -1.0f;
 				}
-
 				//ベクトルを正規化する(ベクトルの大きさを1にする)
 				D3DXVec3Normalize(&vecNor, &vecNor);
 
 				//ポリゴンの位置から対象の現在の位置のベクトルを算出
 				D3DXVECTOR3 vecPosBegin;
 				D3DXVECTOR3 vecPosEnd;
-				vecPosBegin = posBegin - pMeshField->m_indexPos[nCnt1];
-				vecPosEnd = posEnd - pMeshField->m_indexPos[nCnt1];
+				vecPosBegin = beginPos - pMeshField->m_indexPos[nCnt1];
+				vecPosEnd = endPos - pMeshField->m_indexPos[nCnt1];
 
 				//算出したベクトルと法線のベクトルの内積を求める
 				float fVecDotBegin;
@@ -641,20 +636,57 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 				fVecDotEnd = D3DXVec3Dot(&vecNor, &vecPosEnd);
 
 				//内積の計算結果がマイナスの時
-				if (fVecDotBegin > 0.0f && fVecDotEnd < 0.0f)
+				if (fVecDotBegin >= 0.0f && fVecDotEnd < 0.0f)
 				{
+					//当たった場所を算出
 					D3DXVECTOR3 hitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd)) * vecPosEnd;
+					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
 
-					hitPos += pMeshField->m_indexPos[nCnt1];
-					D3DXVECTOR3 differBegin = hitPos - pMeshField->m_indexPos[nCnt1];
-					float fDifferBegin = D3DXVec3Length(&differBegin);
+					D3DXVECTOR3 ghitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd))*vecPosEnd;
+					D3DXVECTOR3 ghitPosa = pMeshField->m_indexPos[nCnt1];
+					D3DXVECTOR3 ghitPosb = pMeshField->m_indexPos[nCnt1 + 1];
+					D3DXVECTOR3 ghitPosc = pMeshField->m_indexPos[nCnt1 + 2];
+					D3DXVECTOR3 ghitPosd = ghitPos + ghitPosa;
 
-					if (fDifferBegin < fDifferNear)
+					//各頂点から対象の現在位置までのベクトルを算出
+					D3DXVECTOR3 vecHitObj[VERTEX_3D_NUM - 1];
+					vecHitObj[0] = hitPos - pMeshField->m_indexPos[nCnt1];
+					vecHitObj[1] = hitPos - pMeshField->m_indexPos[nCnt1 + 1];
+					vecHitObj[2] = hitPos - pMeshField->m_indexPos[nCnt1 + 2];
+
+					//各頂点から対象の現在位置までのベクトルと各頂点から各頂点のベクトルの外積(2D)を求める
+					float fvecCross[VERTEX_3D_NUM - 1];
+
+					for (int nCntVec = 0; nCntVec < VERTEX_3D_NUM - 1; nCntVec++)
 					{
-						fDifferNear = fDifferBegin;
-						hitPos = const_cast<D3DXVECTOR3&>(HitPos);
-						fDifferBegin = const_cast<float&>(fDiffer);
-						bHit = true;
+						//外積の計算
+						fvecCross[nCntVec] = (vecVtx[nCntVec].x * vecHitObj[nCntVec].z) - (vecHitObj[nCntVec].x * vecVtx[nCntVec].z);
+
+						//nCntが奇数の時
+						if (nCnt1 % 2 == 1)
+						{
+							fvecCross[nCntVec] *= -1.0f;
+						}
+					}
+
+					//ポリゴンの範囲内にいるかどうか
+					if (fvecCross[0] <= 0.0f && fvecCross[1] <= 0.0f && fvecCross[2] <= 0.0f)
+					{
+						//当たった場所までの距離を算出
+						D3DXVECTOR3 differBegin = hitPos - pMeshField->m_indexPos[nCnt1];
+						float fDifferBegin = D3DXVec3Length(&differBegin);
+
+						//当たった場所までの距離がより近かったら
+						if (fDifferBegin < fDifferNear)
+						{
+							//参照わたしされた引数を変える
+							D3DXVECTOR3 &returnHitPos = const_cast<D3DXVECTOR3&>(HitPos);
+							float &RreturnDifferBegin = const_cast<float&>(fDiffer);
+							returnHitPos = hitPos;
+							fDifferNear = fDifferBegin;
+							RreturnDifferBegin = fDifferNear;
+							bHit = true;
+						}
 					}
 				}
 			}
