@@ -51,6 +51,7 @@ public:
 		PLAYUER_DATA Player;	// プレイヤーデータ
 		BULLET_DATA Bullet[MAX_BULLET];	// 弾データ
 		bool bConnect;	// 接続確認
+		void Rest(void);	// 変数リセット
 	} COMMUNICATION_DATA;
 
 	CCommunicationData();	// デフォルトコンストラクタ

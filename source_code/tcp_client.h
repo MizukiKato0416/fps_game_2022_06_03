@@ -28,11 +28,13 @@ public:
 	bool Connect(void);	// 接続
 	int Send(char *pSendData, int nSendDataSize);	// 送信(送信データ格納先, 送信データサイズ)
 	int Recv(char *pRecvData, int nRecvDataSize);	// 受信(受信データ格納先, 受信データ格納先最大サイズ)
+	bool GetConnect(void) { return m_bConnect; };	// コネクト確認フラグの取得
 	void Uninit(void);	// 終了
 private:
 	SOCKET m_socket;	// ソケット
 	string m_Ip;	// IPアドレス
 	int m_nPort;	// ポート番号
+	bool m_bConnect;	// コネクト確認
 };
 
 #endif // _TCP_CLIENT_H_

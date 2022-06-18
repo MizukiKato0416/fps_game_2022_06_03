@@ -34,6 +34,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	bool MapLimit(CObject* pObj);		//マップの移動制限
+	void FirstContact(void);
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理

@@ -51,11 +51,7 @@ CGame01::~CGame01()
 //================================================
 HRESULT CGame01::Init(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
-	pClient->Connect();
-
-	CEnemy *enemy;
-	enemy = CEnemy::Create();
+	FirstContact();
 
 	//メッシュフィールド生成
 	m_pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
@@ -70,9 +66,6 @@ HRESULT CGame01::Init(void)
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
 	LoadModelTxt("data/model_set.txt");
-
-	//プレイヤーの生成
-	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	pObject3D = CObject3D::Create({ 0.0f, 200.0f, -1000.0f }, { 200.0f, 200.0f, 0.0f }, {0.0f, D3DX_PI, 0.0f});
 	pObject3D->SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
@@ -164,6 +157,30 @@ bool CGame01::MapLimit(CObject* pObj)
 	}
 
 	return bHit;
+}
+
+//================================================
+//初期情報の取得
+//================================================
+void CGame01::FirstContact(void)
+{
+	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
+	CCommunicationData *DataClass = new CCommunicationData;
+	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
+	CEnemy *enemy = nullptr;
+	char recv[MAX_COMMU_DATA];
+
+	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	enemy = CEnemy::Create();
+
+	pClient->Connect();
+
+	if (pClient->GetConnect() == true)
+	{
+		pClient->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		memcpy(DataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		m_pPlayer->SetCommuData(*DataBuf);
+	}
 }
 
 //================================================

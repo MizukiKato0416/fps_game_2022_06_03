@@ -49,6 +49,8 @@ public:
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
 	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
+	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data) { m_commu_data.SetCmmuData(data); }	// 通信データ設定処理
+	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// 通信データ取得処理
 
 private:
 	//メンバ関数

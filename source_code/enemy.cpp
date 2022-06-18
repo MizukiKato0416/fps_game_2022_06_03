@@ -33,6 +33,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	{
 		m_pos[count_enemy] = { 0.0f, 0.0f, 0.0f };
 		m_rot[count_enemy] = { 0.0f, 0.0f, 0.0f };
+		m_commu_data[count_enemy].GetCmmuData()->Rest();
 	}
 }
 
@@ -184,6 +185,7 @@ void CEnemy::Recv(void)
 				m_debug_cennect = true;
 #endif //_DEBUG
 				memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				m_commu_data[count_enemy].SetCmmuData(*pData);
 			}
 		}
 	}

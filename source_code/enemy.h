@@ -32,9 +32,11 @@ public:
 	void Uninit(void);	// ポリゴンの終了
 	void Update(void);	// ポリゴンの更新
 	void Draw(void);	// ポリゴンの描画
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int index) { return m_commu_data[index].GetCmmuData(); }	// ゲッダー
 	static CEnemy *Create(void);	// 生成
 	static void Recv(void);	// レシーブスレッド
+	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
+	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
+
 private:
 	void Attack(void);	// 攻撃
 	void Move(void);	// 移動

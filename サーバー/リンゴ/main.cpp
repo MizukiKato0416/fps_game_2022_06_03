@@ -166,15 +166,21 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 	// select用変数の初期化
 	FD_ZERO(&readfds);
 
+	// リセット
+	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
+	{
+		commu_data[count_playr].GetCmmuData()->Rest();
+		data[count_playr] = commu_data[count_playr].GetCmmuData();
+	}
+
 	// プレイヤー番号の振り分け
 	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 	{
-		data[count_playr] = commu_data[count_playr].GetCommuData();
 		data[count_playr]->Player.nNumber = count_playr + 1;
 	}
 
 	// ホストはもう接続しているのでtrueに
-	data[0] = commu_data[0].GetCommuData();
+	data[0] = commu_data[0].GetCmmuData();
 	data[0]->bConnect = true;
 
 	// ホスト以外の通信待ち
@@ -183,6 +189,19 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		communication[count_player] = listener->Accept();
 		data[count_player + 1]->bConnect = true;
 	}
+
+	// 初期化データの送信
+	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	player_01->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 	// ホスト、ホスト以外の通信が確立したのでマルチスレッドで通信ができる状態へ
 	g_accept = false;
@@ -242,37 +261,41 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		if (FD_ISSET(sock[0], &fds))
 		{
 			recv = player_01->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[0].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
+			memcpy(data[0], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[0].SetCmmuData(*data[0]);
 
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー2にsendされていたら
-		else if (FD_ISSET(sock[1], &fds))
+		if (FD_ISSET(sock[1], &fds))
 		{
 			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[1].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
+			memcpy(data[1], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[1].SetCmmuData(*data[1]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー3にsendされていたら
-		else if (FD_ISSET(sock[2], &fds))
+		if (FD_ISSET(sock[2], &fds))
 		{
 			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[2].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
+			memcpy(data[2], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[2].SetCmmuData(*data[2]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー4にsendされていたら
-		else if (FD_ISSET(sock[3], &fds))
+		if (FD_ISSET(sock[3], &fds))
 		{
 			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[3].SetCommuData(*(CCommunicationData::COMMUNICATION_DATA*)&recv_data[0]);
+			memcpy(data[3], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			commu_data[3].SetCmmuData(*data[3]);
 
 			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
@@ -288,7 +311,7 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		// 情報を取得
 		for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 		{
-			screen_info[count_playr] = commu_data[count_playr].GetCommuData();
+			screen_info[count_playr] = commu_data[count_playr].GetCmmuData();
 		}
 		cout << "=======================================================" << endl;
 		cout << "ルーム : " << listener->GetNumber() << endl;

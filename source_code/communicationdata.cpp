@@ -50,3 +50,24 @@ CCommunicationData::~CCommunicationData()
 		m_CommuData.Bullet[nCnt].nCollEnemy = 0;
 	}
 }
+
+//-------------------------------
+// ƒŠƒZƒbƒg
+//-------------------------------
+void CCommunicationData::COMMUNICATION_DATA::Rest(void)
+{
+	bConnect = false;
+	Player.fMotionSpeed = 0.0f;
+	Player.Motion = " ";
+	Player.nNumber = 0;
+	Player.Pos = { 0.0f, 0.0f, 0.0f };
+	Player.Rot = { 0.0f, 0.0f, 0.0f };
+	for (int nCnt = 0; nCnt < MAX_BULLET; nCnt++)
+	{
+		Bullet[nCnt].bEnemyHit = false;
+		Bullet[nCnt].BigenPos = { 0.0f, 0.0f, 0.0f };
+		Bullet[nCnt].bObjectHit = false;
+		Bullet[nCnt].EndPos = { 0.0f, 0.0f, 0.0f };
+		Bullet[nCnt].nCollEnemy = 0;
+	}
+}
