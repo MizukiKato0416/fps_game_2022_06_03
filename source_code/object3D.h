@@ -31,6 +31,17 @@ typedef struct
 class CObject3D : public CObject
 {
 public:
+	//ポリゴンの原点の種類
+	enum class ORIGIN_TYPE
+	{
+		CENTER = 0,			//中央
+		LEFT,				//左端
+		RIGHT,				//右端
+		TOP,				//上端
+		LOWER,				//下端
+		MAX
+	};
+
 	CObject3D(CObject::PRIORITY Priority = CObject::PRIORITY::POLYGON_3D);	//コンストラクタ
 	~CObject3D();									//デストラクタ
 
@@ -52,6 +63,7 @@ public:
 	void SetAlphaTest(const bool &bAlphaTest);							//αアテスト設定処理
 	void SetLighting(const bool &bLighting);							//ライティング設定処理
 	void BindTexture(const LPDIRECT3DTEXTURE9 &pTexture);				//テクスチャ設定処理
+	void SetOriginType(const ORIGIN_TYPE &originType) { m_OriginType = originType; }		//原点の種類設定処理
 
 private:
 
@@ -69,6 +81,7 @@ protected:
 	bool m_bAlphaBlend;							//加算合成するかどうか
 	bool m_bAlphaTest;							//αテストするかどうか
 	bool m_bLighting;							//ライティング有効かどうか
+	ORIGIN_TYPE m_OriginType;					//原点の種類
 };
 
 #endif // !_SCENE3D_H_

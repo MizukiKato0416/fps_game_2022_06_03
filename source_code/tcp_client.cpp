@@ -111,10 +111,12 @@ bool CTcpClient::Connect(void)
 	//------------------------
 	if (connect(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0)
 	{
+		m_bConnect = false;
 		return false;
 	}
 	else
 	{
+		m_bConnect = true;
 		return true;
 	}
 }

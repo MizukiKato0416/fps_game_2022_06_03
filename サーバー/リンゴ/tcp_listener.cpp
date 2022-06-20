@@ -15,6 +15,9 @@
 CTcpListener::CTcpListener()
 {
 	m_sockServer = INVALID_SOCKET;
+	m_my_number = -1;
+	m_is_init = false;
+	m_is_uninit = false;
 }
 
 //-------------------------------
@@ -91,6 +94,7 @@ bool CTcpListener::Init(void)
 
 	listen(m_sockServer, nWait);	// 最大待機数
 
+	m_is_init = true;
 	return true;
 }
 
@@ -136,4 +140,5 @@ void CTcpListener::Uninit(void)
 	printf("接続を切断します。\n");
 	closesocket(m_sockServer);	// 接続受付用ソケット
 	m_sockServer = INVALID_SOCKET;
+	m_is_uninit = true;
 }

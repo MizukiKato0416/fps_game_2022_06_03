@@ -12,13 +12,14 @@
 //-------------------------------
 #include "main.h"
 #include "d3dx9.h"
+#include <string>
 
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (3)
 #define MAX_BULLET (30)
-#define MAX_COMMU_DATA (512)
+#define MAX_PLAYER (3)
+#define MAX_COMMU_DATA (2048)
 
 //-------------------------------
 // Classの定義
@@ -40,8 +41,8 @@ public:
 
 	typedef struct
 	{
-		D3DXVECTOR3 bigenPos;	// 弾の位置
-		D3DXVECTOR3 endPos;	// 弾の位置
+		D3DXVECTOR3 BigenPos;	// 弾の位置
+		D3DXVECTOR3 EndPos;	// 弾の位置
 		int nCollEnemy;	// 当てた相手の番号
 		bool bEnemyHit;	// 当たったどうか
 		bool bObjectHit;	// 当たったどうか
@@ -51,14 +52,15 @@ public:
 	{
 		PLAYUER_DATA Player;	// プレイヤーデータ
 		BULLET_DATA Bullet[MAX_BULLET];	// 弾データ
-		bool bConnect = false;	// 接続確認
+		bool bConnect;	// 接続確認
+		void Rest(void);	// 変数リセット
 	} COMMUNICATION_DATA;
+
 	CCommunicationData();	// デフォルトコンストラクタ
 	~CCommunicationData();	// デフォルトデストラクタ
-	COMMUNICATION_DATA *GetCommuData(void) { return &m_CommuData; }	// データのセッター
-	void SetCommuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// データの
+	COMMUNICATION_DATA *GetCmmuData(void) { return &m_CommuData; }	// データのセッター
+	void SetCmmuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// データのゲッダー
 private:
-	SOCKET m_socket;	// ソケット
 	COMMUNICATION_DATA m_CommuData;	// データ
 };
 

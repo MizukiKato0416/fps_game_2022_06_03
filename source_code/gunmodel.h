@@ -37,6 +37,8 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }											//回転取得処理
 	D3DXMATRIX GetMuzzleMtx(void) { return m_mtx_muzzle_world; }
 	CModelSingle *GetModel(void) { return m_model; }									//モデル取得処理
+	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxParent = mtx; }
+
 private:
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_rot;
@@ -44,6 +46,7 @@ private:
 	D3DXMATRIX m_mtx_muzzle_world;				//ワールドマトリックス
 	string m_type;
 	CModelSingle *m_model;					//モデルのポインタ
+	D3DXMATRIX *m_mtxParent;
 };
 
 #endif

@@ -33,6 +33,8 @@ public:
 	void BindTexture(const LPDIRECT3DTEXTURE9 &pTexture);
 	//当たり判定(第二引数は当たり判定をする半径)
 	static bool Collision(CObject *pSubjectObject, const float &fRadius);
+	//ただの当たり判定
+	static bool Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, const D3DXVECTOR3 &beginPos, const D3DXVECTOR3 &endPos);
 	//頂点座標設定処理
 	D3DXVECTOR3 GetBufferPos(const int &nNumVtx) { return m_bufferPos[nNumVtx]; }
 	//頂点座標取得処理

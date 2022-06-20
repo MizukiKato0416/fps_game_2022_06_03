@@ -35,7 +35,7 @@ class CTcpListener;
 //------------------------
 void KeyWait(void);	// ƒL[“ü—Í‘Ò‚¿
 void Accept(CTcpListener *listener, int room_num);	// Ú‘±‘Ò‚¿
-void CreateRoom(CTcpListener *listener, CCommunication *player_01, int room_num);	// •”‰®¶¬ˆ—
+void CreateRoom(CTcpListener *listener, CCommunication *player_01);	// •”‰®¶¬ˆ—
 void StopOrSurver(void);
 
 #endif // !_MAIN_H_

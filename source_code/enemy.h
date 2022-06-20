@@ -32,9 +32,11 @@ public:
 	void Uninit(void);	// ポリゴンの終了
 	void Update(void);	// ポリゴンの更新
 	void Draw(void);	// ポリゴンの描画
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int index) { return m_commu_data[index].GetCmmuData(); }	// ゲッダー
-	static CEnemy *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 生成
+	static CEnemy *Create(void);	// 生成
 	static void Recv(void);	// レシーブスレッド
+	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
+	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
+
 private:
 	void Attack(void);	// 攻撃
 	void Move(void);	// 移動
@@ -45,6 +47,9 @@ private:
 	D3DXVECTOR3 m_rot[MAX_PLAYER];		// 向き
 	D3DXMATRIX m_mtx_wld[MAX_PLAYER];	// ワールドマトリックス
 	int m_my_index[MAX_PLAYER];	// 自分のプレイヤー番号
+#ifdef _DEBUG
+	static bool m_debug_cennect;	// デバッグ用
+#endif //_DEBUG
 };
 
 #endif

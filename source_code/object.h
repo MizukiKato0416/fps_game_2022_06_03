@@ -33,11 +33,11 @@ public:
 		NONE = 0,			// なし
 		PLAYER,				// プレイヤー
 		MODEL,				// モデル
-		MESH_FIELD,			// メッシュフィールド
 		POLYGON_3D,			// 3Dポリゴン
 		SHADOW,				// 影
 		EFFECT3D,			// パーティクル
 		EFFECT2D,			// パーティクル
+		MESH_FIELD,			// メッシュフィールド
 		UI,					// UI
 		FADE,				// フェード
 		MAX
