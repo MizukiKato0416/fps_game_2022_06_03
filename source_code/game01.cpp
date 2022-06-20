@@ -174,7 +174,9 @@ void CGame01::FirstContact(void)
 
 	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-	if (pClient->Connect() == true)
+	pClient->Connect();
+
+	if (pClient->GetConnect() == true)
 	{
 		pClient->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		memcpy(DataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
