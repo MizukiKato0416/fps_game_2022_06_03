@@ -12,6 +12,7 @@
 #include "input_mouse.h"
 #include "object.h"
 #include "player.h"
+#include "xanimmodel.h"
 
 //========================================================
 //マクロ定義
@@ -26,7 +27,7 @@
 #define CAMERA_MAX_RENDERER			(100000.0f)								//cameraでの描画最大Z値
 #define CAMERA_MIN_RENDERER			(5.0f)									//cameraでの描画最小Z値
 #define CAMERA_POS_Y				(100.0f)								//カメラのY位置
-#define CAMERA_POS_XZ				(10.0f)									//カメラのXZ位置
+#define CAMERA_POS_XZ				(0.0f)									//カメラのXZ位置
 
 //================================================
 //静的メンバ変数宣言
@@ -170,6 +171,39 @@ void CCamera::Set(void)
 
 	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
+
+	//カメラのワールドマトリックス生成
+	D3DXMatrixIdentity(&m_mtxWorldCamera);
+	D3DXMATRIX mtxRot, mtxTrans;
+	D3DXVECTOR3 rotCamera = { m_rot.x- D3DX_PI / 2.0f, m_rot.y, 0.0f };
+	//カメラの向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rotCamera.y, rotCamera.x, rotCamera.z);
+	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxRot);
+
+	//カメラの位置を反映
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxTrans);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorldCamera);
+
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
+	int object_size = object.size();
+
+	for (int count_object = 0; count_object < object_size; count_object++)
+	{
+		if (object[count_object]->GetObjType() == CObject::OBJTYPE::PLAYER)
+		{
+			//プレイヤーにキャスト
+			CPlayer *pPlayer = (CPlayer*)object[count_object];
+
+			pPlayer->GetAnimModel()->Draw();
+		}
+	}
 }
 
 //=======================================================================

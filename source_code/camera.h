@@ -47,6 +47,8 @@ public:
 	D3DVIEWPORT9 *GetViewPort(void) { return &m_viewport; }
 	//ビューマトリックス取得処理
 	D3DXMATRIX GetViewMtx(void) { return m_mtxView; }
+	//マトリックス取得処理
+	D3DXMATRIX *GetMtxPoint(void) { return &m_mtxWorldCamera; }
 	//視点と注視点の距離加算処理
 	void AddDiffer(const float fAddDiffer) { m_fDifferVR += fAddDiffer; }
 	//視点と注視点の距離設定処理

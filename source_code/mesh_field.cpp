@@ -95,7 +95,7 @@ HRESULT CMeshField::Init(void)
 			//頂点座標
 			pVtx[nNum].pos = m_bufferPos[nNum];
 			//カラー
-			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 100);
 			//テクスチャ
 			pVtx[nNum].tex = D3DXVECTOR2(0.0f + (1.0f * nLine), 0.0f + (1.0f * nVertical));
 		}
