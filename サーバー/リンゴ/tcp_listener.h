@@ -28,11 +28,15 @@ public:
 	bool GetIsUninit(void) { return m_is_uninit; }	// 終了しているかの判定の取得
 	int GetNumber(void) { return m_my_number; }	// 自分の部屋番号の取得
 	void SetNumber(int number) { m_my_number = number; }	// 自分の部屋番号の設定
+	bool GetCreate(void) { return m_is_create; }	// 自分が生成したかの取得
+	void SetCreate(bool create) { m_is_create = create; }	// 自分が生成したかの設定
 private:
 	SOCKET m_sockServer;	// ソケット
 	int m_my_number;	//　自分の部屋番号
+	int m_accept_num;	// 接続数
 	bool m_is_init;	// 初期化しているか
 	bool m_is_uninit;	// 終了しているか
+	bool m_is_create;	// もう部屋が立っているか
 };
 
 #endif // _TCP_CLIENT_H_

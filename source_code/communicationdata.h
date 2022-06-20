@@ -17,6 +17,8 @@
 //-------------------------------
 #define MAX_BULLET (30)
 #define MAX_PLAYER (3)
+#define MAX_MOTION_DATA (64)
+#define MAX_DATA (1)
 #define MAX_COMMU_DATA (2048)
 
 //-------------------------------
@@ -32,7 +34,7 @@ public:
 	{
 		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピード
-		string Motion;	// モーションの種類
+		char aMotion[MAX_DATA][MAX_MOTION_DATA];	// モーションの種類
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 	} PLAYUER_DATA;
@@ -51,7 +53,6 @@ public:
 		PLAYUER_DATA Player;	// プレイヤーデータ
 		BULLET_DATA Bullet[MAX_BULLET];	// 弾データ
 		bool bConnect;	// 接続確認
-		void Rest(void);	// 変数リセット
 	} COMMUNICATION_DATA;
 
 	CCommunicationData();	// デフォルトコンストラクタ

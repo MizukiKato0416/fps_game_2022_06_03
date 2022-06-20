@@ -33,7 +33,6 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	{
 		m_pos[count_enemy] = { 0.0f, 0.0f, 0.0f };
 		m_rot[count_enemy] = { 0.0f, 0.0f, 0.0f };
-		m_commu_data[count_enemy].GetCmmuData()->Rest();
 	}
 }
 
@@ -216,14 +215,15 @@ void CEnemy::Move(void)
 	{
 		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData(); 
 		string now_motion;
+		string commu_motion = pData->Player.aMotion[0];
 
 		m_pos[count_enemy] = pData->Player.Pos;
 		m_rot[count_enemy] = pData->Player.Rot;
 		
 		now_motion = m_model[count_enemy]->GetAnimation();
-		if (now_motion != pData->Player.Motion && pData->bConnect == true)
+		if (now_motion != commu_motion && pData->bConnect == true)
 		{
-			m_model[count_enemy]->ChangeAnimation(pData->Player.Motion, pData->Player.fMotionSpeed);
+			m_model[count_enemy]->ChangeAnimation(commu_motion, pData->Player.fMotionSpeed);
 		}
 #ifdef _DEBUG
 		if (m_debug_cennect)

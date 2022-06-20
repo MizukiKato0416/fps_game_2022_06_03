@@ -16,8 +16,10 @@ CTcpListener::CTcpListener()
 {
 	m_sockServer = INVALID_SOCKET;
 	m_my_number = -1;
+	m_accept_num = 0;
 	m_is_init = false;
 	m_is_uninit = false;
+	m_is_create = false;
 }
 
 //-------------------------------
@@ -121,6 +123,7 @@ CCommunication * CTcpListener::Accept(void)
 		pSendRecv->Init(sock);
 	}
 
+	m_accept_num++;
 	return pSendRecv;
 }
 

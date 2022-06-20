@@ -12,12 +12,11 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <assert.h>
 #include "main.h"
 #include "tcp_listener.h"
 #include "communication.h"
 #include "communicationdata.h"
-
-using namespace std;
 
 //------------------------
 // マクロ定義
@@ -27,9 +26,11 @@ using namespace std;
 //------------------------
 // グローバル変数
 //------------------------
-int g_stop = 0;	// サーバストップ判定用
-int g_accept_count = 1;	// アクセプトした数
-bool g_accept = false;	// 次のアクセプトにいけるかどうか
+int g_stop;	// サーバストップ判定用
+int g_accept_count;	// アクセプトした数
+int g_active_surver;	// アクティブなサーバー
+int	g_old_active_surver;	// 前回アクティブだったらサーバー
+vector<CTcpListener*> g_listenner;	// サーバー
 
 //------------------------
 // メイン関数
@@ -40,6 +41,13 @@ void main(void)
 	// デバッグ用サイズ確認
 	int debug_size = sizeof(CCommunicationData::COMMUNICATION_DATA);
 #endif // _DEBUG
+
+	g_stop = 0;
+	g_accept_count = 1;
+	g_active_surver = 0;
+	g_old_active_surver = 0;
+	g_listenner.push_back(new CTcpListener);
+
 	//------------------------
 	// WSAの初期化
 	//------------------------
@@ -51,72 +59,99 @@ void main(void)
 		cout << "初期化に失敗しました" << endl;
 	}
 
-	// サーバの生成
-	vector<CTcpListener*> pListenner;
-	pListenner.push_back(new CTcpListener);
-
 	// サーバ停止のキーボード判定用関数のスレッド分け
-	thread th(StopOrSurver);
+	thread select_th(StopOrSurver);
 
-	th.detach();
+	// スレッドを切り離す
+	select_th.detach();
+
+	// 最初のサーバーを立てる
+	{
+		g_listenner[0]->Init();
+
+		// 部屋を作るスレッド
+		thread room_create_th(CreateRoom, g_listenner[0], g_accept_count);
+
+		// スレッドを切り離す
+		room_create_th.detach();
+
+		// 部屋数を加算
+		g_accept_count++;
+
+		// 前のサーバー
+		g_old_active_surver = g_active_surver;
+
+		// サーバーを次に
+		g_active_surver++;
+
+		// サーバーの生成
+		g_listenner.push_back(new CTcpListener);
+	}
 
 	while (g_stop != 1)
 	{
-		// サーバーのサイズを取得
-		int size = pListenner.size();
-		for (int count_listener = 0; count_listener < size; count_listener++)
+		// 何か入ってて初期化していなくて部屋数が最大数以下で前のサーバーが部屋を作り終えていたら
+		if (g_listenner[g_active_surver] != nullptr &&
+			g_listenner[g_active_surver]->GetIsInit() == false &&
+			g_accept_count <= MAX_ROOM &&
+			g_listenner[g_old_active_surver]->GetCreate() == true)
 		{
-			// initしていなかったら
-			if (pListenner[count_listener]->GetIsInit() == false)
+			// 初期化処理
+			g_listenner[g_active_surver]->Init();
+
+			// 部屋を作るスレッド
+			thread th(CreateRoom, g_listenner[g_active_surver], g_accept_count);
+
+			// スレッドを切り離す
+			th.detach();
+
+			// 部屋数を加算
+			g_accept_count++;
+
+			// 前のサーバー
+			g_old_active_surver = g_active_surver;
+
+			// サーバーを次に
+			g_active_surver++;
+
+			// サーバーの生成
+			g_listenner.push_back(new CTcpListener);
+		}
+		// サイズを取得
+		int size = g_listenner.size();
+		for (int count_surver = 0; count_surver < size; count_surver++)
+		{
+			// initしていてuninitしていたら
+			if (g_listenner[count_surver]->GetIsInit() == true &&
+				g_listenner[count_surver]->GetIsUninit() == true)
 			{
-				// 何か入っててinitが成功したら
-				if (pListenner[count_listener] != nullptr && pListenner[count_listener]->Init() == true)
-				{
-					// 部屋が上限じゃない且アクセプト出来たら
-					if (g_accept_count <= MAX_ROOM && g_accept == false)
-					{
-						// アクセプトスレッド
-						thread th(Accept, pListenner[count_listener], g_accept_count);
+				// 消去
+				delete g_listenner[count_surver];
 
-						// アクセプトを出来なくする
-						g_accept = true;
+				// 配列から消去
+				g_listenner.erase(g_listenner.begin() + count_surver);
 
-						th.detach();
+				// サーバーの生成
+				g_listenner.push_back(new CTcpListener);
 
-						// アクセプト数のカウント
-						g_accept_count++;
+				// 前のサーバー
+				g_old_active_surver = count_surver - 1;
 
-						// サーバの生成
-						pListenner.push_back(new CTcpListener);
-					}
-				}
-			}
-			// initした後でuninitされていたら
-			else if (pListenner[count_listener]->GetIsInit() == true &&
-					 pListenner[count_listener]->GetIsUninit() == true)
-			{
-				// 生成されていて通信が切断されているlistenerを削除
-				pListenner.erase(pListenner.begin() + count_listener);
-				int re_size = pListenner.size();
-				for (int count_listener = 0; count_listener < re_size; count_listener++)
-				{
-					// 登録されている部屋番号を-1する
-					int listener_num = pListenner[count_listener]->GetNumber();
-					pListenner[count_listener]->SetNumber(listener_num - 1);
-				}
+				// サーバーを次に
+				g_active_surver = size - 1;
 			}
 		}
 	}
 	// サイズを取得
-	int size = pListenner.size();
+	int size = g_listenner.size();
 	// 全てのlistenerを削除
 	for (int count_listener = 0; count_listener < size; count_listener++)
 	{
-		if (pListenner[count_listener] != nullptr)
+		if (g_listenner[count_listener] != nullptr)
 		{
-			pListenner[count_listener]->Uninit();
-			delete pListenner[count_listener];
-			pListenner[count_listener] = nullptr;
+			g_listenner[count_listener]->Uninit();
+			delete g_listenner[count_listener];
+			g_listenner[count_listener] = nullptr;
 		}
 	}
 
@@ -130,33 +165,13 @@ void main(void)
 }
 
 //------------------------
-// 接続待ち
-//------------------------
-void Accept(CTcpListener *listener, int room_num)
-{
-	// ホスト用クラス
-	CCommunication *communication;
-
-	// 通信待ち
-	communication = listener->Accept();
-
-	// 部屋番号の設定
-	listener->SetNumber(room_num);
-
-	// 部屋事の処理のスレッド分け
-	thread th(CreateRoom, listener, communication);
-
-	th.detach();
-}
-
-//------------------------
 // 部屋生成
 //------------------------
-void CreateRoom(CTcpListener *listener, CCommunication *player_01)
+void CreateRoom(CTcpListener *listener, int room_num)
 {
 	fd_set fds, readfds;	// select用変数
 	SOCKET maxfd, sock[MAX_PLAYER + 1];	// 監視ソケット
-	CCommunication *communication[MAX_PLAYER];	// ホスト以外の通信クラス
+	CCommunication *communication[MAX_PLAYER + 1];	// 通信クラス
 	CCommunicationData commu_data[MAX_PLAYER + 1];	// 全員分の通信データクラス
 	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];	// 全員分の通信データ
 	char recv_data[MAX_COMMU_DATA];	// レシーブ用
@@ -166,10 +181,12 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 	// select用変数の初期化
 	FD_ZERO(&readfds);
 
+	// 部屋番号の設定
+	listener->SetNumber(room_num);
+
 	// リセット
 	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 	{
-		commu_data[count_playr].GetCmmuData()->Rest();
 		data[count_playr] = commu_data[count_playr].GetCmmuData();
 	}
 
@@ -179,38 +196,68 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		data[count_playr]->Player.nNumber = count_playr + 1;
 	}
 
-	// ホストはもう接続しているのでtrueに
-	data[0] = commu_data[0].GetCmmuData();
-	data[0]->bConnect = true;
-
-	// ホスト以外の通信待ち
-	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
+	// 通信待ち
+	for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 	{
 		communication[count_player] = listener->Accept();
-		data[count_player + 1]->bConnect = true;
+		data[count_player]->bConnect = true;
+	}
+
+	if (communication[0] != nullptr &&
+		communication[1] != nullptr &&
+		communication[2] != nullptr &&
+		communication[3] != nullptr &&
+		data[0]->bConnect == true &&
+		data[1]->bConnect == true &&
+		data[2]->bConnect == true &&
+		data[3]->bConnect == true)
+	{
+		// 部屋を作り終えた
+		listener->SetCreate(true);
 	}
 
 	// 初期化データの送信
 	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	player_01->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
+	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
+	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
 	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
-	// ホスト、ホスト以外の通信が確立したのでマルチスレッドで通信ができる状態へ
-	g_accept = false;
+	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 	// ソケットの入手
-	sock[0] = player_01->GetSocket();
-	sock[1] = communication[0]->GetSocket();
-	sock[2] = communication[1]->GetSocket();
-	sock[3] = communication[2]->GetSocket();
+	sock[0] = communication[0]->GetSocket();
+	sock[1] = communication[1]->GetSocket();
+	sock[2] = communication[2]->GetSocket();
+	sock[3] = communication[3]->GetSocket();
 
 	for (int nCnt = 0; nCnt < MAX_PLAYER + 1; nCnt++)
 	{
@@ -260,46 +307,46 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 		// プレイヤー1にsendされていたら
 		if (FD_ISSET(sock[0], &fds))
 		{
-			recv = player_01->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			memcpy(data[0], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[0].SetCmmuData(*data[0]);
 
-			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー2にsendされていたら
 		if (FD_ISSET(sock[1], &fds))
 		{
-			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			memcpy(data[1], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[1].SetCmmuData(*data[1]);
 
-			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー3にsendされていたら
 		if (FD_ISSET(sock[2], &fds))
 		{
-			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			memcpy(data[2], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[2].SetCmmuData(*data[2]);
 
-			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 		// プレイヤー4にsendされていたら
 		if (FD_ISSET(sock[3], &fds))
 		{
-			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			recv = communication[3]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			memcpy(data[3], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			commu_data[3].SetCmmuData(*data[3]);
 
-			player_01->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		}
 
 		// スクリーン消去
@@ -327,18 +374,18 @@ void CreateRoom(CTcpListener *listener, CCommunication *player_01)
 	}
 
 	// 終了処理
-	if (player_01 != nullptr)
-	{
-		player_01->Uninit();
-		delete player_01;
-	}
-	for (int count_player = 0; count_player < MAX_PLAYER; count_player++)
+	for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 	{
 		if (communication[count_player] != nullptr)
 		{
 			communication[count_player]->Uninit();
 			delete communication[count_player];
+			communication[count_player] = nullptr;
 		}
+	}
+	if (listener != nullptr)
+	{
+		listener->Uninit();
 	}
 
 	// アクセプト数を減らす

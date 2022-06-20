@@ -34,8 +34,7 @@ class CTcpListener;
 // プロトタイプ宣言
 //------------------------
 void KeyWait(void);	// キー入力待ち
-void Accept(CTcpListener *listener, int room_num);	// 接続待ち
-void CreateRoom(CTcpListener *listener, CCommunication *player_01);	// 部屋生成処理
+void CreateRoom(CTcpListener *listener, int room_num);	// 部屋生成処理
 void StopOrSurver(void);
 
 #endif // !_MAIN_H_
