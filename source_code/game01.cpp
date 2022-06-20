@@ -70,6 +70,8 @@ HRESULT CGame01::Init(void)
 	pObject3D = CObject3D::Create({ 0.0f, 200.0f, -1000.0f }, { 200.0f, 200.0f, 0.0f }, {0.0f, D3DX_PI, 0.0f});
 	pObject3D->SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
 
+	//CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 2.0f, 0.0f }, "container_000.x", NULL, false);
+
 	return S_OK;
 }
 
