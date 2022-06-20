@@ -209,21 +209,25 @@ HRESULT CBullet::Init(void)
 		if (fMeshDiffer > m_fDiffer)
 		{
 			//モデルの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, m_endPos, {});
-			CPresetEffect::SetEffect3D(3, m_endPos, {});
+			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
+			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 		}
 		else
 		{
 			//メッシュフィールドの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, meshHitPos, {});
-			CPresetEffect::SetEffect3D(3, meshHitPos, {});
+			CPresetEffect::SetEffect3D(2, meshHitPos, {}, {});
+			CPresetEffect::SetEffect3D(3, meshHitPos, {}, {});
+
 		}
 	}
 	else
 	{
 		//モデルの当たった位置にエフェクトを出す
-		CPresetEffect::SetEffect3D(2, m_endPos, {});
-		CPresetEffect::SetEffect3D(3, m_endPos, {});
+		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
+		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
+		//弾痕　　最後の引数に回転入れてください
+		CPresetEffect::SetEffect3D(4, m_endPos, {}, {});
+
 	}
 
 
