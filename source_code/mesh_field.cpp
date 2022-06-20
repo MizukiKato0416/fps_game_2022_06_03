@@ -639,10 +639,9 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
 
 					D3DXVECTOR3 ghitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd))*vecPosEnd;
-					D3DXVECTOR3 ghitPosa = pMeshField->m_indexPos[nCnt1];
-					D3DXVECTOR3 ghitPosb = pMeshField->m_indexPos[nCnt1 + 1];
-					D3DXVECTOR3 ghitPosc = pMeshField->m_indexPos[nCnt1 + 2];
-					D3DXVECTOR3 ghitPosd = ghitPos + ghitPosa;
+					D3DXVECTOR3 ghitPosa = ghitPos + pMeshField->m_indexPos[nCnt1];
+					D3DXVECTOR3 ghitPosb = ghitPos + pMeshField->m_indexPos[nCnt1 + 1];
+					D3DXVECTOR3 ghitPosc = ghitPos + pMeshField->m_indexPos[nCnt1 + 2];
 
 					//各頂点から対象の現在位置までのベクトルを算出
 					D3DXVECTOR3 vecHitObj[VERTEX_3D_NUM - 1];
