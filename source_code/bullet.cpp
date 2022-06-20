@@ -211,6 +211,7 @@ HRESULT CBullet::Init(void)
 			//モデルの当たった位置にエフェクトを出す
 			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
 			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
+
 		}
 		else
 		{
