@@ -301,7 +301,7 @@ void CScene2D::FadeColorChange(int Alpha)
 //=============================================================================
 // ポリゴン情報セット(回転)
 //=============================================================================
-void CScene2D::SetRotate(D3DXVECTOR3 pos, float Rotate, float Rotate2, float Vectol)
+void CScene2D::SetRotate(D3DXVECTOR3 pos, float Rotate, float /*Rotate2*/, float Vectol)
 {
 	VERTEX_2D*pVtx;//頂点情報へのポインタ
 

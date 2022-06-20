@@ -37,9 +37,6 @@ public:
 
 	static CPlane *Create();
 
-
-	//テクスチャ破棄
-	static void UninitTexture();
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL; //頂点バッファへのポインタ
 

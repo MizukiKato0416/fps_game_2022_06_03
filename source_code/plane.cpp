@@ -141,14 +141,6 @@ void CPlane::Draw()
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0x00);
 }
-//=============================================================================
-// テクスチャ破棄
-//=============================================================================
-void CPlane::UninitTexture()
-{
-
-}
-
 //作成
 CPlane *CPlane::Create()
 {

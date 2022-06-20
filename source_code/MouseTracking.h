@@ -10,7 +10,7 @@
 class CMouseTracking : public CEffect
 {
 public:
-	CMouseTracking(PRIORITY priorty = PRIORITY::EFFECT2D);
+	CMouseTracking(PRIORITY priorty = PRIORITY::EFFECT3D);
 	~CMouseTracking();
 
 	HRESULT Init(D3DXVECTOR3 pos,
@@ -48,6 +48,7 @@ public:
 		D3DXVECTOR3 rot);
 
 private:
+
 	D3DXVECTOR2 m_move;
 	D3DXVECTOR3 m_Vec;
 	D3DXVECTOR3 m_Endpos;

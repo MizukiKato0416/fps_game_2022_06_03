@@ -62,8 +62,7 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	m_fAngle = (float)atan2(m_Vec.x, m_Vec.y);		//角度
 
 	m_fAngle += randAngle;
-	m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
-	SetPosition(m_pos);
+	m_pos = D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
 
 	return S_OK;
@@ -129,7 +128,7 @@ CMouseTracking *CMouseTracking::Create(D3DXVECTOR3 pos,
 	D3DXVECTOR3 rot)
 {
 	CMouseTracking *pMouseTracking = NULL;
-	pMouseTracking = new CMouseTracking(CObject::PRIORITY::EFFECT2D);		//メモリ確保
+	pMouseTracking = new CMouseTracking(CObject::PRIORITY::EFFECT3D);		//メモリ確保
 										//NULLチェック
 	if (pMouseTracking != NULL)
 	{

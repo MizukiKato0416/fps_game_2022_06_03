@@ -21,7 +21,7 @@ EFFECTSTATE2D
 	MOVERANDX = 0						//移動ランダムX 1だと有効
 	MOVERANDY = 0						//移動ランダムY 1だと有効
 	MOUSEPOS = 0						//マウス追従ON 1だと有効
-	TEXTURE = 5						//テクスチャ
+	TEXTURE = HitDamage.png						//テクスチャ
 	SYNTHETIC = 1						//合成
 END_EFFECTSTATE2D
 

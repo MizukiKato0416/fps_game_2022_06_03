@@ -35,7 +35,7 @@ typedef struct
 class CScene2D : public CObject
 {
 public:
-	CScene2D(PRIORITY priorty = PRIORITY::EFFECT2D);
+	CScene2D(PRIORITY priorty = PRIORITY::EFFECT3D);
 	~CScene2D();
 
 	HRESULT Init();	//èâä˙âª

@@ -38,7 +38,7 @@ HRESULT CEffect::Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincol
 
 	m_Size = Size;
 	m_MinSize = MinSize;
-
+	m_pTexture = nType;
 	m_nLife = nLife;
 	m_bUninit = false;
 	
