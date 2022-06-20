@@ -8,7 +8,7 @@ EFFECTSTATE3D
 	COLOR = 255 255 255 255			//カラー
 	CHANGECOLOR = 0 0 0 -2			//カラー変動値
 	LIFE = 100						//ライフ
-	TEXTURE = 22						//テクスチャ
+	TEXTURE = BulletHoll.png						//テクスチャ
 	SYNTHETIC = 1						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動
 	TEXNUM = 1.0 1.0					//テクスチャ枚数
