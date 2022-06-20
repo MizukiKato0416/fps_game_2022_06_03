@@ -85,7 +85,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 
 	//銃モデルの生成
-	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun.x");
+	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 
 	//位置の設定
 	SetPos(m_pos);
@@ -314,12 +314,11 @@ void CPlayer::Draw(void)
 	//マトリックスを取得
 	D3DXMATRIX *handR = nullptr;
 	handR = m_pAnimModel->GetMatrix("handR");
-	m_pGunModel->SetMtxParent(handR);
+	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
 	//銃と親子関係をつける
 	m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
 	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-	
-
+	m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
 }
 
 //================================================

@@ -634,14 +634,13 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 				//内積の計算結果がマイナスの時
 				if (fVecDotBegin >= 0.0f && fVecDotEnd < 0.0f)
 				{
-					//当たった場所を算出
-					D3DXVECTOR3 hitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd)) * vecPosEnd;
-					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
+					//内分比を計算
+					float fInner = fVecDotBegin / (fVecDotBegin + fVecDotEnd);
+					fInner = fabsf(fInner);
 
-					D3DXVECTOR3 ghitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd))*vecPosEnd;
-					D3DXVECTOR3 ghitPosa = ghitPos + pMeshField->m_indexPos[nCnt1];
-					D3DXVECTOR3 ghitPosb = ghitPos + pMeshField->m_indexPos[nCnt1 + 1];
-					D3DXVECTOR3 ghitPosc = ghitPos + pMeshField->m_indexPos[nCnt1 + 2];
+					//当たった場所を算出
+					D3DXVECTOR3 hitPos = (1 - fInner)*vecPosBegin + fInner * vecPosEnd;
+					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
 
 					//各頂点から対象の現在位置までのベクトルを算出
 					D3DXVECTOR3 vecHitObj[VERTEX_3D_NUM - 1];
