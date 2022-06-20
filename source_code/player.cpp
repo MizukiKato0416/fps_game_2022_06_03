@@ -563,8 +563,8 @@ void CPlayer::Shoot(void)
 			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
 
 			//マズルフラッシュエフェクトの生成
-			CPresetEffect::SetEffect3D(0, pos, {});
-			CPresetEffect::SetEffect3D(1, pos, {});
+			CPresetEffect::SetEffect3D(0, pos, {}, {});
+			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			//弾の生成
 			CBullet::Create();

@@ -19,6 +19,7 @@
 #include "sphereEffect.h"
 #include "ThunderBill.h"
 #include "BezierBillh.h"
+#include "BulletHoll.h"
 
 #include "LoadEffect.h"
 
@@ -218,7 +219,7 @@ void CPresetEffect::SetEffectState3D(
 //=============================================================================
 // åƒÇŒÇÍÇΩï®ÇåƒÇ—èoÇ∑Ç‚Ç¬2D
 //=============================================================================
-/*void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos, D3DXVECTOR3 PlayerPos)
+/*void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos, D3DXVECTOR3 PlayerPos, D3DXVECTOR3 rot)
 {
 	switch (m_EffectState2D[nPattern].m_nPattern)
 	{
@@ -364,7 +365,7 @@ void CPresetEffect::SetEffectState3D(
 //=============================================================================
 // åƒÇŒÇÍÇΩï®ÇåƒÇ—èoÇ∑Ç‚Ç¬3D
 //=============================================================================
-void CPresetEffect::SetEffect3D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos)
+void CPresetEffect::SetEffect3D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpos, D3DXVECTOR3 rot)
 {
 	D3DXVECTOR3 Vectl;
 	float fA;
@@ -634,6 +635,23 @@ void CPresetEffect::SetEffect3D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 				(CBillEffect::ANIMPATTERN)m_EffectState3D[nPattern].m_AnimPatternType);
 		}
 		break;
+	case(9):
+		CBulletHoll::Create(D3DXVECTOR3(m_EffectState3D[nPattern].m_fSize, m_EffectState3D[nPattern].m_fSize, 0.0f),
+			D3DXVECTOR3(m_EffectState3D[nPattern].m_fAddSize, m_EffectState3D[nPattern].m_fAddSize, 0.0f),
+			pos,
+			m_EffectState3D[nPattern].m_Col,
+			m_EffectState3D[nPattern].m_Changecolor,
+			m_EffectState3D[nPattern].m_nLife,
+			m_EffectState3D[nPattern].nTexture,
+			m_EffectState3D[nPattern].m_TexMove,
+			m_EffectState3D[nPattern].m_TexNum,
+			m_EffectState3D[nPattern].AnimCnt,
+			m_EffectState3D[nPattern].m_TexSplit,
+			rot,
+			m_EffectState3D[nPattern].Synthetic,
+			(CBillEffect::ANIMPATTERN)m_EffectState3D[nPattern].m_AnimPatternType);
+		break;
+
 	}
 }
 
@@ -714,7 +732,7 @@ void CPresetEffect::Update()
 				{
 					if (m_Order3D[i3][i].nDeley < nCntDeley[i])
 					{
-						SetEffect3D(m_Order3D[i3][i].m_nOrder[i2], m_Order3D[i3][i].pos[i2], m_Order3D[i3][i].Endpos[i2]);
+						SetEffect3D(m_Order3D[i3][i].m_nOrder[i2], m_Order3D[i3][i].pos[i2], m_Order3D[i3][i].Endpos[i2], {});
 						m_Order3D[i3][i].bOne[i2] = true;
 					}
 				}
