@@ -95,7 +95,7 @@ HRESULT CMeshField::Init(void)
 			//頂点座標
 			pVtx[nNum].pos = m_bufferPos[nNum];
 			//カラー
-			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 100);
+			pVtx[nNum].col = D3DCOLOR_RGBA(255, 255, 255, 255);
 			//テクスチャ
 			pVtx[nNum].tex = D3DXVECTOR2(0.0f + (1.0f * nLine), 0.0f + (1.0f * nVertical));
 		}
@@ -634,15 +634,13 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 				//内積の計算結果がマイナスの時
 				if (fVecDotBegin >= 0.0f && fVecDotEnd < 0.0f)
 				{
-					//当たった場所を算出
-					D3DXVECTOR3 hitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd)) * vecPosEnd;
-					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
+					//内分比を計算
+					float fInner = fVecDotBegin / (fVecDotBegin + -fVecDotEnd);
+					//fInner = fabsf(fInner);
 
-					D3DXVECTOR3 ghitPos = (1 - (fVecDotBegin / (fVecDotBegin + fVecDotEnd)))*vecPosBegin + (fVecDotBegin / (fVecDotBegin + fVecDotEnd))*vecPosEnd;
-					D3DXVECTOR3 ghitPosa = pMeshField->m_indexPos[nCnt1];
-					D3DXVECTOR3 ghitPosb = pMeshField->m_indexPos[nCnt1 + 1];
-					D3DXVECTOR3 ghitPosc = pMeshField->m_indexPos[nCnt1 + 2];
-					D3DXVECTOR3 ghitPosd = ghitPos + ghitPosa;
+					//当たった場所を算出
+					D3DXVECTOR3 hitPos = (1 - fInner)*vecPosBegin + fInner * vecPosEnd;
+					hitPos = pMeshField->m_indexPos[nCnt1] + hitPos;
 
 					//各頂点から対象の現在位置までのベクトルを算出
 					D3DXVECTOR3 vecHitObj[VERTEX_3D_NUM - 1];
@@ -669,7 +667,7 @@ bool CMeshField::Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, cons
 					if (fvecCross[0] <= 0.0f && fvecCross[1] <= 0.0f && fvecCross[2] <= 0.0f)
 					{
 						//当たった場所までの距離を算出
-						D3DXVECTOR3 differBegin = hitPos - pMeshField->m_indexPos[nCnt1];
+						D3DXVECTOR3 differBegin = hitPos - beginPos;
 						float fDifferBegin = D3DXVec3Length(&differBegin);
 
 						//当たった場所までの距離がより近かったら

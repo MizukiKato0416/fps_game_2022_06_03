@@ -327,11 +327,3 @@ void CBillEffect::Draw()
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
 }
-
-//=============================================================================
-// ポリゴンテクスチャセット
-//=============================================================================
-void CBillEffect::SetTexture(int nTex)
-{
-	m_nTexType = nTex;
-}

@@ -8,9 +8,6 @@
 #include "main.h"
 #include "object.h"
 
-//マクロ定義
-#define MAX_TEXTURE_FILED (24)
-
 class CPlane : public CObject
 {
 public:
@@ -39,20 +36,14 @@ public:
 	void SetPosBill(D3DXVECTOR3 pos, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3, D3DXVECTOR3 pos4);
 
 	static CPlane *Create();
-	static void CreateTextureFiled();
 
-
-	//テクスチャ破棄
-	static void UninitTexture();
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL; //頂点バッファへのポインタ
 
-	static int m_nMaxTex;					   //使用する最大テクスチャ
 	static int m_Synthetic;
 protected:
 	string m_pTexture;	//テクスチャのパス
 
-	int m_nTexType;												//貼るテクスチャ
 	D3DXVECTOR2 m_TexNum;
 	D3DXVECTOR2 m_TexMove;
 	D3DXVECTOR2 m_TexSize;

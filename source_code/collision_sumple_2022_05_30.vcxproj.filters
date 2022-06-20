@@ -22,6 +22,21 @@
     <Filter Include="ソース ファイル\しゅうすけ\エフェクト処理">
       <UniqueIdentifier>{958d8232-f425-4ad3-b9ce-a8e969e48362}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\しゅうすけ\エフェクト処理\3d">
+      <UniqueIdentifier>{88e2df71-b427-45af-8155-828adea17bee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\しゅうすけ\エフェクト処理">
+      <UniqueIdentifier>{55b5ffe2-e756-4588-b9c4-9d92742b6c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\しゅうすけ\エフェクト処理\3d">
+      <UniqueIdentifier>{488c6099-8cd0-4452-a4c2-1045e072381a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\しゅうすけ\エフェクト処理\2d">
+      <UniqueIdentifier>{fdc38deb-1b8c-4d29-b340-6aa433de4664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\しゅうすけ\エフェクト処理\2">
+      <UniqueIdentifier>{6a000f36-26d6-451c-b506-1e0b9c125573}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="billboard.cpp">
@@ -141,15 +156,6 @@
     <ClCompile Include="PresetSetEffect.cpp">
       <Filter>ソース ファイル\しゅうすけ</Filter>
     </ClCompile>
-    <ClCompile Include="MeshEffect.cpp">
-      <Filter>ソース ファイル\しゅうすけ</Filter>
-    </ClCompile>
-    <ClCompile Include="plane.cpp">
-      <Filter>ソース ファイル\しゅうすけ</Filter>
-    </ClCompile>
-    <ClCompile Include="SetMesh.cpp">
-      <Filter>ソース ファイル\しゅうすけ</Filter>
-    </ClCompile>
     <ClCompile Include="bullet.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -157,37 +163,55 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ActiveBillboard.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="billeffect.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
     </ClCompile>
     <ClCompile Include="BezierBill.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
     </ClCompile>
-    <ClCompile Include="FieldEffect.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="Rotate3d.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="SphereEffect.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="straight3d.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="ThunderBill.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
-    </ClCompile>
-    <ClCompile Include="Trajectory.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
+    <ClCompile Include="billeffect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
     </ClCompile>
     <ClCompile Include="BulletHoll.cpp">
-      <Filter>ソース ファイル\しゅうすけ\エフェクト処理</Filter>
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldEffect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Rotate3d.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereEffect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="straight3d.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="ThunderBill.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Trajectory.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="SetMesh.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="plane.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshEffect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseTracking.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
+    <ClCompile Include="scene2d.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,49 +326,7 @@
     <ClInclude Include="communicationdata.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="LoadEffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
     <ClInclude Include="PresetSetEffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="Trajectory.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="ThunderBill.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="straight3d.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereEffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="SetMesh.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="Rotate3d.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="plane.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshEffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="FieldEffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="billeffect.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="BezierBillh.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
-    </ClInclude>
-    <ClInclude Include="ActiveBillboard.h">
       <Filter>ヘッダー ファイル\しゅうすけ</Filter>
     </ClInclude>
     <ClInclude Include="bullet.h">
@@ -353,8 +335,59 @@
     <ClInclude Include="gunmodel.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="ActiveBillboard.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierBillh.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="billeffect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
     <ClInclude Include="BulletHoll.h">
-      <Filter>ヘッダー ファイル\しゅうすけ</Filter>
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldEffect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshEffect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="plane.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotate3d.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="SetMesh.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="straight3d.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="ThunderBill.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Trajectory.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereEffect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\3d</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadEffect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseTracking.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="scene2d.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

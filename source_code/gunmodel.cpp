@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "model_single.h"
 #include "model.h"
+#include "model.h"
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -34,7 +35,7 @@ CGunModel::~CGunModel()
 //=============================================================================
 HRESULT CGunModel::Init(void)
 {
-	m_model = CModelSingle::Create(m_pos, m_rot, m_type, NULL, false);
+	m_model = CModelSingle::Create(m_pos, {0.0f, 2.0f, 0.0f}, m_type, NULL, false);
 
 	return S_OK;
 }
@@ -70,11 +71,13 @@ void CGunModel::Draw(void)
 
 	D3DXMatrixIdentity(&m_mtx_muzzle_world);	//マトリックス初期化
 
+	D3DXVECTOR3 rot = m_model->GetModel()->GetRot();
+
 	//向きの設定
 	D3DXMatrixRotationYawPitchRoll(	&mtx_rot,
-									0.0f,
-									0.0f,
-									0.0f);
+									rot.y,
+									rot.x,
+									rot.z);
 
 	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
