@@ -30,12 +30,14 @@
 //================================================
 //マクロ定義
 //================================================
-#define PLAYER_JUMP							(15.0f)			//ジャンプ力
-#define PLAYER_GRAVITY						(1.0f)			//重力の大きさ
-#define PLAYER_WALK_SPEED					(5.0f)			//歩き移動の移動量
-#define PLAYER_RUN_SPEED					(8.0f)			//走り移動の移動量
-#define PLAYER_SIZE							(75.0f)			//プレイヤーのサイズ調整値
-#define PLAYER_SHOOT_COUNTER				(5)				//次の弾が出るまでのカウンター
+#define PLAYER_JUMP							(15.0f)									//ジャンプ力
+#define PLAYER_GRAVITY						(1.0f)									//重力の大きさ
+#define PLAYER_WALK_SPEED					(5.0f)									//歩き移動の移動量
+#define PLAYER_RUN_SPEED					(8.0f)									//走り移動の移動量
+#define PLAYER_ADS_WALK_SPEED				(3.0f)									//ADS中の移動速度
+#define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
+#define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, 96.0f, 2.0f))		//ADSしたときの銃のオフセット
 
 //================================================
 //デフォルトコンストラクタ
@@ -55,6 +57,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_bJump = false;
 	m_fMoveSpeed = 0.0f;
 	m_nCounter = 0;
+	m_bAds = false;
 }
 
 //================================================
@@ -83,6 +86,7 @@ HRESULT CPlayer::Init(void)
 	m_bJump = false;
 	m_fMoveSpeed = 0.0f;
 	m_nCounter = 0;
+	m_bAds = false;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
@@ -95,7 +99,7 @@ HRESULT CPlayer::Init(void)
 	SetObjType(CObject::OBJTYPE::PLAYER);
 
 	// アニメーション付きXファイルの生成
-	m_pAnimModel = CXanimModel::Create("data/motion.x");
+	m_pAnimModel = CXanimModel::Create("data/armmotion.x");
 	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 
@@ -162,7 +166,10 @@ void CPlayer::Update(void)
 	Chest();
 
 	//射撃処理
-	Shoot();
+	Shot();
+
+	//ADS処理
+	ADS();
 
 	//移動処理
 	Move();
@@ -311,14 +318,27 @@ void CPlayer::Draw(void)
 
 	m_pAnimModel->Draw();
 
-	//マトリックスを取得
-	D3DXMATRIX *handR = nullptr;
-	handR = m_pAnimModel->GetMatrix("handR");
-	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
-	//銃と親子関係をつける
-	m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
-	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-	m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+	if (!m_bAds)
+	{
+		//マトリックスを取得
+		D3DXMATRIX *handR = nullptr;
+		handR = m_pAnimModel->GetMatrix("handR");
+		m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+		//銃と親子関係をつける
+		m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
+		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+	}
+	else
+	{
+		//銃と親子関係をつける
+		m_pGunModel->GetModel()->GetModel()->SetMtxParent(&m_mtxWorld);
+		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
+		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+	}
+	
 }
 
 //================================================
@@ -533,7 +553,7 @@ void CPlayer::Jump(void)
 //================================================
 //射撃処理
 //================================================
-void CPlayer::Shoot(void)
+void CPlayer::Shot(void)
 {
 	//マウス取得処理
 	CInputMouse *pInputMouse;
@@ -556,7 +576,7 @@ void CPlayer::Shoot(void)
 		if (m_nCounter < 0)
 		{
 			//既定の値にする
-			m_nCounter = PLAYER_SHOOT_COUNTER;
+			m_nCounter = PLAYER_SHOT_COUNTER;
 
 			//オフセット位置設定
 			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
@@ -580,17 +600,47 @@ void CPlayer::Shoot(void)
 		}
 
 		//既定の値より小さかったら
-		if (m_nCounter > 0 && m_nCounter < PLAYER_SHOOT_COUNTER)
+		if (m_nCounter > 0 && m_nCounter <= PLAYER_SHOT_COUNTER)
 		{
 			//カウンターを加算
 			m_nCounter++;
 
 			//既定の値より大きくなったら
-			if (m_nCounter > PLAYER_SHOOT_COUNTER)
+			if (m_nCounter > PLAYER_SHOT_COUNTER)
 			{
 				//0にする
 				m_nCounter = 0;
 			}
+		}
+	}
+}
+
+//================================================
+//ADSの処理
+//================================================
+void CPlayer::ADS(void)
+{
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	//右クリックをしたら
+	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_RIGHT) == true)
+	{
+		//ADS状態でないなら
+		if (!m_bAds)
+		{
+			//ADS状態にする
+			m_bAds = true;
+		}
+	}
+	else
+	{
+		//ADS状態なら
+		if (m_bAds)
+		{
+			//ADS状態をやめる
+			m_bAds = false;
 		}
 	}
 }

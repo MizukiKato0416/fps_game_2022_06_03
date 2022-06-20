@@ -150,6 +150,8 @@ HRESULT CBullet::Init(void)
 							//カメラのローカル座標を保存
 							hitPosV = posV;
 							bHitAny = true;
+
+							//pModel->GetModel()->GetMesh()->GetFVF()
 						}
 					}
 				}
@@ -201,10 +203,12 @@ HRESULT CBullet::Init(void)
 
 	float fMeshDiffer = 0.0f;
 	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
-
+	bool bCollMesh = CMeshField::Collision(meshHitPos, fMeshDiffer, posCameraV, m_endPos);
 	//メッシュフィールドに当たったら
-	if (CMeshField::Collision(meshHitPos, fMeshDiffer, posCameraV, m_endPos) == true)
+	if (bCollMesh)
 	{
+		//終点を設定
+		m_endPos = meshHitPos;
 		//当たったメッシュフィールドまでの距離がモデルの距離より遠いとき
 		if (fMeshDiffer > m_fDiffer)
 		{
@@ -219,17 +223,15 @@ HRESULT CBullet::Init(void)
 			//メッシュフィールドの当たった位置にエフェクトを出す
 			CPresetEffect::SetEffect3D(2, meshHitPos, {}, {});
 			CPresetEffect::SetEffect3D(3, meshHitPos, {}, {});
-
 		}
 	}
-	else
+	else if(!bCollMesh && bHitAny)
 	{
 		//モデルの当たった位置にエフェクトを出す
 		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
 		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 		//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
 		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f,D3DX_PI / 2,D3DX_PI));
-
 	}
 
 
@@ -250,6 +252,9 @@ HRESULT CBullet::Init(void)
 	//ライティングオフにする
 	m_apOrbit[0]->SetLighting(false);
 	m_apOrbit[1]->SetLighting(false);
+	//ライティングオフにする
+	m_apOrbit[0]->SetAlphaTest(true);
+	m_apOrbit[1]->SetAlphaTest(true);
 
 	return S_OK;
 }
