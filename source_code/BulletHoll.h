@@ -51,7 +51,6 @@ public:
 		ANIMPATTERN AnimPattern);
 
 private:
-	int nLife;	//õ–½
 	bool bUninit;
 	D3DXVECTOR3 m_pos;
 	float m_size;		//Œ»İ‚Ì‘å‚«‚³

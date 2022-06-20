@@ -204,6 +204,15 @@
     <ClCompile Include="MeshEffect.cpp">
       <Filter>ソース ファイル\しゅうすけ\エフェクト処理\3d</Filter>
     </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseTracking.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
+    <ClCompile Include="scene2d.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h">
@@ -370,6 +379,15 @@
     </ClInclude>
     <ClInclude Include="LoadEffect.h">
       <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseTracking.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="scene2d.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -160,6 +160,7 @@
     <ClCompile Include="BulletHoll.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
+    <ClCompile Include="effect.cpp" />
     <ClCompile Include="effect2D.cpp" />
     <ClCompile Include="effect3D.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model_single.cpp" />
+    <ClCompile Include="MouseTracking.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
@@ -194,6 +196,7 @@
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="Rotate3d.cpp" />
+    <ClCompile Include="scene2d.cpp" />
     <ClCompile Include="SetMesh.cpp" />
     <ClCompile Include="shadow.cpp" />
     <ClCompile Include="bullet.cpp" />
@@ -217,6 +220,7 @@
     <ClInclude Include="BulletHoll.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="effect2D.h" />
     <ClInclude Include="effect3D.h" />
     <ClInclude Include="enemy.h" />
@@ -241,6 +245,7 @@
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model_single.h" />
+    <ClInclude Include="MouseTracking.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
@@ -251,6 +256,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="Rotate3d.h" />
+    <ClInclude Include="scene2d.h" />
     <ClInclude Include="SetMesh.h" />
     <ClInclude Include="shadow.h" />
     <ClInclude Include="bullet.h" />
