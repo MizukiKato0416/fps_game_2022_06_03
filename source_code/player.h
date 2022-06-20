@@ -57,7 +57,8 @@ private:
 	void Move(void);								//移動処理
 	void Rotate(void);								//回転処理
 	void Jump(void);								//ジャンプ処理
-	void Shoot(void);								//射撃処理
+	void Shot(void);								//射撃処理
+	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
 
 	//メンバ変数
@@ -80,6 +81,7 @@ private:
 	float m_fAnimSpeed;								//アニメーションのスピード
 	float m_fMoveSpeed;								//移動する速さ
 	int m_nCounter;									//次の弾が出るまでのカウンター
+	bool m_bAds;									//ADSしているかどうか
 };
 
 #endif // !_PLAYER_H_
