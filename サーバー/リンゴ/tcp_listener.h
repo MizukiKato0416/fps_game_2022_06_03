@@ -26,6 +26,7 @@ public:
 	void Uninit(void);	// 終了
 	bool GetIsInit(void) { return m_is_init; }	// 初期化しているかの判定の取得
 	bool GetIsUninit(void) { return m_is_uninit; }	// 終了しているかの判定の取得
+	SOCKET GetSocket(void) { return m_sockServer; }	// ソケットの取得
 	int GetNumber(void) { return m_my_number; }	// 自分の部屋番号の取得
 	void SetNumber(int number) { m_my_number = number; }	// 自分の部屋番号の設定
 	bool GetCreate(void) { return m_is_create; }	// 自分が生成したかの取得

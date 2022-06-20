@@ -123,7 +123,8 @@ void main(void)
 		{
 			// init‚µ‚Ä‚¢‚Äuninit‚µ‚Ä‚¢‚½‚ç
 			if (g_listenner[count_surver]->GetIsInit() == true &&
-				g_listenner[count_surver]->GetIsUninit() == true)
+				g_listenner[count_surver]->GetIsUninit() == true &&
+				g_listenner[count_surver]->GetSocket() == INVALID_SOCKET)
 			{
 				// Á‹
 				delete g_listenner[count_surver];
