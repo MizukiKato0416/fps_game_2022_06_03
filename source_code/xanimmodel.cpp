@@ -546,6 +546,27 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 }
 
 //=============================================================================
+// 当たり判定用コンテナのセーブ
+//=============================================================================
+void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
+{
+	FrameData *frame_data = (FrameData*)frame;
+	m_mesh.push_back(*(MeshContainer*)frame_data->pMeshContainer);
+
+	// 兄弟がいれば再帰で呼び出す
+	if (frame_data->pFrameSibling != NULL)
+	{
+		SaveMeshContainer(frame_data->pFrameSibling);
+	}
+
+	// 子がいれば再帰で呼び出す
+	if (frame_data->pFrameFirstChild != NULL)
+	{
+		SaveMeshContainer(frame_data->pFrameFirstChild);
+	}
+}
+
+//=============================================================================
 // 指定オブジェクトのマトリックス入手
 //=============================================================================
 D3DXMATRIX *CXanimModel::GetMatrix(string name)
