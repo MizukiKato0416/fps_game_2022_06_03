@@ -15,11 +15,6 @@
 CTcpListener::CTcpListener()
 {
 	m_sockServer = INVALID_SOCKET;
-	m_my_number = -1;
-	m_accept_num = 0;
-	m_is_init = false;
-	m_is_uninit = false;
-	m_is_create = false;
 }
 
 //-------------------------------
@@ -65,7 +60,7 @@ bool CTcpListener::Init(void)
 	}
 	else
 	{
-		printf("サーバーデータが読み取れませんでした。");
+		cout << "サーバーデータが読み取れませんでした。" << endl;
 	}
 
 	fclose(pFile);
@@ -77,7 +72,7 @@ bool CTcpListener::Init(void)
 
 	if (m_sockServer == INVALID_SOCKET)
 	{
-		printf("接続待ちソケットが作れませんでした。");
+		cout << "接続待ちソケットが作れませんでした。" << endl;
 		return false;
 	}
 
@@ -96,7 +91,6 @@ bool CTcpListener::Init(void)
 
 	listen(m_sockServer, nWait);	// 最大待機数
 
-	m_is_init = true;
 	return true;
 }
 
@@ -116,14 +110,19 @@ CCommunication * CTcpListener::Accept(void)
 	SOCKET sock = accept(	m_sockServer,
 							(struct sockaddr*)&clientAddr,
 							&nLength);
-
-	printf("接続出来ました。\n");
+	if (sock == INVALID_SOCKET)
+	{
+		cout << "接続できませんでした。。" << endl;
+	}
+	else
+	{
+		cout << "接続出来ました。" << endl;
+	}
 	if (pSendRecv != NULL)
 	{
 		pSendRecv->Init(sock);
 	}
 
-	m_accept_num++;
 	return pSendRecv;
 }
 
@@ -140,8 +139,7 @@ void CTcpListener::Uninit(void)
 	//------------------------
 	// 接続切断
 	//------------------------
-	printf("接続を切断します。\n");
+	cout << "接続を切断します。"<< endl;
 	closesocket(m_sockServer);	// 接続受付用ソケット
 	m_sockServer = INVALID_SOCKET;
-	m_is_uninit = true;
 }
