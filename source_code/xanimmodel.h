@@ -64,5 +64,6 @@ private:
 	D3DXVECTOR3 m_size;	// サイズ
 	D3DXVECTOR3 m_vtx_min;	// モデルの最小頂点
 	D3DXVECTOR3 m_vtx_max;	// モデルの最大頂点
+	vector<LPD3DXMESHCONTAINER> m_mesh;		//メッシュ
 };
 #endif

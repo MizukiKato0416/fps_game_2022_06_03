@@ -20,7 +20,7 @@
 //================================================
 #define BULLET_MOVE_SPEED		(350.0f)		//軌道の速さ
 #define BULLET_SIZE_X			(300.0f)		//軌道のサイズ
-#define BULLET_SIZE_Y			(5.0f)			//軌道のサイズ
+#define BULLET_SIZE_Y			(3.0f)			//軌道のサイズ
 #define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
 
 //================================================
@@ -150,8 +150,6 @@ HRESULT CBullet::Init(void)
 							//カメラのローカル座標を保存
 							hitPosV = posV;
 							bHitAny = true;
-
-							//pModel->GetModel()->GetMesh()->GetFVF()
 						}
 					}
 				}

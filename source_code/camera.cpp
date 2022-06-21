@@ -18,14 +18,14 @@
 //マクロ定義
 //========================================================
 #define CAMERA_V_SPEED_Y			(0.03f)									//カメラの横移動スピード
-#define CAMERA_V__MOUSE_SPEED_Y		(0.003f)								//カメラの横移動スピード（マウスの時）
+#define CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
 #define CAMERA_V_SPEED_XZ			(0.01f)									//カメラの縦移動スピード
-#define CAMERA_V__MOUSE_SPEED_XZ	(-0.001f)								//カメラの横移動スピード（マウスの時）
+#define CAMERA_V__MOUSE_SPEED_XZ	(-0.0005f)								//カメラの横移動スピード（マウスの時）
 #define CAMERA_RESULT_DISTANCE		(200.0f)								//リザルトの視点と注視点の距離
 #define CAMERA_V_MAX_POS_Y			(400.0f)								//視点のy座標最大値
 #define CAMERA_V_MIN_POS_Y			(50.0f)									//視点のy座標最小値
 #define CAMERA_MAX_RENDERER			(100000.0f)								//cameraでの描画最大Z値
-#define CAMERA_MIN_RENDERER			(5.0f)									//cameraでの描画最小Z値
+#define CAMERA_MIN_RENDERER			(3.5f)									//cameraでの描画最小Z値
 #define CAMERA_POS_Y				(100.0f)								//カメラのY位置
 #define CAMERA_POS_XZ				(0.0f)									//カメラのXZ位置
 
@@ -57,6 +57,7 @@ CCamera::CCamera()
 	m_bRotateY = false;								//カメラY軸が回転しているかどうか
 	m_nNum = 0;										//cameraの個体識別番号
 	m_fDifferVR = 0.0f;								//視点と注視点の距離
+	m_fRadius = 0.0f;								//画角
 }
 
 //================================================
@@ -94,6 +95,7 @@ HRESULT CCamera::Init(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot, const floa
 	m_viewport.Height = (DWORD)viewporHeight;		//描画する画面の高さ
 	m_bRotateX = false;								//カメラX軸が回転しているかどうか
 	m_bRotateY = false;								//カメラY軸が回転しているかどうか
+	m_fRadius = CAMERA_RADIUS;						//画角
 
 	//視点の場所を注視点を元に移動
 	m_fDifferVR = CAMERA_DISTANCE;
@@ -153,7 +155,7 @@ void CCamera::Set(void)
 
 	//プロジェクションマトリックスを作成
 	D3DXMatrixPerspectiveFovLH(&m_mtxProjection,
-								D3DXToRadian(50.0f),									//画角
+								D3DXToRadian(m_fRadius),								//画角
 								(float)m_viewport.Width / (float)m_viewport.Height,		//比率
 								CAMERA_MIN_RENDERER,									//Z方向の描画範囲
 								CAMERA_MAX_RENDERER);
@@ -172,24 +174,9 @@ void CCamera::Set(void)
 	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
 
-	//カメラのワールドマトリックス生成
-	D3DXMatrixIdentity(&m_mtxWorldCamera);
-	D3DXMATRIX mtxRot, mtxTrans;
-	D3DXVECTOR3 rotCamera = { m_rot.x- D3DX_PI / 2.0f, m_rot.y, 0.0f };
-	//カメラの向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rotCamera.y, rotCamera.x, rotCamera.z);
-	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxRot);
-
-	//カメラの位置を反映
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxTrans);
-
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorldCamera);
 
 	//オブジェクト情報を入れるポインタ
 	vector<CObject*> object;
-
 	//先頭のポインタを代入
 	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
 	int object_size = object.size();
@@ -440,12 +427,6 @@ void CCamera::MainCameraUpdate(void)
 			//視点をプレイヤーに固定する
 			m_posV = object[count_object]->GetPos();
 			m_posV.y += CAMERA_POS_Y;
-
-			//プレイヤーにキャスト
-			CPlayer *pPlayer = (CPlayer*)object[count_object];
-			//XとZの位置を調節
-			m_posV.x += sinf(pPlayer->GetRot().y) * CAMERA_POS_XZ;
-			m_posV.z += cosf(pPlayer->GetRot().y) * CAMERA_POS_XZ;
 		}
 	}
 
@@ -494,4 +475,33 @@ void CCamera::MainCameraUpdate(void)
 	{
 		m_rot.x = D3DX_PI / 8.0f;
 	}
+
+	//ワールドマトリックス設定処理
+	SetWorldMtx();
+}
+
+//================================================
+//メインカメラのワールドマトリックス設定処理
+//================================================
+void CCamera::SetWorldMtx(void)
+{
+	//デバイスのポインタ
+	LPDIRECT3DDEVICE9 pDevice;
+	//デバイスの取得
+	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	//カメラのワールドマトリックス生成
+	D3DXVECTOR3 pos(m_posV.x, m_posV.y, m_posV.z);
+	D3DXMatrixIdentity(&m_mtxWorldCamera);
+	D3DXMATRIX mtxRot, mtxTrans;
+	D3DXVECTOR3 rotCamera = { m_rot.x - D3DX_PI / 2.0f, m_rot.y, 0.0f };
+	//カメラの向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rotCamera.y, rotCamera.x, rotCamera.z);
+	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxRot);
+
+	//カメラの位置を反映
+	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+	D3DXMatrixMultiply(&m_mtxWorldCamera, &m_mtxWorldCamera, &mtxTrans);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorldCamera);
 }
