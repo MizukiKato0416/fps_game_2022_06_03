@@ -202,7 +202,7 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 	// ƒJƒŠƒ“ƒO
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	if (m_matx_bone.size > 0)
+	if (m_matx_bone.size() > 0)
 	{
 		m_matx_bone.clear();
 	}
