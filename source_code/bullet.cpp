@@ -207,8 +207,6 @@ HRESULT CBullet::Init(void)
 	//メッシュフィールドに当たったら
 	if (bCollMesh)
 	{
-		//終点を設定
-		m_endPos = meshHitPos;
 		//当たったメッシュフィールドまでの距離がモデルの距離より遠いとき
 		if (fMeshDiffer > m_fDiffer)
 		{
@@ -220,6 +218,8 @@ HRESULT CBullet::Init(void)
 		}
 		else
 		{
+			//終点を設定
+			m_endPos = meshHitPos;
 			//メッシュフィールドの当たった位置にエフェクトを出す
 			CPresetEffect::SetEffect3D(2, meshHitPos, {}, {});
 			CPresetEffect::SetEffect3D(3, meshHitPos, {}, {});

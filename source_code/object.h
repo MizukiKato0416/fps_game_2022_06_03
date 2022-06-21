@@ -33,6 +33,7 @@ public:
 		NONE = 0,			// なし
 		PLAYER,				// プレイヤー
 		MODEL,				// モデル
+		BULLET,				// 弾
 		POLYGON_3D,			// 3Dポリゴン
 		SHADOW,				// 影
 		EFFECT3D,			// パーティクル

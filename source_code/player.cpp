@@ -26,6 +26,7 @@
 #include "PresetSetEffect.h"
 #include "bullet.h"
 #include "gunmodel.h"
+#include "object2D.h"
 
 //================================================
 //マクロ定義
@@ -37,7 +38,7 @@
 #define PLAYER_ADS_WALK_SPEED				(3.0f)									//ADS中の移動速度
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, 96.0f, 2.0f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.5f, 10.0f))		//ADSしたときの銃のオフセット
 
 //================================================
 //デフォルトコンストラクタ
@@ -58,6 +59,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_fMoveSpeed = 0.0f;
 	m_nCounter = 0;
 	m_bAds = false;
+	m_pCloss = nullptr;
 }
 
 //================================================
@@ -123,6 +125,9 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
+	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
+
 	return S_OK;
 }
 
@@ -164,12 +169,6 @@ void CPlayer::Update(void)
 
 	//腰の処理
 	Chest();
-
-	//射撃処理
-	Shot();
-
-	//ADS処理
-	ADS();
 
 	//移動処理
 	Move();
@@ -250,6 +249,11 @@ void CPlayer::Update(void)
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 
+	//射撃処理
+	Shot();
+
+	//ADS処理
+	ADS();
 }
 
 //================================================
@@ -280,6 +284,7 @@ void CPlayer::Draw(void)
 		rot = m_rot;
 	}
 
+	D3DXMATRIX *cameraMtx = nullptr;
 	//cameraのポインタ配列1番目のアドレス取得
 	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
 
@@ -298,6 +303,8 @@ void CPlayer::Draw(void)
 			//プレイヤーの向きを反映
 			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+			cameraMtx = pCamera->GetMtxPoint();
 		}
 	}
 
@@ -316,7 +323,7 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	m_pAnimModel->Draw();
+	//m_pAnimModel->Draw();
 
 	if (!m_bAds)
 	{
@@ -333,12 +340,11 @@ void CPlayer::Draw(void)
 	else
 	{
 		//銃と親子関係をつける
-		m_pGunModel->GetModel()->GetModel()->SetMtxParent(&m_mtxWorld);
+		m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
 	}
-	
 }
 
 //================================================
@@ -477,6 +483,11 @@ void CPlayer::Move(void)
 		{
 			//目的の向きを設定
 			m_fObjectiveRot = rotCamera.y + D3DX_PI / 2.0f;
+		}
+
+		if (m_bAds)
+		{
+			m_fMoveSpeed = PLAYER_ADS_WALK_SPEED;
 		}
 
 		//移動量加算
@@ -668,14 +679,14 @@ void CPlayer::Chest(void)
 			D3DXMatrixRotationYawPitchRoll(&cameraMtx, 0.0f, rotCamera.x, 0.0f);
 
 			//マトリックスを取得
-			D3DXMATRIX *chest = nullptr;
-			chest = m_pAnimModel->GetMatrix("chest");
+			D3DXMATRIX *handR = nullptr;
+			handR = m_pAnimModel->GetMatrix("handR");
 
-			//chest->_11 = 10050.0f;
+			handR->_11 = 10050.0f;
 
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &cameraMtx);
 
-			m_pAnimModel->SetMatrix("chest", chest);
+			//m_pAnimModel->SetMatrix("handR", handR);
 		}
 	}
 }
