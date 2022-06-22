@@ -41,6 +41,8 @@ public:
 
 	//当たった敵のプレイヤー番号取得処理
 	int GetHitPlayerNum(void) { return m_nPlayer; }
+	//ダメージ取得処理
+	int GetDamage(void) { return m_nDamage; }
 
 private:
 	D3DXVECTOR3 m_bigenPos;						//弾の始点
@@ -49,6 +51,7 @@ private:
 	CObject3D *m_apOrbit[BULLET_MAX_ORBIT];		//軌道エフェクトのポインタ
 	float m_fDiffer;							//終点までの距離
 	int m_nPlayer;								//プレイヤー番号
+	int m_nDamage;								//ダメージ
 };
 //================================================
 //プロトタイプ宣言

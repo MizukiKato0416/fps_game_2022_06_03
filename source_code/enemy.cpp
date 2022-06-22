@@ -30,6 +30,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 {
 	m_pos = { 0.0f, 0.0f, 0.0f };
 	m_rot = { 0.0f, 0.0f, 0.0f };
+	m_nLife = 0;
 }
 
 //=============================================================================
@@ -46,6 +47,7 @@ CEnemy::~CEnemy()
 HRESULT CEnemy::Init(void)
 {
 	SetObjType(CObject::OBJTYPE::ENEMY);
+	m_nLife = 100;
 
 	m_my_index = m_create_count;
 	m_create_count++;
@@ -192,7 +194,15 @@ void CEnemy::Recv(void)
 //=============================================================================
 void CEnemy::Attack(void)
 {
-	
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[m_my_index].GetCmmuData();
+
+	for (int bullet_count = 0; bullet_count < MAX_BULLET; bullet_count++)
+	{
+		if (pData->Bullet[bullet_count].bUse == true)
+		{
+			pData->Bullet[bullet_count].bUse = false;
+		}
+	}
 }
 
 //=============================================================================

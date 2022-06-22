@@ -10,7 +10,7 @@
 class CMouseTracking : public CEffect
 {
 public:
-	CMouseTracking(int nPriority);
+	CMouseTracking(PRIORITY priorty = PRIORITY::EFFECT3D);
 	~CMouseTracking();
 
 	HRESULT Init(D3DXVECTOR3 pos,
@@ -19,7 +19,7 @@ public:
 		D3DCOLORVALUE Mincolor,
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
-		int nLife, int nType,
+		int nLife, string nType,
 		D3DXVECTOR3 Endpos,
 		int Diffusion,
 		int UninitVectl,
@@ -38,7 +38,7 @@ public:
 		D3DCOLORVALUE Mincolor,
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
-		int nLife, int nType,
+		int nLife, string nType,
 		D3DXVECTOR3 Endpos,
 		int Diffusion,
 		int UninitVectl,
@@ -48,7 +48,7 @@ public:
 		D3DXVECTOR3 rot);
 
 private:
-	D3DXVECTOR3 m_pos;
+
 	D3DXVECTOR2 m_move;
 	D3DXVECTOR3 m_Vec;
 	D3DXVECTOR3 m_Endpos;

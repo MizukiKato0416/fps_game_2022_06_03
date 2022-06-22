@@ -9,7 +9,7 @@
 // インクルード
 //*****************************************************************************
 #include "main.h"
-#include "Scene.h"
+#include "object.h"
 
 //*****************************************************************************
 // マクロ定義
@@ -32,21 +32,16 @@ typedef struct
 //*****************************************************************************
 //オブジェクトクラス
 //*****************************************************************************
-class CScene2D : public CScene
+class CScene2D : public CObject
 {
 public:
-	CScene2D(int nPriority = 3);
+	CScene2D(PRIORITY priorty = PRIORITY::EFFECT2D);
 	~CScene2D();
 
-	HRESULT Init(D3DXVECTOR3 pos);	//初期化
+	HRESULT Init();	//初期化
 	void Uninit();				//終了
 	void Update();				//更新
 	void Draw();				//描画
-
-	static void UninitTexture();
-
-	static void CreateTexture();//テクスチャ読み込み
-
 
 	void SetPosition(D3DXVECTOR3 pos);		//pos更新用
 	D3DXVECTOR3 GetPosition() { return m_pos; }				//pos更新するためにゲット
@@ -55,8 +50,6 @@ public:
 	float GetWhidth() { return  m_Size.x; }			//pos更新するためにゲッ
 	void SetHight(float Hight);		//大きさ更新
 	void SetWhidth(float Whidth);	//大きさ更新
-
-	void SetTexture(int nTex) { m_nType = nTex; }		//テクスチャタイプ
 
 	void ColorChange(D3DCOLORVALUE color);	//カラー変更
 
@@ -68,19 +61,16 @@ public:
 	void SetGaugeScele(float Whidth, float Hight);				//ゲージタイプのスケール変更
 	void SetRotate(D3DXVECTOR3 pos, float Rotate, float Rotate2, float Vectol);			//回転
 
+protected:
+	D3DXVECTOR3 m_pos;
+	string m_pTexture;					//種類
 
 private:
 
-	static LPDIRECT3DTEXTURE9 m_Texture[MAX_TEXTURE];				//テクスチャーポインタ
-	static int m_nMaxTex;											//使用する最大テクスチャ
-
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL;	//頂点バッファへのポインタ
-
-	D3DXVECTOR3 m_pos;				//位置
 
 	D3DXVECTOR2 m_Size;				//サイズ
 
-	int m_nType;					//種類
 
 	int m_Texpos;					//テクスチャ座標
 	float m_TexSize;				//テクスチャサイズ
