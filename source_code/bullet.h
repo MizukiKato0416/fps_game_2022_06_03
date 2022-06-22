@@ -39,12 +39,16 @@ public:
 
 	static CBullet *Create(void);		//生成処理
 
+	//当たった敵のプレイヤー番号取得処理
+	int GetHitPlayerNum(void) { return m_nPlayer; }
+
 private:
 	D3DXVECTOR3 m_bigenPos;						//弾の始点
 	D3DXVECTOR3 m_endPos;						//弾の終点
 	D3DXVECTOR3 m_rayVec;						//レイの方向
 	CObject3D *m_apOrbit[BULLET_MAX_ORBIT];		//軌道エフェクトのポインタ
 	float m_fDiffer;							//終点までの距離
+	int m_nPlayer;								//プレイヤー番号
 };
 //================================================
 //プロトタイプ宣言

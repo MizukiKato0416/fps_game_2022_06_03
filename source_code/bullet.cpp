@@ -40,6 +40,7 @@ CBullet::CBullet(CObject::PRIORITY Priority) :CObject(Priority)
 	m_rayVec = { 0.0f, 0.0f, 0.0f };
 	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BULLET_MAX_ORBIT]));
 	m_fDiffer = 0.0f;
+	m_nPlayer = 0;
 }
 
 //================================================
@@ -245,6 +246,8 @@ HRESULT CBullet::Init(void)
 							hitPosV = posV;
 							bHitEnemy = true;
 							bHitAny = false;
+							//“–‚½‚Á‚½“G‚ÌƒvƒŒƒCƒ„[”Ô†æ“¾
+							m_nPlayer = pEnemy->GetPlayerNumber();
 						}
 					}
 				}
