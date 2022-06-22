@@ -25,6 +25,7 @@
 #define BULLET_SIZE_X			(300.0f)		//軌道のサイズ
 #define BULLET_SIZE_Y			(3.0f)			//軌道のサイズ
 #define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
+#define BULLET_DAMAGE			(20)			//ダメージ
 
 //================================================
 //静的メンバ変数宣言
@@ -41,6 +42,7 @@ CBullet::CBullet(CObject::PRIORITY Priority) :CObject(Priority)
 	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BULLET_MAX_ORBIT]));
 	m_fDiffer = 0.0f;
 	m_nPlayer = 0;
+	m_nDamage = 0;
 }
 
 //================================================
@@ -189,7 +191,8 @@ HRESULT CBullet::Init(void)
 
 	//当たった敵のマトリックス
 	D3DXMATRIX mtxHitEnemy;
-
+	//当たった敵のポインタ
+	CEnemy* pHitEnemy = nullptr;
 	//オブジェクト情報を入れるポインタ
 	object.clear();
 
@@ -240,6 +243,8 @@ HRESULT CBullet::Init(void)
 							m_fDiffer = fDiffer;
 							//当たったオブジェクトのマトリックスを保存
 							mtxHitEnemy = modelMtx;
+							//ポインタを保存
+							pHitEnemy = pEnemy;
 							//レイの方向を保存
 							rayVecHit = vec;
 							//カメラのローカル座標を保存
@@ -286,6 +291,9 @@ HRESULT CBullet::Init(void)
 		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
 		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
 		D3DXVec3TransformCoord(&HitPos, &HitPos, &mtxHitEnemy);
+
+		//ダメージを設定
+		m_nDamage = BULLET_DAMAGE;
 
 		//終点を設定
 		m_endPos = HitPos;

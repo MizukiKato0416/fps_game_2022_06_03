@@ -35,9 +35,13 @@ public:
 	static CEnemy *Create(void);	// 生成
 	static void Recv(void);	// レシーブスレッド
 	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
+	static CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
 	CXanimModel *GetSelfModel(void) { return m_model; }
 	int GetPlayerNumber(void) { CCommunicationData::COMMUNICATION_DATA *data = m_commu_data[m_my_index].GetCmmuData(); return data->Player.nNumber; }
+	//ライフ取得処理
+	int GetLife(void) { return m_nLife; }
+	//ライフ設定処理
+	void SetLife(const int nLife) { m_nLife = nLife; }
 
 private:
 	void Attack(void);	// 攻撃
@@ -51,6 +55,7 @@ private:
 	D3DXVECTOR3 m_rot;		// 向き
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
 	int m_my_index;	// 自分のプレイヤー番号
+	int m_nLife;			//ライフ
 };
 
 #endif
