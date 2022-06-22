@@ -585,6 +585,7 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 
 	if (m_is_first == false)
 	{
+		m_mesh.push_back(*mesh_container);
 		if (mesh_container->pSkinInfo != NULL)
 		{
 			LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)mesh_container->m_BoneBuffer->GetBufferPointer();	// ƒ{[ƒ“‚Ì”‚Ü‚í‚·
