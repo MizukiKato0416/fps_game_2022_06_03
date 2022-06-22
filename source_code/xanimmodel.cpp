@@ -585,7 +585,6 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 
 	if (m_is_first == false)
 	{
-		m_mesh.push_back(*mesh_container);
 		if (mesh_container->pSkinInfo != NULL)
 		{
 			LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)mesh_container->m_BoneBuffer->GetBufferPointer();	// ボーンの数まわす
@@ -601,6 +600,7 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
 						m_matx_bone.push_back(matrix);
+						m_mesh.push_back(*mesh_container);
 
 						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 					}
@@ -628,6 +628,7 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
 						m_matx_bone[nCntWeight] = matrix;
+						m_mesh[nCntWeight] = *mesh_container;
 
 						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 					}
