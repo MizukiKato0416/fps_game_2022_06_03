@@ -7,7 +7,7 @@
 //*****************************************************************************
 //コンストラクタ
 //*****************************************************************************
-CMouseTracking::CMouseTracking(int nPriority) : CEffect(nPriority)
+CMouseTracking::CMouseTracking(PRIORITY priorty) : CEffect(priorty)
 {
 	m_move = {};
 	m_Vec = {};
@@ -30,7 +30,7 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	D3DCOLORVALUE Mincolor,
 	D3DXVECTOR2 Size,
 	D3DXVECTOR2 MinSize,
-	int nLife, int nType,
+	int nLife, string nType,
 	D3DXVECTOR3 Endpos,
 	int Diffusion,
 	int UninitVectl,
@@ -62,8 +62,7 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	m_fAngle = (float)atan2(m_Vec.x, m_Vec.y);		//角度
 
 	m_fAngle += randAngle;
-	m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
-	SetPosition(m_pos);
+	m_pos = D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
 
 	return S_OK;
@@ -119,7 +118,7 @@ CMouseTracking *CMouseTracking::Create(D3DXVECTOR3 pos,
 	D3DCOLORVALUE Mincolor,
 	D3DXVECTOR2 Size,
 	D3DXVECTOR2 MinSize,
-	int nLife, int nType,
+	int nLife, string nType,
 	D3DXVECTOR3 Endpos,
 	int Diffusion,
 	int UninitVectl,
@@ -129,7 +128,7 @@ CMouseTracking *CMouseTracking::Create(D3DXVECTOR3 pos,
 	D3DXVECTOR3 rot)
 {
 	CMouseTracking *pMouseTracking = NULL;
-	pMouseTracking = new CMouseTracking(CManager::PRIORITY_EFFECT);		//メモリ確保
+	pMouseTracking = new CMouseTracking(CObject::PRIORITY::EFFECT2D);		//メモリ確保
 										//NULLチェック
 	if (pMouseTracking != NULL)
 	{
