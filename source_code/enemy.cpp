@@ -194,7 +194,15 @@ void CEnemy::Recv(void)
 //=============================================================================
 void CEnemy::Attack(void)
 {
-	
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[m_my_index].GetCmmuData();
+
+	for (int bullet_count = 0; bullet_count < MAX_BULLET; bullet_count++)
+	{
+		if (pData->Bullet[bullet_count].bUse == true)
+		{
+			pData->Bullet[bullet_count].bUse = false;
+		}
+	}
 }
 
 //=============================================================================

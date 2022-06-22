@@ -44,8 +44,9 @@ public:
 		D3DXVECTOR3 BigenPos;	// 弾の位置
 		D3DXVECTOR3 EndPos;	// 弾の位置
 		int nCollEnemy;	// 当てた相手の番号
-		bool bEnemyHit;	// 当たったどうか
-		bool bObjectHit;	// 当たったどうか
+		int nDamage;	// ダメージ
+		bool bHit;	// 当たったかどうか
+		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
 
 	typedef struct

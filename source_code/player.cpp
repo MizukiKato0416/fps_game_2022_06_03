@@ -22,7 +22,6 @@
 #include "tcp_client.h"
 #include "communicationdata.h"
 #include "game01.h"
-#include <thread>
 #include "PresetSetEffect.h"
 #include "bullet.h"
 #include "gunmodel.h"
@@ -575,6 +574,12 @@ void CPlayer::Shot(void)
 	CInputMouse *pInputMouse;
 	pInputMouse = CManager::GetInstance()->GetInputMouse();
 
+	// 通信データ取得処理
+	CCommunicationData::COMMUNICATION_DATA *pData;	
+	pData = m_commu_data.GetCmmuData();
+
+	CBullet *pBullet;	// 弾のポインタ
+
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
 		//撃つアニメーションでなかったら
@@ -603,7 +608,20 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			//弾の生成
-			CBullet::Create();
+			pBullet = CBullet::Create();
+
+			for (int nBullet = 0; nBullet < MAX_BULLET; nBullet++)
+			{
+				// 弾を使ってなかったら
+				if (pData->Bullet[nBullet].bUse == false)
+				{
+					// 情報を設定
+					pData->Bullet[nBullet].nCollEnemy = pBullet->GetHitPlayerNum();
+					pData->Bullet[nBullet].nDamage = pBullet->GetHitPlayerNum();
+					pData->Bullet[nBullet].bHit = true;
+					pData->Bullet[nBullet].bUse = true;
+				}
+			}
 		}
 	}
 	else

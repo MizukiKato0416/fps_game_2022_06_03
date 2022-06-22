@@ -173,8 +173,6 @@ void CGame01::FirstContact(void)
 	CEnemy *enemy = nullptr;
 	char recv[MAX_COMMU_DATA];
 
-	m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-
 	pClient->Connect();
 
 	if (pClient->GetConnect() == true)
@@ -184,19 +182,23 @@ void CGame01::FirstContact(void)
 		switch (DataBuf->Player.nNumber)
 		{
 		case 1:
-			m_pPlayer->SetPos(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 2:
-			m_pPlayer->SetPos(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 3:
-			m_pPlayer->SetPos(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 4:
-			m_pPlayer->SetPos(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		}
 		m_pPlayer->SetCommuData(*DataBuf);
+	}
+	else
+	{
+		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
 	m_pEnemy.push_back(CEnemy::Create());
 	m_pEnemy.push_back(CEnemy::Create());
