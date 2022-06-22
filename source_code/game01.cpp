@@ -184,16 +184,16 @@ void CGame01::FirstContact(void)
 		switch (DataBuf->Player.nNumber)
 		{
 		case 1:
-			m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+			m_pPlayer->SetPos(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
 			break;
 		case 2:
-			m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+			m_pPlayer->SetPos(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f));
 			break;
 		case 3:
-			m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+			m_pPlayer->SetPos(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
 			break;
 		case 4:
-			m_pPlayer->SetPos(D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
+			m_pPlayer->SetPos(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f));
 			break;
 		}
 		m_pPlayer->SetCommuData(*DataBuf);
