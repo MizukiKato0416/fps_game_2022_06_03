@@ -26,18 +26,21 @@
 #include "PresetSetEffect.h"
 #include "bullet.h"
 #include "gunmodel.h"
+#include "object2D.h"
 
 //================================================
 //マクロ定義
 //================================================
-#define PLAYER_JUMP							(15.0f)									//ジャンプ力
-#define PLAYER_GRAVITY						(1.0f)									//重力の大きさ
-#define PLAYER_WALK_SPEED					(5.0f)									//歩き移動の移動量
-#define PLAYER_RUN_SPEED					(8.0f)									//走り移動の移動量
-#define PLAYER_ADS_WALK_SPEED				(3.0f)									//ADS中の移動速度
+#define PLAYER_JUMP							(16.0f)									//ジャンプ力
+#define PLAYER_GRAVITY						(1.2f)									//重力の大きさ
+#define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
+#define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
+#define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, 96.0f, 2.0f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.0f, 2.0f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
+#define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 
 //================================================
 //デフォルトコンストラクタ
@@ -58,6 +61,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_fMoveSpeed = 0.0f;
 	m_nCounter = 0;
 	m_bAds = false;
+	m_pCloss = nullptr;
 }
 
 //================================================
@@ -123,6 +127,9 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
+	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
+
 	return S_OK;
 }
 
@@ -164,12 +171,6 @@ void CPlayer::Update(void)
 
 	//腰の処理
 	Chest();
-
-	//射撃処理
-	Shot();
-
-	//ADS処理
-	ADS();
 
 	//移動処理
 	Move();
@@ -220,7 +221,7 @@ void CPlayer::Update(void)
 	}
 
 	//モデルとの当たり判定
-	int nHit = CModelSingle::Collision(this, m_size.x / 2.0f, 100.0f);
+	int nHit = CModelSingle::Collision(this, m_size.x / 2.0f, 150.0f);
 	//上からあたったとき
 	if (nHit == 1)
 	{
@@ -250,6 +251,11 @@ void CPlayer::Update(void)
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 
+	//射撃処理
+	Shot();
+
+	//ADS処理
+	ADS();
 }
 
 //================================================
@@ -280,6 +286,7 @@ void CPlayer::Draw(void)
 		rot = m_rot;
 	}
 
+	D3DXMATRIX *cameraMtx = nullptr;
 	//cameraのポインタ配列1番目のアドレス取得
 	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
 
@@ -298,6 +305,8 @@ void CPlayer::Draw(void)
 			//プレイヤーの向きを反映
 			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+			cameraMtx = pCamera->GetMtxPoint();
 		}
 	}
 
@@ -316,7 +325,7 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	m_pAnimModel->Draw();
+	//m_pAnimModel->Draw();
 
 	if (!m_bAds)
 	{
@@ -333,12 +342,11 @@ void CPlayer::Draw(void)
 	else
 	{
 		//銃と親子関係をつける
-		m_pGunModel->GetModel()->GetModel()->SetMtxParent(&m_mtxWorld);
+		m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
 	}
-	
 }
 
 //================================================
@@ -479,6 +487,11 @@ void CPlayer::Move(void)
 			m_fObjectiveRot = rotCamera.y + D3DX_PI / 2.0f;
 		}
 
+		if (m_bAds)
+		{
+			m_fMoveSpeed = PLAYER_ADS_WALK_SPEED;
+		}
+
 		//移動量加算
 		m_move.x = -sinf(m_fObjectiveRot + D3DX_PI) * m_fMoveSpeed;
 		m_move.z = -cosf(m_fObjectiveRot + D3DX_PI) * m_fMoveSpeed;
@@ -580,6 +593,7 @@ void CPlayer::Shot(void)
 
 			//オフセット位置設定
 			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
+			pos += m_posOld - m_pos;
 
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {}, {});
@@ -633,6 +647,34 @@ void CPlayer::ADS(void)
 			//ADS状態にする
 			m_bAds = true;
 		}
+		//cameraのポインタ配列1番目のアドレス取得
+		CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+		for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+		{
+			//cameraの取得
+			CCamera *pCamera = &**pCameraAddress;
+			if (pCamera != nullptr)
+			{
+				//cameraの画角取得
+				float fRadius = pCamera->GetRadius();
+				//既定より大きいとき
+				if (fRadius > PLAYER_ADS_CAMERA_RADIUS)
+				{
+					//減らす
+					fRadius -= PLAYER_ADS_CAMERA_ADD_RADIUS;
+
+					//既定より小さくなったら
+					if (fRadius < PLAYER_ADS_CAMERA_RADIUS)
+					{
+						//既定の値にする
+						fRadius = PLAYER_ADS_CAMERA_RADIUS;
+					}
+					//画角を設定
+					pCamera->SetRadius(fRadius);
+				}
+			}
+		}
 	}
 	else
 	{
@@ -641,6 +683,28 @@ void CPlayer::ADS(void)
 		{
 			//ADS状態をやめる
 			m_bAds = false;
+
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//cameraの画角取得
+					float fRadius = pCamera->GetRadius();
+					//既定より小さいとき
+					if (fRadius < CAMERA_RADIUS)
+					{
+						//既定の値にする
+						fRadius = CAMERA_RADIUS;
+						//画角を設定
+						pCamera->SetRadius(fRadius);
+					}
+				}
+			}
 		}
 	}
 }
@@ -668,14 +732,14 @@ void CPlayer::Chest(void)
 			D3DXMatrixRotationYawPitchRoll(&cameraMtx, 0.0f, rotCamera.x, 0.0f);
 
 			//マトリックスを取得
-			D3DXMATRIX *chest = nullptr;
-			chest = m_pAnimModel->GetMatrix("chest");
+			D3DXMATRIX *handR = nullptr;
+			handR = m_pAnimModel->GetMatrix("handR");
 
-			//chest->_11 = 10050.0f;
+			handR->_11 = 10050.0f;
 
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &cameraMtx);
 
-			m_pAnimModel->SetMatrix("chest", chest);
+			//m_pAnimModel->SetMatrix("handR", handR);
 		}
 	}
 }

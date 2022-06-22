@@ -12,6 +12,7 @@ class CGunModel;
 class CSparkle;
 class CWind;
 class CXanimModel;
+class CObject2D;
 
 //================================================
 //マクロ定義
@@ -51,6 +52,7 @@ public:
 	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
 	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data) { m_commu_data.SetCmmuData(data); }	// 通信データ設定処理
 	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// 通信データ取得処理
+	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
 
 private:
 	//メンバ関数
@@ -82,6 +84,7 @@ private:
 	float m_fMoveSpeed;								//移動する速さ
 	int m_nCounter;									//次の弾が出るまでのカウンター
 	bool m_bAds;									//ADSしているかどうか
+	CObject2D *m_pCloss;							//クロスヘア
 };
 
 #endif // !_PLAYER_H_

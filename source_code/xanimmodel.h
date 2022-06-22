@@ -39,6 +39,9 @@ public:
 	void CheckContainer(LPD3DXFRAME frame, D3DXMATRIX *check_mtx, string name);	// コンテナの名前のチェック
 	void CheckContainer(LPD3DXFRAME frame);	// コンテナ最小最大頂点のチェック
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
+	void SaveMeshContainer(LPD3DXFRAME frame);	// メッシュの設定
+	vector<MeshContainer> GetMesh(void) { return m_mesh; }	// メッシュの入手
+	vector<D3DXMATRIX> GetBoneMtx(void) { return m_matx_bone; }	// ボーンのマトリックスの入手
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
@@ -64,5 +67,7 @@ private:
 	D3DXVECTOR3 m_size;	// サイズ
 	D3DXVECTOR3 m_vtx_min;	// モデルの最小頂点
 	D3DXVECTOR3 m_vtx_max;	// モデルの最大頂点
+	vector<MeshContainer> m_mesh;		//メッシュ
+	vector<D3DXMATRIX> m_matx_bone;		//ボーンのマトリックス
 };
 #endif

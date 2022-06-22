@@ -17,6 +17,7 @@
 #define CAMERA_INIT_POS				(D3DXVECTOR3(0.0f, 50.0f, 0.0f))	//カメラの初期位置
 #define CAMERA_DEFAULT_POS			(D3DXVECTOR3(0.0f, 200.0f, 0.0f))	//カメラのデフォルト位置
 #define CAMERA_MAX_POS				(D3DXVECTOR3(0.0f, 350.0f, 0.0f))	//カメラの最大位置
+#define CAMERA_RADIUS				(90.0f)								//カメラの画角
 
 //================================================
 //クラスの定義
@@ -47,6 +48,8 @@ public:
 	D3DVIEWPORT9 *GetViewPort(void) { return &m_viewport; }
 	//ビューマトリックス取得処理
 	D3DXMATRIX GetViewMtx(void) { return m_mtxView; }
+	//マトリックス取得処理
+	D3DXMATRIX *GetMtxPoint(void) { return &m_mtxWorldCamera; }
 	//視点と注視点の距離加算処理
 	void AddDiffer(const float fAddDiffer) { m_fDifferVR += fAddDiffer; }
 	//視点と注視点の距離設定処理
@@ -61,12 +64,16 @@ public:
 	void SetRotateY(const bool bRotateY) { m_bRotateY = bRotateY; }
 	//ワールド座標からスクリーン座標への変換
 	D3DXVECTOR3 WorldPosToScreenPos(D3DXVECTOR3 pos);
-
+	//画角取得処理
+	float GetRadius(void) { return m_fRadius; }
+	//画角設定処理
+	void SetRadius(const float fRadius) { m_fRadius = fRadius; }
 
 private:
 	//メンバ関数
 	void Rotate(void);						//回転処理
 	void MainCameraUpdate(void);			//メインカメラの更新処理
+	void SetWorldMtx(void);					//ワールドマトリックス設定処理
 
 	D3DXVECTOR3 m_posV;						//現在の視点
 	D3DXVECTOR3 m_posVDest;					//目的の視点
@@ -85,6 +92,7 @@ private:
 	bool m_bRotateY;						//カメラY軸が回転中かどうか
 	int m_nNum;								//cameraの個体識別番号
 	float m_fDifferVR;						//視点と注視点の距離
+	float m_fRadius;						//画角
 };
 
 #endif //!_CAMERA_H_

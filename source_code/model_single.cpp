@@ -662,7 +662,7 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					D3DXVECTOR3 objectPos = pos;
 					objectPos.y = ((vecNor[5].x * vecPos[5].x) - (vecNor[5].z * vecPos[5].z)) / vecNor[5].y;
 
-					objectPos.y += vecPos[5].y + fHeight;
+					objectPos.y += vtxPos[5].y - fHeight;
 
 					nHit = 2;
 					pObject->SetPos(objectPos);

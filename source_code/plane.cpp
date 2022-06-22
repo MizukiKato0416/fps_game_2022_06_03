@@ -8,10 +8,8 @@
 #include "object3D.h"
 
 //マクロ定義
-#define TEXTURE_FILENAME_3D "data/Tex3DNameRead.txt"
 
 //静的メンバ変数
-int CPlane::m_nMaxTex = 0;
 
 CPlane::CPlane(PRIORITY priorty) : CObject(priorty)
 {
@@ -124,7 +122,7 @@ void CPlane::Draw()
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
 	//頂点フォーマット
 	pDevice->SetFVF(FVF_VERTEX_3D);
-	if (m_nTexType != -1)
+	if (buf != NULL)
 	{
 		pDevice->SetTexture(0, buf);    //テクスチャの設定
 	}
@@ -143,14 +141,6 @@ void CPlane::Draw()
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0x00);
 }
-//=============================================================================
-// テクスチャ破棄
-//=============================================================================
-void CPlane::UninitTexture()
-{
-
-}
-
 //作成
 CPlane *CPlane::Create()
 {
@@ -198,51 +188,6 @@ void CPlane::ChangeColor(D3DXCOLOR col)
 	m_pVtxBuff->Unlock();
 }
 
-#if 0
-//=============================================================================
-// テクスチャ生成
-//=============================================================================
-//void CPlane::CreateTextureFiled()
-//{
-//	// 頂点情報を設定
-//	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();//デバイスの取得
-//
-//	//ファイル読み込み
-//	char aFile[256];
-//	FILE *pFile = fopen(TEXTURE_FILENAME_3D, "r");
-//
-//	int nCntTex = 0;
-//
-//	if (pFile != NULL)
-//	{
-//		while (true)
-//		{
-//			fscanf(pFile, "%s", &aFile[0]);
-//
-//			if (strcmp(&aFile[0], "NUM_TEXTURE") == 0)	//NUM_TEXTUREの文字列
-//			{
-//				fscanf(pFile, "%s", &aFile[0]);
-//				fscanf(pFile, "%d", &m_nMaxTex);//使用するテクスチャ数を読み込む
-//			}
-//
-//			if (strcmp(&aFile[0], "TEXTURE_FILENAME") == 0) //TEXTURE_FILENAMEの文字列
-//			{
-//				fscanf(pFile, "%s", &aFile[0]);
-//				fscanf(pFile, "%s", &aFile[0]);
-//				D3DXCreateTextureFromFile(pDevice, &aFile[0], &m_pTexture[nCntTex]);
-//				nCntTex++;
-//			}
-//
-//			if (strcmp(&aFile[0], "END_SCRIPT") == 0) //END_SCRIPTの文字列を見つけたら
-//			{
-//				break;
-//			}
-//
-//		}
-//	}
-//	fclose(pFile);
-//}
-#endif
 //=============================================================================
 //カラー変更
 //=============================================================================

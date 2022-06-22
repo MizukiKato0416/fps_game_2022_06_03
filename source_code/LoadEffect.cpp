@@ -207,7 +207,8 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 				if (strcmp(&aFile[0], "TEXTURE") == 0)		//テクスチャ
 				{
 					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &nTexture);
+					fscanf(pFile, "%s", &aFile[0]);
+					nTexture = &aFile[0];
 				}
 				if (strcmp(&aFile[0], "DISTANCE") == 0)		//発生距離
 				{
@@ -418,7 +419,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 				if (strcmp(&aFile[0], "TEXNUM") == 0)	//テクスチャ移動量
 				{
 					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f", &TexNum);
+					fscanf(pFile, "%f %f", &TexNum.x, &TexNum.y);
 				}
 				if (strcmp(&aFile[0], "SECONDTYPE") == 0)	//頂点数
 				{

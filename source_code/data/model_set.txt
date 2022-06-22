@@ -3,20 +3,320 @@
 //Author: â¡ì°êêà®
 //-----------------------------------------------
 SET_MODEL
+pas = outer_wall000.x
+pos = -2686.74 0.00 5452.35
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = 2559.32 0.00 5472.11
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = 5558.52 0.00 2642.91
+rot = 0.00 -1.65 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = 5311.96 0.00 -2166.75
+rot = 0.00 -1.59 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = 2580.02 -142.60 -5506.38
+rot = 0.00 -3.18 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = -2886.70 -142.60 -5401.96
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = -5599.03 0.00 -2811.69
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = outer_wall000.x
+pos = -5555.67 -213.90 2326.20
+rot = 0.00 -1.53 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
 pas = container_000.x
-pos = 1000.00 0.00 -1000.00
+pos = -914.63 22.60 -541.93
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
 SET_MODEL
 pas = container_000.x
-pos = 1500.00 0.00 -1000.00
+pos = -413.75 0.00 -468.64
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -330.58 0.00 594.24
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -334.45 0.00 1587.53
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = 171.62 0.00 260.90
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -234.95 52.50 181.92
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -52.45 -31.50 182.33
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -916.72 0.00 447.05
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -1124.62 0.00 441.28
+rot = 0.00 -3.15 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1024.62 0.00 845.39
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1016.76 207.00 847.30
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1013.07 0.00 1657.63
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1009.88 202.40 1657.96
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -911.52 0.00 2068.05
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -1112.96 0.00 2057.96
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -397.99 0.00 1961.48
+rot = 0.00 -1.59 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -1607.02 0.00 2070.41
+rot = 0.00 1.59 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2573.33 0.00 2085.55
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_001.x
+pos = -2419.51 52.80 677.85
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_001.x
+pos = -2421.15 55.50 313.35
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2412.42 55.50 482.79
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2595.94 55.50 482.34
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2417.78 246.40 485.75
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2599.68 237.60 478.92
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2431.15 0.00 176.72
+rot = 0.00 -1.56 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2943.23 0.00 281.34
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2935.39 0.00 1929.78
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -3285.18 0.00 672.09
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -3281.65 0.00 1656.63
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
 SET_MODEL
 pas = container_001.x
-pos = 1000.00 0.00 -1000.00
+pos = -3099.31 345.10 1580.73
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_001.x
+pos = -3113.01 340.80 590.73
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2943.73 371.60 519.39
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -2930.80 375.00 2324.49
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -3089.15 125.00 440.85
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -3101.37 162.50 1771.06
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2893.98 -12.50 1982.37
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2891.16 62.50 1841.38
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -2893.36 125.00 1692.08
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -3289.11 350.00 1572.50
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -3284.97 356.80 1014.94
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_000.x
+pos = -3440.52 391.80 2069.93
+rot = 0.00 -1.62 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1202.73 0.00 47.85
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1205.42 178.80 21.09
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1826.92 0.00 57.82
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box.x
+pos = -1822.82 191.10 63.66
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL

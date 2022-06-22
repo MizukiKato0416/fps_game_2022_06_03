@@ -19,22 +19,17 @@
 //=============================================================================
 // 静的メンバ変数宣言
 //=============================================================================
-CCommunicationData CEnemy::m_commu_data[MAX_PLAYER];
-#ifdef _DEBUG
-bool CEnemy::m_debug_cennect = false;	// デバッグ用
-#endif //_DEBUG
+CCommunicationData CEnemy::m_commu_data[MAX_PLAYER] = {};
+int CEnemy::m_create_count = 0;
+bool CEnemy::m_create_thread = false;
 
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
 CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 {
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		m_pos[count_enemy] = { 0.0f, 0.0f, 0.0f };
-		m_rot[count_enemy] = { 0.0f, 0.0f, 0.0f };
-		m_commu_data[count_enemy].GetCmmuData()->Rest();
-	}
+	m_pos = { 0.0f, 0.0f, 0.0f };
+	m_rot = { 0.0f, 0.0f, 0.0f };
 }
 
 //=============================================================================
@@ -50,16 +45,21 @@ CEnemy::~CEnemy()
 //=============================================================================
 HRESULT CEnemy::Init(void)
 {
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	m_my_index = m_create_count;
+	m_create_count++;
+
+	m_model = CXanimModel::Create("data/motion.x");
+	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
+	m_pGunModel = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
+
+	if (m_create_thread == false)
 	{
-		m_model[count_enemy] = CXanimModel::Create("data/motion.x");
-		m_model[count_enemy]->ChangeAnimation("nutral", 60.0f / 4800.0f);
-		m_pGunModel[count_enemy] = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
+		std::thread th(Recv);
+
+		th.detach();
+
+		m_create_thread = true;
 	}
-
-	std::thread th(Recv);
-
-	th.detach();
 
 	return S_OK;
 }
@@ -70,10 +70,7 @@ HRESULT CEnemy::Init(void)
 void CEnemy::Uninit(void)
 {
 	Release();
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		m_model[count_enemy]->Uninit();
-	}
+	m_model->Uninit();
 }
 
 //=============================================================================
@@ -81,10 +78,7 @@ void CEnemy::Uninit(void)
 //=============================================================================
 void CEnemy::Update(void)
 {
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		m_model[count_enemy]->Update();
-	}
+	m_model->Update();
 	
 	Move();
 	Attack();
@@ -98,46 +92,44 @@ void CEnemy::Draw(void)
 	LPDIRECT3DDEVICE9 pDevice; // デバイスのポインタ
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスを取得する
 
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		//--------------------------------------
-		//プレイヤー(原点)のマトリックスの設定
-		//--------------------------------------
-		D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	//--------------------------------------
+	//プレイヤー(原点)のマトリックスの設定
+	//--------------------------------------
+	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
 
-		D3DXMatrixIdentity(&m_mtx_wld[count_enemy]);	//マトリックス初期化
+	D3DXMatrixIdentity(&m_mtx_wld);	//マトリックス初期化
 
-										//向きの設定
-		D3DXMatrixRotationYawPitchRoll(&mtxRot,
-			m_rot[count_enemy].y,
-			m_rot[count_enemy].x,
-			m_rot[count_enemy].z);
+	//向きの設定
+	D3DXMatrixRotationYawPitchRoll(&mtxRot,
+		m_rot.y,
+		m_rot.x,
+		m_rot.z);
 
-		D3DXMatrixMultiply(&m_mtx_wld[count_enemy],
-			&m_mtx_wld[count_enemy],
-			&mtxRot);
-		//位置
-		D3DXMatrixTranslation(&mtxTrans,
-			m_pos[count_enemy].x,
-			m_pos[count_enemy].y,
-			m_pos[count_enemy].z);
+	D3DXMatrixMultiply(&m_mtx_wld,
+		&m_mtx_wld,
+		&mtxRot);
+	//位置
+	D3DXMatrixTranslation(&mtxTrans,
+		m_pos.x,
+		m_pos.y,
+		m_pos.z);
 
-		D3DXMatrixMultiply(&m_mtx_wld[count_enemy],
-			&m_mtx_wld[count_enemy],
-			&mtxTrans);
-		//マトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD,
-			&m_mtx_wld[count_enemy]);
-		m_model[count_enemy]->Draw();
+	D3DXMatrixMultiply(&m_mtx_wld,
+		&m_mtx_wld,
+		&mtxTrans);
+	//マトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD,
+		&m_mtx_wld);
 
-		//マトリックスを取得
-		D3DXMATRIX *hand = nullptr;
-		hand = m_model[count_enemy]->GetMatrix("handL");
+	m_model->Draw();
 
-		//銃と親子関係をつける
-		m_pGunModel[count_enemy]->GetModel()->SetMtxParent(hand);
-		m_pGunModel[count_enemy]->GetModel()->SetObjParent(true);
-	}
+	//マトリックスを取得
+	D3DXMATRIX *hand = nullptr;
+	hand = m_model->GetMatrix("handL");
+
+	//銃と親子関係をつける
+	m_pGunModel->GetModel()->SetMtxParent(hand);
+	m_pGunModel->GetModel()->SetObjParent(true);
 }
 
 //=============================================================================
@@ -181,9 +173,6 @@ void CEnemy::Recv(void)
 			}
 			else
 			{
-#ifdef _DEBUG
-				m_debug_cennect = true;
-#endif //_DEBUG
 				memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				m_commu_data[count_enemy].SetCmmuData(*pData);
 			}
@@ -194,9 +183,6 @@ void CEnemy::Recv(void)
 		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
 		pData->bConnect = false;
 	}
-#ifdef _DEBUG
-	m_debug_cennect = false;
-#endif //_DEBUG
 }
 
 //=============================================================================
@@ -212,28 +198,23 @@ void CEnemy::Attack(void)
 //=============================================================================
 void CEnemy::Move(void)
 {
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData(); 
-		string now_motion;
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[m_my_index].GetCmmuData(); 
+	string now_motion;
+	string commu_motion = pData->Player.aMotion[0];
 
-		m_pos[count_enemy] = pData->Player.Pos;
-		m_rot[count_enemy] = pData->Player.Rot;
-		
-		now_motion = m_model[count_enemy]->GetAnimation();
-		if (now_motion != pData->Player.Motion && pData->bConnect == true)
+	if (pData->bConnect == true)
+	{
+		m_pos = pData->Player.Pos;
+		m_rot = pData->Player.Rot;
+
+		now_motion = m_model->GetAnimation();
+		if (now_motion != commu_motion && pData->bConnect == true)
 		{
-			m_model[count_enemy]->ChangeAnimation(pData->Player.Motion, pData->Player.fMotionSpeed);
+			m_model->ChangeAnimation(commu_motion, pData->Player.fMotionSpeed);
 		}
-#ifdef _DEBUG
-		if (m_debug_cennect)
-		{
-			int n = 0;
-		}
-		else if (!m_debug_cennect)
-		{
-			int n = 0;
-		}
-#endif //_DEBUG
+	}
+	else
+	{
+		m_pos.y = -100;
 	}
 }

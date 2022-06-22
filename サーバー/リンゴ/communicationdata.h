@@ -1,67 +1,68 @@
-//====================================================
+ï»¿//====================================================
 //
-// ƒRƒ~ƒ…ƒjƒP[ƒVƒ‡ƒ“ƒf[ƒ^‚Ìƒwƒbƒ_[ƒtƒ@ƒCƒ‹(communicationdata.h)
-// Author : ‰H’¹ ‘¾ˆê
+// ã‚³ãƒŸãƒ¥ãƒ‹ã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã®ãƒ˜ãƒƒãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«(communicationdata.h)
+// Author : ç¾½é³¥ å¤ªä¸€
 //
 //====================================================
 #ifndef _COMUNICASION_DATA_H_
 #define _COMUNICASION_DATA_H_
 
 //-------------------------------
-// ƒCƒ“ƒNƒ‹[ƒh
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰
 //-------------------------------
 #include "main.h"
 #include "d3dx9.h"
 #include <string>
 
 //-------------------------------
-// ƒ}ƒNƒ’è‹`
+// ãƒã‚¯ãƒ­å®šç¾©
 //-------------------------------
 #define MAX_BULLET (30)
 #define MAX_PLAYER (3)
+#define MAX_MOTION_DATA (64)
+#define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (2048)
 
 //-------------------------------
-// Class‚Ì’è‹`
+// Classã®å®šç¾©
 //-------------------------------
 class CCommunicationData
 {
 public:
 	//---------------------------
-	// \‘¢‘Ì
+	// æ§‹é€ ä½“
 	//---------------------------
 	typedef struct
 	{
-		int nNumber;	// ƒvƒŒƒCƒ„[‚ÌƒCƒ“ƒfƒbƒNƒX
-		float fMotionSpeed;	// ƒ‚[ƒVƒ‡ƒ“‚ÌƒXƒs[ƒh
-		string Motion;	// ƒ‚[ƒVƒ‡ƒ“‚Ìí—Ş
-		D3DXVECTOR3 Pos;	// ƒvƒŒƒCƒ„[‚ÌˆÊ’u
-		D3DXVECTOR3 Rot;	// Šp“x
+		int nNumber;	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		float fMotionSpeed;	// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¹ãƒ”ãƒ¼ãƒ‰
+		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®
+		D3DXVECTOR3 Pos;	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®
+		D3DXVECTOR3 Rot;	// è§’åº¦
 	} PLAYUER_DATA;
 
 	typedef struct
 	{
-		D3DXVECTOR3 BigenPos;	// ’e‚ÌˆÊ’u
-		D3DXVECTOR3 EndPos;	// ’e‚ÌˆÊ’u
-		int nCollEnemy;	// “–‚Ä‚½‘Šè‚Ì”Ô†
-		bool bEnemyHit;	// “–‚½‚Á‚½‚Ç‚¤‚©
-		bool bObjectHit;	// “–‚½‚Á‚½‚Ç‚¤‚©
+		D3DXVECTOR3 BigenPos;	// å¼¾ã®ä½ç½®
+		D3DXVECTOR3 EndPos;	// å¼¾ã®ä½ç½®
+		int nCollEnemy;	// å½“ã¦ãŸç›¸æ‰‹ã®ç•ªå·
+		bool bEnemyHit;	// å½“ãŸã£ãŸã©ã†ã‹
+		bool bObjectHit;	// å½“ãŸã£ãŸã©ã†ã‹
 	} BULLET_DATA;
 
 	typedef struct
 	{
-		PLAYUER_DATA Player;	// ƒvƒŒƒCƒ„[ƒf[ƒ^
-		BULLET_DATA Bullet[MAX_BULLET];	// ’eƒf[ƒ^
-		bool bConnect;	// Ú‘±Šm”F
-		void Rest(void);	// •Ï”ƒŠƒZƒbƒg
+		PLAYUER_DATA Player;	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿
+		BULLET_DATA Bullet[MAX_BULLET];	// å¼¾ãƒ‡ãƒ¼ã‚¿
+		bool bConnect;	// æ¥ç¶šç¢ºèª
 	} COMMUNICATION_DATA;
 
-	CCommunicationData();	// ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
-	~CCommunicationData();	// ƒfƒtƒHƒ‹ƒgƒfƒXƒgƒ‰ƒNƒ^
-	COMMUNICATION_DATA *GetCmmuData(void) { return &m_CommuData; }	// ƒf[ƒ^‚ÌƒZƒbƒ^[
-	void SetCmmuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// ƒf[ƒ^‚ÌƒQƒbƒ_[
+	CCommunicationData();	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	~CCommunicationData();	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	COMMUNICATION_DATA *GetCmmuData(void) { return &m_CommuData; }	// ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒã‚¿ãƒ¼
+	void SetCmmuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// ãƒ‡ãƒ¼ã‚¿ã®ã‚²ãƒƒãƒ€ãƒ¼
 private:
-	COMMUNICATION_DATA m_CommuData;	// ƒf[ƒ^
+	COMMUNICATION_DATA m_CommuData;	// ãƒ‡ãƒ¼ã‚¿
 };
 
 #endif // _TCP_CLIENT_H_

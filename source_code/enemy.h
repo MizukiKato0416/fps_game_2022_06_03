@@ -36,20 +36,20 @@ public:
 	static void Recv(void);	// レシーブスレッド
 	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
 	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
+	CXanimModel *GetSelfModel(void) { return m_model; }
 
 private:
 	void Attack(void);	// 攻撃
 	void Move(void);	// 移動
 	static CCommunicationData m_commu_data[MAX_PLAYER];	// 通信データ
-	CXanimModel *m_model[MAX_PLAYER];	// モデル
-	CModelSingle *m_pGunModel[MAX_PLAYER];			// 銃モデル
-	D3DXVECTOR3 m_pos[MAX_PLAYER];		// 位置
-	D3DXVECTOR3 m_rot[MAX_PLAYER];		// 向き
-	D3DXMATRIX m_mtx_wld[MAX_PLAYER];	// ワールドマトリックス
-	int m_my_index[MAX_PLAYER];	// 自分のプレイヤー番号
-#ifdef _DEBUG
-	static bool m_debug_cennect;	// デバッグ用
-#endif //_DEBUG
+	static int m_create_count;	// 生成した数
+	static bool m_create_thread;	// スレッドを分けたか
+	CXanimModel *m_model;	// モデル
+	CModelSingle *m_pGunModel;			// 銃モデル
+	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_rot;		// 向き
+	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
+	int m_my_index;	// 自分のプレイヤー番号
 };
 
 #endif

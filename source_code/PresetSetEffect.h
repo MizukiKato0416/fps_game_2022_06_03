@@ -199,7 +199,9 @@ public:
 
 	static CPresetEffect *CreateOrderMenu(int nDeley, int nPresetNum, int nOrder[MAX_ORDER_3D]);
 
-	static void ResetPattern() { m_nEffectPattern = 0; }
+	static void ResetPattern() { m_nEffectPattern2d = 0; 
+	m_nEffectPattern3d = 0;
+	}
 	static void ResetOrder() { m_nMaxOrderCount = 0; }
 
 	HRESULT Init();
@@ -213,7 +215,8 @@ private:
 	static EFFECT_STATE3D m_EffectState3D[MAX_EFFECTPATTERN_3D];
 	static ORDER_PRESET m_Order3D[MAX_ORDER_3D][MAX_ORDER_3D];
 
-	static int m_nEffectPattern;	//複数のやつ読み込めるようにするやつ
+	static int m_nEffectPattern2d;	//複数のやつ読み込めるようにするやつ
+	static int m_nEffectPattern3d;	//複数のやつ読み込めるようにするやつ
 
 	static int m_nMaxOrderCount;	//呼び出す最大数カウント
 	static int m_PrticleCreateTime;	//パーティクル生成間隔計算

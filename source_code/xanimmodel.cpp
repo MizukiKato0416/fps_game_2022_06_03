@@ -202,6 +202,11 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 	// カリング
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
+	if (m_matx_bone.size() > 0)
+	{
+		m_matx_bone.clear();
+	}
+
 	if (mesh_container->pSkinInfo != NULL)
 	{
 		LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)mesh_container->m_BoneBuffer->GetBufferPointer();	// ボーンの数まわす
@@ -231,6 +236,7 @@ void CXanimModel::DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER conta
 				{
 					// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 					matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
+					m_matx_bone.push_back(matrix);
 
 					pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 				}
@@ -542,6 +548,27 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 	if (frame_data->pFrameFirstChild != NULL)
 	{
 		CheckContainer(frame_data->pFrameFirstChild);
+	}
+}
+
+//=============================================================================
+// 当たり判定用コンテナのセーブ
+//=============================================================================
+void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
+{
+	FrameData *frame_data = (FrameData*)frame;
+	m_mesh.push_back(*(MeshContainer*)frame_data->pMeshContainer);
+
+	// 兄弟がいれば再帰で呼び出す
+	if (frame_data->pFrameSibling != NULL)
+	{
+		SaveMeshContainer(frame_data->pFrameSibling);
+	}
+
+	// 子がいれば再帰で呼び出す
+	if (frame_data->pFrameFirstChild != NULL)
+	{
+		SaveMeshContainer(frame_data->pFrameFirstChild);
 	}
 }
 
