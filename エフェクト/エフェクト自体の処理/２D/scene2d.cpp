@@ -8,26 +8,20 @@
 #include "Scene2D.h"
 #include "manager.h"
 #include "Renderer.h"
-#include "keyboard.h"
 
 //=============================================================================
 // マクロ
 //=============================================================================
-#define FILENAMETEXT "data/Tex2DNameRead.txt"	//読み込むスクリプトファイル名
 
 //=============================================================================
 // 静的メンバ変数宣言
 //=============================================================================
-LPDIRECT3DTEXTURE9 CScene2D::m_Texture[MAX_TEXTURE] = {};
-int CScene2D::m_nMaxTex = 0;
-
 
 //=============================================================================
 // コンストラクタ
 //=============================================================================
-CScene2D::CScene2D(int nPriority) :CScene(nPriority)
+CScene2D::CScene2D(PRIORITY priorty) : CObject(priorty)
 {
-	m_Texture[MAX_TEXTURE] = {};
 	m_pVtxBuff = NULL;
 
 	m_Texpos = 0;
@@ -45,7 +39,7 @@ CScene2D::~CScene2D()
 //=============================================================================
 // ポリゴンの初期化
 //=============================================================================
-HRESULT CScene2D::Init(D3DXVECTOR3 pos)
+HRESULT CScene2D::Init()
 {
 	// 頂点情報を設定
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();//デバイスの取得
@@ -54,8 +48,6 @@ HRESULT CScene2D::Init(D3DXVECTOR3 pos)
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_2D) * 4, D3DUSAGE_WRITEONLY, FVF_VERTEX_2D, D3DPOOL_MANAGED, &m_pVtxBuff, NULL);
 	VERTEX_2D*pVtx;//頂点情報へのポインタ
 
-				   //メンバ変数に数値をセット
-	m_pos = pos;
 
 	//頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
@@ -143,6 +135,7 @@ void CScene2D::Update()
 void CScene2D::Draw()
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();//デバイスのポインタ
+	LPDIRECT3DTEXTURE9 buf = CManager::GetInstance()->GetTexture()->GetTexture(m_pTexture);
 
 	//アルファテスト関係
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
@@ -155,9 +148,9 @@ void CScene2D::Draw()
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);//頂点フォーマットの設定
 
-	if (m_nType != -1)
+	if (buf != NULL)
 	{
-		pDevice->SetTexture(0, m_Texture[m_nType]);//テクスチャの設定
+		pDevice->SetTexture(0, buf);//テクスチャの設定
 	}
 	else
 	{
@@ -174,22 +167,6 @@ void CScene2D::Draw()
 
 }
 
-//=============================================================================
-// テクスチャ破棄
-//=============================================================================
-void CScene2D::UninitTexture()
-{
-	//テクスチャ破棄
-	for (int nCnt = 0; nCnt < m_nMaxTex; nCnt++)
-	{
-		if (m_Texture[nCnt] != NULL)
-		{
-			m_Texture[nCnt]->Release();
-			m_Texture[nCnt] = NULL;
-		}
-	}
-
-}
 //=============================================================================
 // テクスチャ情報セット(テクスチャパターンの更新)
 //=============================================================================
@@ -324,7 +301,7 @@ void CScene2D::FadeColorChange(int Alpha)
 //=============================================================================
 // ポリゴン情報セット(回転)
 //=============================================================================
-void CScene2D::SetRotate(D3DXVECTOR3 pos, float Rotate, float Rotate2, float Vectol)
+void CScene2D::SetRotate(D3DXVECTOR3 pos, float Rotate, float /*Rotate2*/, float Vectol)
 {
 	VERTEX_2D*pVtx;//頂点情報へのポインタ
 
@@ -368,48 +345,4 @@ void CScene2D::SetWhidth(float Whidth)
 {
 	m_Size.x = Whidth;
 	//CScene2D::Update();
-}
-
-//=============================================================================
-// テクスチャ生成
-//=============================================================================
-void CScene2D::CreateTexture()
-{
-	// 頂点情報を設定
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();//デバイスの取得
-
-	//ファイル読み込み
-	char aFile[256];
-	FILE *pFile = fopen(FILENAMETEXT, "r");
-
-	int nCntTex = 0;
-
-	if (pFile != NULL)
-	{
-		while (true)
-		{
-			fscanf(pFile, "%s", &aFile[0]);
-
-			if (strcmp(&aFile[0], "NUM_TEXTURE") == 0)	//NUM_TEXTUREの文字列
-			{
-				fscanf(pFile, "%s", &aFile[0]);
-				fscanf(pFile, "%d", &m_nMaxTex);//使用するテクスチャ数を読み込む
-			}
-
-			if (strcmp(&aFile[0], "TEXTURE_FILENAME") == 0) //TEXTURE_FILENAMEの文字列
-			{
-				fscanf(pFile, "%s", &aFile[0]);
-				fscanf(pFile, "%s", &aFile[0]);
-				D3DXCreateTextureFromFile(pDevice, &aFile[0], &m_Texture[nCntTex]);
-				nCntTex++;
-			}
-
-			if (strcmp(&aFile[0], "END_SCRIPT") == 0) //END_SCRIPTの文字列を見つけたら
-			{
-				break;
-			}
-
-		}
-	}
-	fclose(pFile);
 }

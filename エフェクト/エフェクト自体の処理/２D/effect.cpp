@@ -11,7 +11,7 @@
 //*****************************************************************************
 //コンストラクタ
 //*****************************************************************************
-CEffect::CEffect(int nPriority) : CScene2D(nPriority)
+CEffect::CEffect(PRIORITY priorty) : CScene2D(priorty)
 {
 	m_Color = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_MinColor = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
@@ -28,21 +28,21 @@ CEffect::~CEffect()
 //*****************************************************************************
 //初期化
 //*****************************************************************************
-HRESULT CEffect::Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincolor, D3DXVECTOR2 Size, D3DXVECTOR2 MinSize, int nLife, int nType,int Synthetic)
+HRESULT CEffect::Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincolor, D3DXVECTOR2 Size, D3DXVECTOR2 MinSize, int nLife, string nType,int Synthetic)
 {
-	CScene2D::Init(pos);
+	CScene2D::Init();
 
+	m_pos = pos;
 	m_Color = color;
 	m_MinColor = Mincolor;
 
 	m_Size = Size;
 	m_MinSize = MinSize;
-
+	m_pTexture = nType;
 	m_nLife = nLife;
 	m_bUninit = false;
 	
 	nSynthetic = Synthetic;
-	CScene2D::SetTexture(nType);	//選択した番号のテクスチャを貼る
 	CScene2D::SetWhidth(m_Size.x);
 	CScene2D::SetHight(m_Size.y);
 

@@ -11,10 +11,10 @@
 class CEffect : public CScene2D
 {
 public:
-	CEffect(int nPriority = 3);
+	CEffect(PRIORITY priorty = PRIORITY::EFFECT3D);
 	virtual ~CEffect();
 
-	virtual HRESULT Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincolor, D3DXVECTOR2 Size, D3DXVECTOR2 MinSize, int nLife, int nType , int Synthetic);
+	virtual HRESULT Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincolor, D3DXVECTOR2 Size, D3DXVECTOR2 MinSize, int nLife, string nType , int Synthetic);
 	virtual void Uninit();
 	virtual void Update();
 	virtual void Draw();
