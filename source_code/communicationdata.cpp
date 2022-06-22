@@ -21,11 +21,11 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.Rot = { 0.0f, 0.0f, 0.0f };
 	for (int nCnt = 0; nCnt < MAX_BULLET; nCnt++)
 	{
-		m_CommuData.Bullet[nCnt].bEnemyHit = false;
 		m_CommuData.Bullet[nCnt].BigenPos = { 0.0f, 0.0f, 0.0f };
-		m_CommuData.Bullet[nCnt].bObjectHit = false;
 		m_CommuData.Bullet[nCnt].EndPos = { 0.0f, 0.0f, 0.0f };
 		m_CommuData.Bullet[nCnt].nCollEnemy = 0;
+		m_CommuData.Bullet[nCnt].bHit = false;
+		m_CommuData.Bullet[nCnt].bUse = false;
 	}
 }
 
