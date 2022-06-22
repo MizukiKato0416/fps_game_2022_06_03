@@ -124,6 +124,7 @@ void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 	// フレーム描画
 	DrawFrame(m_root_frame);
 	SaveMeshContainer(m_root_frame);
+	m_is_first = true;
 }
 
 //=============================================================================
@@ -599,6 +600,7 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
 						m_matx_bone.push_back(matrix);
+						m_mesh.push_back(*mesh_container);
 
 						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 					}
@@ -608,7 +610,6 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 				mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
 			}
 		}
-		m_is_first = false;
 	}
 	else
 	{
@@ -627,6 +628,7 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
 						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
 						m_matx_bone[nCntWeight] = matrix;
+						m_mesh[nCntWeight] = *mesh_container;
 
 						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
 					}
