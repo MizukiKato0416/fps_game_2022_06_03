@@ -37,7 +37,7 @@ public:
 	bool MapLimit(CObject* pObj);		//マップの移動制限
 	void FirstContact(void);
 	//敵のモデル取得処理
-	CEnemy* GetEnemy(void);
+	vector<CEnemy*> GetEnemy(void);
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理
@@ -45,7 +45,7 @@ private:
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
 	CMeshField *m_pMeshField;			//メッシュフィールドのポインタ
-	CEnemy *m_pEnemy;					//敵のモデルのポインタ
+	vector<CEnemy*> m_pEnemy;					//敵のモデルのポインタ
 };	
 
 #endif // !_GAME01_H_

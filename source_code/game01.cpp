@@ -31,7 +31,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 {
 	m_pPlayer = nullptr;
 	m_pMeshField = nullptr;
-	m_pEnemy = nullptr;
+	m_pEnemy.clear();
 }
 
 //================================================
@@ -198,13 +198,15 @@ void CGame01::FirstContact(void)
 		}
 		m_pPlayer->SetCommuData(*DataBuf);
 	}
-	m_pEnemy = CEnemy::Create();
+	m_pEnemy.push_back(CEnemy::Create());
+	m_pEnemy.push_back(CEnemy::Create());
+	m_pEnemy.push_back(CEnemy::Create());
 }
 
 //================================================
 //“G‚Ìƒ‚ƒfƒ‹æ“¾ˆ—
 //================================================
-CEnemy* CGame01::GetEnemy(void)
+vector<CEnemy*> CGame01::GetEnemy(void)
 {
 	return m_pEnemy;
 }
