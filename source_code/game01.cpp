@@ -185,10 +185,10 @@ void CGame01::FirstContact(void)
 			m_pPlayer = CPlayer::Create(D3DXVECTOR3(5000.0f, 1000.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 2:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-5000.0f, 1000.0f, -5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-5000.0f, 1000.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 3:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(5000.0f, 1000.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(5000.0f, 1000.0f, -5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 4:
 			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-5000.0f, 1000.0f, -5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));

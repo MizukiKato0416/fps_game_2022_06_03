@@ -29,7 +29,7 @@ public:
 	void Draw(void);	// 描画
 	void DrawMatrix(LPD3DXMATRIX matrix);	// フレームの描画
 	void DrawFrame(LPD3DXFRAME frame);	// フレームの描画(再帰処理)
-	void DrawMeshContainer(LPD3DXFRAME frame, LPD3DXMESHCONTAINER container);	// メッシュコンテナの描画(再帰処理)
+	void DrawMeshContainer(LPD3DXMESHCONTAINER container);	// メッシュコンテナの描画(再帰処理)
 	HRESULT AllocateAllBoneMatrix(LPD3DXFRAME frame);	// 全ボーンの描画用マトリックスの保存(再帰処理)
 	HRESULT AllocateBoneMatrix(LPD3DXMESHCONTAINER vontainer);	// 全ボーンの描画用マトリックスの保存(再帰処理)
 	static CXanimModel *Create(string type);	// 生成
@@ -40,6 +40,7 @@ public:
 	void CheckContainer(LPD3DXFRAME frame);	// コンテナ最小最大頂点のチェック
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
 	void SaveMeshContainer(LPD3DXFRAME frame);	// メッシュの設定
+	void SaveMeshContainer(LPD3DXMESHCONTAINER container);	// メッシュの設定
 	vector<MeshContainer> GetMesh(void) { return m_mesh; }	// メッシュの入手
 	vector<D3DXMATRIX> GetBoneMtx(void) { return m_matx_bone; }	// ボーンのマトリックスの入手
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
@@ -69,5 +70,6 @@ private:
 	D3DXVECTOR3 m_vtx_max;	// モデルの最大頂点
 	vector<MeshContainer> m_mesh;		//メッシュ
 	vector<D3DXMATRIX> m_matx_bone;		//ボーンのマトリックス
+	bool m_is_first;	// 最初だけフラグ
 };
 #endif
