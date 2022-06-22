@@ -31,6 +31,7 @@ public:
 	enum class PRIORITY
 	{
 		NONE = 0,			// なし
+		MESH_FIELD,			// メッシュフィールド
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
 		MODEL,				// モデル
@@ -39,7 +40,6 @@ public:
 		SHADOW,				// 影
 		EFFECT3D,			// パーティクル
 		EFFECT2D,			// パーティクル
-		MESH_FIELD,			// メッシュフィールド
 		UI,					// UI
 		FADE,				// フェード
 		MAX

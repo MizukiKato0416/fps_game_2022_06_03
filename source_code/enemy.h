@@ -42,6 +42,8 @@ public:
 	int GetLife(void) { return m_nLife; }
 	//ライフ設定処理
 	void SetLife(const int nLife) { m_nLife = nLife; }
+	//ワールドマトリックス取得処理
+	D3DXMATRIX GetMtx(void) { return m_mtx_wld; }
 
 private:
 	void Attack(void);	// 攻撃

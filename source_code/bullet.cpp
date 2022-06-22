@@ -188,79 +188,6 @@ HRESULT CBullet::Init(void)
 	//銃口のマトリックス
 	D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
-
-	//当たった敵のマトリックス
-	D3DXMATRIX mtxHitEnemy;
-	//当たった敵のポインタ
-	CEnemy* pHitEnemy = nullptr;
-	//オブジェクト情報を入れるポインタ
-	object.clear();
-
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
-	nProprty_Size = object.size();
-
-	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
-	{
-		//オブジェクトの種類が敵だったら
-		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
-		{
-			//敵にキャスト
-			CEnemy *pEnemy = nullptr;
-			pEnemy = (CEnemy*)object[nCnt];
-
-			//メッシュ取得
-			vector<MeshContainer> mesh = pEnemy->GetSelfModel()->GetMesh();
-			vector<D3DXMATRIX> mtxEnemy = pEnemy->GetSelfModel()->GetBoneMtx();
-			int nMeshNum = mesh.size();
-			int nNumParts = 0;
-
-			for (int nCntMesh = 0; nCntMesh < nMeshNum; nCntMesh++)
-			{
-				D3DXMATRIX modelInvMtx;
-				D3DXMATRIX modelMtx = mtxEnemy[nCntMesh];
-
-				D3DXMatrixIdentity(&modelInvMtx);
-				D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
-
-				D3DXVECTOR3 posV = posCameraV;
-
-				D3DXVECTOR3 endPos = posV + m_rayVec;
-				D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-				D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
-
-				D3DXVECTOR3 vec = endPos - posV;
-
-				//レイとメッシュの当たり判定
-				if (D3DXIntersect(mesh[nCntMesh].MeshData.pMesh, &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
-				{
-					//当たったとき
-					if (bHit)
-					{
-						if (m_fDiffer > fDiffer)
-						{
-							//距離を保存
-							m_fDiffer = fDiffer;
-							//当たったオブジェクトのマトリックスを保存
-							mtxHitEnemy = modelMtx;
-							//ポインタを保存
-							pHitEnemy = pEnemy;
-							//レイの方向を保存
-							rayVecHit = vec;
-							//カメラのローカル座標を保存
-							hitPosV = posV;
-							bHitEnemy = true;
-							bHitAny = false;
-							//当たった敵のプレイヤー番号取得
-							m_nPlayer = pEnemy->GetPlayerNumber();
-						}
-					}
-				}
-			}
-		}
-	}
-
-	
 	
 	//モデルと当たっていて敵に当たっていないとき
 	if (bHitAny)
@@ -281,25 +208,6 @@ HRESULT CBullet::Init(void)
 		m_endPos = HitPos;
 	}
 
-	//敵に当たっているとき
-	if (bHitEnemy)
-	{
-		D3DXVec3Normalize(&rayVecHit, &rayVecHit);
-		//レイのベクトルを算出した距離の分伸ばす
-		rayVecHit *= m_fDiffer;
-
-		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
-		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
-		D3DXVec3TransformCoord(&HitPos, &HitPos, &mtxHitEnemy);
-
-		//ダメージを設定
-		m_nDamage = BULLET_DAMAGE;
-
-		//終点を設定
-		m_endPos = HitPos;
-	}
-
-
 	float fMeshDiffer = 0.0f;
 	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
 	bool bCollMesh = CMeshField::Collision(meshHitPos, fMeshDiffer, posCameraV, m_endPos);
@@ -312,8 +220,9 @@ HRESULT CBullet::Init(void)
 			//モデルの当たった位置にエフェクトを出す
 			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
 			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
-			//弾痕　　最後の引数に回転入れてください
-			CPresetEffect::SetEffect3D(4, m_endPos, {}, {});
+			//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
+			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
+			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		}
 		else
 		{
@@ -330,7 +239,8 @@ HRESULT CBullet::Init(void)
 		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
 		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 		//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
-		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f,D3DX_PI / 2,D3DX_PI));
+		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
+		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f , 0.0f));
 	}
 	else if (!bCollMesh && bHitEnemy)
 	{//敵に当たったら

@@ -14,6 +14,7 @@
 #include "xanimmodel.h"
 #include "model.h"
 #include "model_single.h"
+#include "player.h"
 #include <thread>
 
 //=============================================================================
@@ -47,7 +48,7 @@ CEnemy::~CEnemy()
 HRESULT CEnemy::Init(void)
 {
 	SetObjType(CObject::OBJTYPE::ENEMY);
-	m_nLife = 100;
+	m_nLife = PLAYER_LIFE;
 
 	m_my_index = m_create_count;
 	m_create_count++;
@@ -227,6 +228,6 @@ void CEnemy::Move(void)
 	}
 	else
 	{
-		m_pos.y = 0;
+		m_pos.y = 100;
 	}
 }

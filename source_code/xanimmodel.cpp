@@ -21,7 +21,6 @@ CXanimModel::CXanimModel()
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_vtx_min = { 100000.0f, 100000.0f, 100000.0f };
 	m_vtx_max = { -100000.0f, -100000.0f, -100000.0f };
-	m_is_first = false;
 }
 
 //=============================================================================
@@ -123,8 +122,6 @@ void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 	UpdateFrame(m_root_frame, matrix);
 	// フレーム描画
 	DrawFrame(m_root_frame);
-	SaveMeshContainer(m_root_frame);
-	m_is_first = true;
 }
 
 //=============================================================================
@@ -545,37 +542,6 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 	if (frame_data->pFrameFirstChild != NULL)
 	{
 		CheckContainer(frame_data->pFrameFirstChild);
-	}
-}
-
-//=============================================================================
-// 当たり判定用コンテナのセーブ
-//=============================================================================
-void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
-{
-	FrameData *frame_data = (FrameData*)frame;
-	LPD3DXMESHCONTAINER container_data = frame_data->pMeshContainer;
-	MeshContainer *mesh_container = (MeshContainer*)container_data;
-
-	// コンテナの数だけ描画する
-	while (container_data != NULL)
-	{
-		m_mesh.push_back(*mesh_container);
-		m_matx_bone.push_back(frame_data->TransformationMatrix);
-
-		container_data = container_data->pNextMeshContainer;
-	}
-
-	// 兄弟がいれば再帰で呼び出す
-	if (frame_data->pFrameSibling != NULL)
-	{
-		SaveMeshContainer(frame_data->pFrameSibling);
-	}
-
-	// 子がいれば再帰で呼び出す
-	if (frame_data->pFrameFirstChild != NULL)
-	{
-		SaveMeshContainer(frame_data->pFrameFirstChild);
 	}
 }
 
