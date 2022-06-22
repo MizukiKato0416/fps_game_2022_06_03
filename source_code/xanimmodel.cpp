@@ -555,11 +555,13 @@ void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
 {
 	FrameData *frame_data = (FrameData*)frame;
 	LPD3DXMESHCONTAINER container_data = frame_data->pMeshContainer;
+	MeshContainer *mesh_container = (MeshContainer*)container_data;
 
 	// コンテナの数だけ描画する
 	while (container_data != NULL)
 	{
-		SaveMeshContainer(container_data);
+		m_mesh.push_back(*mesh_container);
+		m_matx_bone.push_back(frame_data->TransformationMatrix);
 
 		container_data = container_data->pNextMeshContainer;
 	}
@@ -574,70 +576,6 @@ void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
 	if (frame_data->pFrameFirstChild != NULL)
 	{
 		SaveMeshContainer(frame_data->pFrameFirstChild);
-	}
-}
-
-void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
-{
-	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
-	MeshContainer *mesh_container = (MeshContainer*)container;
-	pDevice = CManager::GetRenderer()->GetDevice();	//デバイスを取得する
-
-	if (m_is_first == false)
-	{
-		if (mesh_container->pSkinInfo != NULL)
-		{
-			LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)mesh_container->m_BoneBuffer->GetBufferPointer();	// ボーンの数まわす
-			for (DWORD nCntBone = 0; nCntBone < mesh_container->m_BoneNum; nCntBone++)
-			{
-				for (DWORD nCntWeight = 0; nCntWeight < mesh_container->m_BoneWeightNum; nCntWeight++)
-				{
-					DWORD matrix_index = bone_buffer[nCntBone].BoneId[nCntWeight];
-					D3DXMATRIX matrix;
-
-					if (matrix_index != UINT_MAX)
-					{
-						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
-						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
-						m_matx_bone.push_back(matrix);
-						m_mesh.push_back(*mesh_container);
-
-						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
-					}
-				}
-				pDevice->SetMaterial(&mesh_container->pMaterials[bone_buffer[nCntBone].AttribId].MatD3D);
-				pDevice->SetTexture(0, mesh_container->m_TextureList[bone_buffer[nCntBone].AttribId]);
-				mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
-			}
-		}
-	}
-	else
-	{
-		if (mesh_container->pSkinInfo != NULL)
-		{
-			LPD3DXBONECOMBINATION bone_buffer = (LPD3DXBONECOMBINATION)mesh_container->m_BoneBuffer->GetBufferPointer();	// ボーンの数まわす
-			for (DWORD nCntBone = 0; nCntBone < mesh_container->m_BoneNum; nCntBone++)
-			{
-				for (DWORD nCntWeight = 0; nCntWeight < mesh_container->m_BoneWeightNum; nCntWeight++)
-				{
-					DWORD matrix_index = bone_buffer[nCntBone].BoneId[nCntWeight];
-					D3DXMATRIX matrix;
-
-					if (matrix_index != UINT_MAX)
-					{
-						// オフセット行列(m_BoneOffsetMatrix) * ボーンの行列(m_BoneMatrix)で最新の位置を割り出す
-						matrix = mesh_container->m_BoneOffsetMatrix[matrix_index] * (*mesh_container->m_BoneMatrix[matrix_index]);
-						m_matx_bone[nCntWeight] = matrix;
-						m_mesh[nCntWeight] = *mesh_container;
-
-						pDevice->SetTransform(D3DTS_WORLDMATRIX(nCntWeight), &matrix);
-					}
-				}
-				pDevice->SetMaterial(&mesh_container->pMaterials[bone_buffer[nCntBone].AttribId].MatD3D);
-				pDevice->SetTexture(0, mesh_container->m_TextureList[bone_buffer[nCntBone].AttribId]);
-				mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
-			}
-		}
 	}
 }
 

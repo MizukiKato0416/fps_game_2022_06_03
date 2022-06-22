@@ -40,7 +40,6 @@ public:
 	void CheckContainer(LPD3DXFRAME frame);	// コンテナ最小最大頂点のチェック
 	void ResetAnimasionPos(void) { m_anim_controller->SetTrackPosition(0, 0); }	// アニメーション位置のリセット
 	void SaveMeshContainer(LPD3DXFRAME frame);	// メッシュの設定
-	void SaveMeshContainer(LPD3DXMESHCONTAINER container);	// メッシュの設定
 	vector<MeshContainer> GetMesh(void) { return m_mesh; }	// メッシュの入手
 	vector<D3DXMATRIX> GetBoneMtx(void) { return m_matx_bone; }	// ボーンのマトリックスの入手
 	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
