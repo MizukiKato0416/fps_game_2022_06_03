@@ -42,7 +42,7 @@ public:
 	//当たった敵のプレイヤー番号取得処理
 	int GetHitPlayerNum(void) { return m_nPlayer; }
 	//ダメージ取得処理
-	int GetHitPlayerNum(void) { return m_nPlayer; }
+	int GetDamage(void) { return m_nDamage; }
 
 private:
 	D3DXVECTOR3 m_bigenPos;						//弾の始点
