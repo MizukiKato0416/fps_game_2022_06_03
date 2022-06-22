@@ -16,6 +16,7 @@
 #include "mesh_field.h"
 #include "xanimmodel.h"
 #include "hierarchydata.h"
+#include "enemy.h"
 
 //================================================
 //マクロ定義
@@ -39,6 +40,7 @@ CBullet::CBullet(CObject::PRIORITY Priority) :CObject(Priority)
 	m_rayVec = { 0.0f, 0.0f, 0.0f };
 	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BULLET_MAX_ORBIT]));
 	m_fDiffer = 0.0f;
+	m_nPlayer = 0;
 }
 
 //================================================
@@ -185,50 +187,75 @@ HRESULT CBullet::Init(void)
 	D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
 
-	//メッシュ取得
-	vector<MeshContainer> mesh = pPlayerObj->GetAnimModel()->GetMesh();
-	vector<D3DXMATRIX> mtxEnemy = pPlayerObj->GetAnimModel()->GetBoneMtx();
-	int nMeshNum = mesh.size();
-	int nNumParts = 0;
+	//当たった敵のマトリックス
+	D3DXMATRIX mtxHitEnemy;
 
-	for (int nCntMesh = 0; nCntMesh < nMeshNum; nCntMesh++)
+	//オブジェクト情報を入れるポインタ
+	object.clear();
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
+	nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
 	{
-		D3DXMATRIX modelInvMtx;
-		D3DXMATRIX modelMtx = mtxEnemy[nCntMesh];
-
-		D3DXMatrixIdentity(&modelInvMtx);
-		D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
-
-		D3DXVECTOR3 posV = posCameraV;
-
-		D3DXVECTOR3 endPos = posV + m_rayVec;
-		D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-		D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
-
-		D3DXVECTOR3 vec = endPos - posV;
-
-		//レイとメッシュの当たり判定
-		if (D3DXIntersect(mesh[nCntMesh].MeshData.pMesh, &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
+		//オブジェクトの種類が敵だったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
 		{
-			//当たったとき
-			if (bHit)
+			//敵にキャスト
+			CEnemy *pEnemy = nullptr;
+			pEnemy = (CEnemy*)object[nCnt];
+
+			//メッシュ取得
+			vector<MeshContainer> mesh = pEnemy->GetSelfModel()->GetMesh();
+			vector<D3DXMATRIX> mtxEnemy = pEnemy->GetSelfModel()->GetBoneMtx();
+			int nMeshNum = mesh.size();
+			int nNumParts = 0;
+
+			for (int nCntMesh = 0; nCntMesh < nMeshNum; nCntMesh++)
 			{
-				if (m_fDiffer > fDiffer)
+				D3DXMATRIX modelInvMtx;
+				D3DXMATRIX modelMtx = mtxEnemy[nCntMesh];
+
+				D3DXMatrixIdentity(&modelInvMtx);
+				D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
+
+				D3DXVECTOR3 posV = posCameraV;
+
+				D3DXVECTOR3 endPos = posV + m_rayVec;
+				D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
+				D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
+
+				D3DXVECTOR3 vec = endPos - posV;
+
+				//レイとメッシュの当たり判定
+				if (D3DXIntersect(mesh[nCntMesh].MeshData.pMesh, &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
 				{
-					//距離を保存
-					m_fDiffer = fDiffer;
-					//当たったオブジェクトを保存
-					nNumParts = nCntMesh;
-					//レイの方向を保存
-					rayVecHit = vec;
-					//カメラのローカル座標を保存
-					hitPosV = posV;
-					bHitEnemy = true;
-					bHitAny = false;
+					//当たったとき
+					if (bHit)
+					{
+						if (m_fDiffer > fDiffer)
+						{
+							//距離を保存
+							m_fDiffer = fDiffer;
+							//当たったオブジェクトのマトリックスを保存
+							mtxHitEnemy = modelMtx;
+							//レイの方向を保存
+							rayVecHit = vec;
+							//カメラのローカル座標を保存
+							hitPosV = posV;
+							bHitEnemy = true;
+							bHitAny = false;
+							//当たった敵のプレイヤー番号取得
+							m_nPlayer = pEnemy->GetPlayerNumber();
+						}
+					}
 				}
 			}
 		}
 	}
+
+	
 	
 	//モデルと当たっていて敵に当たっていないとき
 	if (bHitAny)
@@ -258,7 +285,7 @@ HRESULT CBullet::Init(void)
 
 		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
 		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
-		D3DXVec3TransformCoord(&HitPos, &HitPos, &mtxEnemy[nNumParts]);
+		D3DXVec3TransformCoord(&HitPos, &HitPos, &mtxHitEnemy);
 
 		//終点を設定
 		m_endPos = HitPos;

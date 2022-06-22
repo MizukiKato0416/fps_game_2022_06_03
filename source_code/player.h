@@ -85,6 +85,7 @@ private:
 	int m_nCounter;									//次の弾が出るまでのカウンター
 	bool m_bAds;									//ADSしているかどうか
 	CObject2D *m_pCloss;							//クロスヘア
+	int m_nLife;									//体力
 };
 
 #endif // !_PLAYER_H_

@@ -41,6 +41,7 @@
 #define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.0f, 2.0f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
+#define PLAYER_LIFE							(100)									//体力
 
 //================================================
 //デフォルトコンストラクタ
@@ -62,6 +63,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nCounter = 0;
 	m_bAds = false;
 	m_pCloss = nullptr;
+	m_nLife = 0;
 }
 
 //================================================
@@ -91,6 +93,7 @@ HRESULT CPlayer::Init(void)
 	m_fMoveSpeed = 0.0f;
 	m_nCounter = 0;
 	m_bAds = false;
+	m_nLife = PLAYER_LIFE;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");

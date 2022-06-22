@@ -32,6 +32,7 @@ public:
 	{
 		NONE = 0,			// なし
 		PLAYER,				// プレイヤー
+		ENEMY,				// 敵
 		MODEL,				// モデル
 		BULLET,				// 弾
 		POLYGON_3D,			// 3Dポリゴン
@@ -53,6 +54,7 @@ public:
 		EFFECT_2D,			// 2Dエフェクト
 		MODEL,				// モデル
 		PLAYER,				// プレイヤー
+		ENEMY,				// 敵
 		UI,					// UI
 		SHADOW,				// 影
 		MAX

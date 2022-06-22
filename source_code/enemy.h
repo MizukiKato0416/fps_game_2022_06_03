@@ -26,7 +26,7 @@ class CModelSingle;
 class CEnemy : public CObject
 {
 public:
-	CEnemy(CObject::PRIORITY Priority = CObject::PRIORITY::PLAYER);	// デフォルトコンストラクタ
+	CEnemy(CObject::PRIORITY Priority = CObject::PRIORITY::ENEMY);	// デフォルトコンストラクタ
 	~CEnemy();	// デフォルトデストラクタ
 	HRESULT Init(void);	// ポリゴンの初期化
 	void Uninit(void);	// ポリゴンの終了
@@ -37,6 +37,7 @@ public:
 	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
 	CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
 	CXanimModel *GetSelfModel(void) { return m_model; }
+	int GetPlayerNumber(void) { CCommunicationData::COMMUNICATION_DATA *data = m_commu_data[m_my_index].GetCmmuData(); return data->Player.nNumber; }
 
 private:
 	void Attack(void);	// 攻撃
