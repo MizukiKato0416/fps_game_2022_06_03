@@ -41,6 +41,8 @@ public:
 	void SetMtxWorld(void);																//ワールドマトリックス設定処理
 	bool GetColl(void) { return m_bCollision; }											//当たり判定取得処理
 	CModel *GetModel(void) { return m_pModel; }											//モデル取得処理
+	void SetCulliMode(bool culli) { m_bCullingInv = culli; }							//カリングモード取得処理
+	bool GetCulliMode(void) { return m_bCullingInv; }									//カリングモード取得処理
 
 private:
 	//メンバ変数
@@ -53,6 +55,7 @@ private:
 	CModel *m_pParent;					//親モデルへのポインタ
 	//CXload::X_TYPE m_type;				//出すモデルの種類
 	bool m_bCollision;					//当たり判定をするかどうか
+	bool m_bCullingInv;					// カリングを逆にするか
 };
 
 #endif // !_MODEL_SINGLE_H_

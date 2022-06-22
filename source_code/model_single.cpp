@@ -32,6 +32,7 @@ CModelSingle::CModelSingle(CObject::PRIORITY Priority) :CObject(Priority)
 	m_pParent = nullptr;
 	m_pModel = nullptr;
 	m_bCollision = false;
+	m_bCullingInv = false;
 }
 
 //================================================
@@ -93,6 +94,12 @@ void CModelSingle::Draw(void)
 	//デバイスの取得
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
+	if (m_bCullingInv == true)
+	{
+		// 逆カリング
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	}
+
 	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
 
 	D3DXMatrixIdentity(&m_mtxWorld);		//モデルのワールドマトリックスの初期化
@@ -110,6 +117,12 @@ void CModelSingle::Draw(void)
 
 	//モデルの描画
 	m_pModel->Draw();
+
+	if (m_bCullingInv == true)
+	{
+		// カリングを戻す
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
 }
 
 //================================================

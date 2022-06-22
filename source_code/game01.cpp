@@ -170,7 +170,6 @@ void CGame01::FirstContact(void)
 	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
 	CCommunicationData *DataClass = new CCommunicationData;
 	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
-	CEnemy *enemy = nullptr;
 	char recv[MAX_COMMU_DATA];
 
 	pClient->Connect();

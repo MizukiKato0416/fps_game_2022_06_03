@@ -37,7 +37,7 @@
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.0f, 2.0f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -2.9f, 2.78f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 
@@ -339,6 +339,7 @@ void CPlayer::Draw(void)
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+		m_pGunModel->GetModel()->SetCulliMode(false);
 	}
 	else
 	{
@@ -347,6 +348,7 @@ void CPlayer::Draw(void)
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+		m_pGunModel->GetModel()->SetCulliMode(true);
 	}
 }
 
