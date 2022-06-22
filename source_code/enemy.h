@@ -26,7 +26,7 @@ class CModelSingle;
 class CEnemy : public CObject
 {
 public:
-	CEnemy(CObject::PRIORITY Priority = CObject::PRIORITY::PLAYER);	// デフォルトコンストラクタ
+	CEnemy(CObject::PRIORITY Priority = CObject::PRIORITY::ENEMY);	// デフォルトコンストラクタ
 	~CEnemy();	// デフォルトデストラクタ
 	HRESULT Init(void);	// ポリゴンの初期化
 	void Uninit(void);	// ポリゴンの終了

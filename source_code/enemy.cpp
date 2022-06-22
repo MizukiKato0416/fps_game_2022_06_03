@@ -45,6 +45,8 @@ CEnemy::~CEnemy()
 //=============================================================================
 HRESULT CEnemy::Init(void)
 {
+	SetObjType(CObject::OBJTYPE::ENEMY);
+
 	m_my_index = m_create_count;
 	m_create_count++;
 
