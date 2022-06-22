@@ -227,6 +227,6 @@ void CEnemy::Move(void)
 	}
 	else
 	{
-		m_pos.y = -100;
+		m_pos.y = 0;
 	}
 }
