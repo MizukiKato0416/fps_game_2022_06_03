@@ -124,6 +124,7 @@ void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 	// ƒtƒŒ[ƒ€•`‰æ
 	DrawFrame(m_root_frame);
 	SaveMeshContainer(m_root_frame);
+	m_is_first = true;
 }
 
 //=============================================================================
@@ -608,7 +609,6 @@ void CXanimModel::SaveMeshContainer(LPD3DXMESHCONTAINER container)
 				mesh_container->MeshData.pMesh->DrawSubset(nCntBone);
 			}
 		}
-		m_is_first = false;
 	}
 	else
 	{
