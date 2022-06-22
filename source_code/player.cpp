@@ -26,6 +26,7 @@
 #include "bullet.h"
 #include "gunmodel.h"
 #include "object2D.h"
+#include "enemy.h"
 
 //================================================
 //マクロ定義
@@ -37,7 +38,7 @@
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -2.9f, 2.78f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 
@@ -156,6 +157,9 @@ void CPlayer::Uninit(void)
 //================================================
 void CPlayer::Update(void)
 {
+	//敵から受け取ったデータについての処理
+	RecvEnemyData();
+
 	CSound *sound;
 	sound = CManager::GetInstance()->GetSound();
 	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
@@ -618,7 +622,7 @@ void CPlayer::Shot(void)
 				{
 					// 情報を設定
 					pData->Bullet[nBullet].nCollEnemy = pBullet->GetHitPlayerNum();
-					pData->Bullet[nBullet].nDamage = pBullet->GetHitPlayerNum();
+					pData->Bullet[nBullet].nDamage = pBullet->GetDamage();
 					pData->Bullet[nBullet].bHit = true;
 					pData->Bullet[nBullet].bUse = true;
 				}
@@ -762,6 +766,50 @@ void CPlayer::Chest(void)
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &cameraMtx);
 
 			//m_pAnimModel->SetMatrix("handR", handR);
+		}
+	}
+}
+
+//================================================
+//敵のデータ取得処理
+//================================================
+void CPlayer::RecvEnemyData(void)
+{
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
+	int nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+	{
+		//オブジェクトの種類が敵だったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
+		{
+			//プレイヤーにキャスト
+			CEnemy *pEnemy = nullptr;
+			pEnemy = (CEnemy*)object[nCnt];
+
+			//サーバーから敵に送られてきた情報を取得
+			CCommunicationData::COMMUNICATION_DATA *pData = pEnemy->GetCommuData(nCnt);
+
+			for (int nBullet = 0; nBullet < MAX_BULLET; nBullet++)
+			{
+				// 弾を使ってなかったら且つ弾が当たったプレイヤー番号が自身と一致していたら
+				if (pData->Bullet[nBullet].bUse == true && pData->Bullet[nBullet].nCollEnemy == m_commu_data.GetCmmuData()->Player.nNumber)
+				{
+					//ライフを減らす
+					m_nLife -= pData->Bullet[nBullet].nDamage;
+
+					//ライフが0になったら
+					if (m_nLife <= 0)
+					{
+						//消す
+						Uninit();
+					}
+				}
+			}
 		}
 	}
 }

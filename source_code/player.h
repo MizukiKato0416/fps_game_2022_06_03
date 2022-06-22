@@ -63,6 +63,7 @@ private:
 	void Shot(void);								//射撃処理
 	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
+	void RecvEnemyData(void);						//敵のデータ取得処理
 
 	//メンバ変数
 	CCommunicationData m_commu_data;	// 通信データ

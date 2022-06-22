@@ -14,6 +14,7 @@
 #include "xanimmodel.h"
 #include "model.h"
 #include "model_single.h"
+#include "model_collision.h"
 #include "player.h"
 #include <thread>
 
@@ -32,6 +33,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_pos = { 0.0f, 0.0f, 0.0f };
 	m_rot = { 0.0f, 0.0f, 0.0f };
 	m_nLife = 0;
+	m_pCollModel = nullptr;
 }
 
 //=============================================================================
@@ -56,6 +58,8 @@ HRESULT CEnemy::Init(void)
 	m_model = CXanimModel::Create("data/motion.x");
 	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
 	m_pGunModel = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
+	//当たり判定ボックスの生成
+	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	if (m_create_thread == false)
 	{
@@ -135,6 +139,10 @@ void CEnemy::Draw(void)
 	//銃と親子関係をつける
 	m_pGunModel->GetModel()->SetMtxParent(hand);
 	m_pGunModel->GetModel()->SetObjParent(true);
+
+	//親子関係をつける
+	m_pCollModel->GetModel()->SetMtxParent(&m_mtx_wld);
+	m_pCollModel->GetModel()->SetObjParent(true);
 }
 
 //=============================================================================

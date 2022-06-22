@@ -25,7 +25,7 @@
 #define CAMERA_V_MAX_POS_Y			(400.0f)								//視点のy座標最大値
 #define CAMERA_V_MIN_POS_Y			(50.0f)									//視点のy座標最小値
 #define CAMERA_MAX_RENDERER			(100000.0f)								//cameraでの描画最大Z値
-#define CAMERA_MIN_RENDERER			(3.5f)									//cameraでの描画最小Z値
+#define CAMERA_MIN_RENDERER			(4.0f)									//cameraでの描画最小Z値
 #define CAMERA_POS_Y				(100.0f)								//カメラのY位置
 #define CAMERA_POS_XZ				(0.0f)									//カメラのXZ位置
 

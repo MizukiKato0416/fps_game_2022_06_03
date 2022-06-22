@@ -53,6 +53,7 @@ public:
 		EFFECT_3D,			// 3Dエフェクト
 		EFFECT_2D,			// 2Dエフェクト
 		MODEL,				// モデル
+		MODEL_COLLISION,	// 当たり判定用モデル
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
 		UI,					// UI

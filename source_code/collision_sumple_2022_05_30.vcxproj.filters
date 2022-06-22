@@ -213,6 +213,9 @@
     <ClCompile Include="scene2d.cpp">
       <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
     </ClCompile>
+    <ClCompile Include="model_collision.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h">
@@ -388,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="scene2d.h">
       <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="model_collision.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

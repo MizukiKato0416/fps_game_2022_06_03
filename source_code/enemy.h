@@ -19,6 +19,7 @@
 //*****************************************************************************
 class CXanimModel;
 class CModelSingle;
+class CModelCollision;
 
 //*****************************************************************************
 // クラス定義
@@ -44,6 +45,8 @@ public:
 	void SetLife(const int nLife) { m_nLife = nLife; }
 	//ワールドマトリックス取得処理
 	D3DXMATRIX GetMtx(void) { return m_mtx_wld; }
+	//当たり判定用モデル取得処理
+	CModelCollision *GetModelCollision(void) { return m_pCollModel; }
 
 private:
 	void Attack(void);	// 攻撃
@@ -58,6 +61,7 @@ private:
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
 	int m_my_index;	// 自分のプレイヤー番号
 	int m_nLife;			//ライフ
+	CModelCollision* m_pCollModel;	//当たり判定のボックス
 };
 
 #endif
