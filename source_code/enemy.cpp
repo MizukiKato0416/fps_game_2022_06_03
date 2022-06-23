@@ -19,13 +19,6 @@
 #include <thread>
 
 //=============================================================================
-// 静的メンバ変数宣言
-//=============================================================================
-CCommunicationData CEnemy::m_commu_data[MAX_PLAYER] = {};
-int CEnemy::m_create_count = 0;
-bool CEnemy::m_create_thread = false;
-
-//=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
 CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
@@ -52,23 +45,15 @@ HRESULT CEnemy::Init(void)
 	SetObjType(CObject::OBJTYPE::ENEMY);
 	m_nLife = PLAYER_LIFE;
 
-	m_my_index = m_create_count;
-	m_create_count++;
-
 	m_model = CXanimModel::Create("data/motion.x");
 	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
 	m_pGunModel = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
 	//当たり判定ボックスの生成
 	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
-	if (m_create_thread == false)
-	{
-		std::thread th(Recv);
+	std::thread th(Recv, &m_commu_data);
 
-		th.detach();
-
-		m_create_thread = true;
-	}
+	th.detach();
 
 	return S_OK;
 }
@@ -166,7 +151,7 @@ CEnemy *CEnemy::Create(void)
 //=============================================================================
 // レシーブスレッド
 //=============================================================================
-void CEnemy::Recv(void)
+void CEnemy::Recv(CCommunicationData *data)
 {
 	int size = 1;
 
@@ -175,27 +160,21 @@ void CEnemy::Recv(void)
 		CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
 		char recv[MAX_COMMU_DATA];
 
-		for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-		{
-			CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
+		CCommunicationData::COMMUNICATION_DATA *pData = data->GetCmmuData();
 
-			size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			if (size <= 0)
-			{
-				break;
-			}
-			else
-			{
-				memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-				m_commu_data[count_enemy].SetCmmuData(*pData);
-			}
+		size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		if (size <= 0)
+		{
+			break;
+		}
+		else
+		{
+			memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			data->SetCmmuData(*pData);
 		}
 	}
-	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
-	{
-		CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[count_enemy].GetCmmuData();
-		pData->bConnect = false;
-	}
+	CCommunicationData::COMMUNICATION_DATA *pData = data->GetCmmuData();
+	pData->bConnect = false;
 }
 
 //=============================================================================
@@ -203,14 +182,11 @@ void CEnemy::Recv(void)
 //=============================================================================
 void CEnemy::Attack(void)
 {
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[m_my_index].GetCmmuData();
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
 
-	for (int bullet_count = 0; bullet_count < MAX_BULLET; bullet_count++)
+	if (pData->Bullet.bUse == true)
 	{
-		if (pData->Bullet[bullet_count].bUse == true)
-		{
-			pData->Bullet[bullet_count].bUse = false;
-		}
+		pData->Bullet.bUse = false;
 	}
 }
 
@@ -219,7 +195,7 @@ void CEnemy::Attack(void)
 //=============================================================================
 void CEnemy::Move(void)
 {
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data[m_my_index].GetCmmuData(); 
+	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData(); 
 	string now_motion;
 	string commu_motion = pData->Player.aMotion[0];
 

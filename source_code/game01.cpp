@@ -2,6 +2,9 @@
 //ÉQÅ[ÉÄ01èàóù
 //Author: â¡ì°êêà®
 //================================================
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <thread>
 #include "game01.h"
 #include "manager.h"
 #include "input_keyboard.h"
@@ -31,6 +34,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 {
 	m_pPlayer = nullptr;
 	m_pMeshField = nullptr;
+	m_bAllConnect = false;
 	m_pEnemy.clear();
 }
 
@@ -172,6 +176,10 @@ void CGame01::FirstContact(void)
 	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
 	char recv[MAX_COMMU_DATA];
 
+	thread ConnectLoading(ConnectLading, &m_bAllConnect);
+
+	ConnectLoading.detach();
+
 	pClient->Connect();
 
 	if (pClient->GetConnect() == true)
@@ -181,16 +189,16 @@ void CGame01::FirstContact(void)
 		switch (DataBuf->Player.nNumber)
 		{
 		case 1:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(5000.0f, 1000.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 2:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-5000.0f, 1000.0f, 5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 3:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(5000.0f, 1000.0f, -5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		case 4:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-5000.0f, 1000.0f, -5000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
 		}
 		m_pPlayer->SetCommuData(*DataBuf);
@@ -202,6 +210,16 @@ void CGame01::FirstContact(void)
 	m_pEnemy.push_back(CEnemy::Create());
 	m_pEnemy.push_back(CEnemy::Create());
 	m_pEnemy.push_back(CEnemy::Create());
+
+	m_bAllConnect = true;
+}
+
+void CGame01::ConnectLading(bool *bConnect)
+{
+	while (*bConnect == false)
+	{
+
+	}
 }
 
 //================================================
