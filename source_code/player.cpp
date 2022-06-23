@@ -615,17 +615,13 @@ void CPlayer::Shot(void)
 			//弾の生成
 			pBullet = CBullet::Create();
 
-			for (int nBullet = 0; nBullet < MAX_BULLET; nBullet++)
+			// 弾を使ってなかったら
+			if (pData->Bullet.bUse == false)
 			{
-				// 弾を使ってなかったら
-				if (pData->Bullet[nBullet].bUse == false)
-				{
-					// 情報を設定
-					pData->Bullet[nBullet].nCollEnemy = pBullet->GetHitPlayerNum();
-					pData->Bullet[nBullet].nDamage = pBullet->GetDamage();
-					pData->Bullet[nBullet].bHit = true;
-					pData->Bullet[nBullet].bUse = true;
-				}
+				// 情報を設定
+				pData->Bullet.nCollEnemy = pBullet->GetHitPlayerNum();
+				pData->Bullet.nDamage = pBullet->GetDamage();
+				pData->Bullet.bUse = true;
 			}
 		}
 	}
@@ -792,22 +788,19 @@ void CPlayer::RecvEnemyData(void)
 			pEnemy = (CEnemy*)object[nCnt];
 
 			//サーバーから敵に送られてきた情報を取得
-			CCommunicationData::COMMUNICATION_DATA *pData = pEnemy->GetCommuData(nCnt);
+			CCommunicationData::COMMUNICATION_DATA *pData = pEnemy->GetCommuData();
 
-			for (int nBullet = 0; nBullet < MAX_BULLET; nBullet++)
+			// 弾を使ってなかったら且つ弾が当たったプレイヤー番号が自身と一致していたら
+			if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == m_commu_data.GetCmmuData()->Player.nNumber)
 			{
-				// 弾を使ってなかったら且つ弾が当たったプレイヤー番号が自身と一致していたら
-				if (pData->Bullet[nBullet].bUse == true && pData->Bullet[nBullet].nCollEnemy == m_commu_data.GetCmmuData()->Player.nNumber)
-				{
-					//ライフを減らす
-					m_nLife -= pData->Bullet[nBullet].nDamage;
+				//ライフを減らす
+				m_nLife -= pData->Bullet.nDamage;
 
-					//ライフが0になったら
-					if (m_nLife <= 0)
-					{
-						//消す
-						Uninit();
-					}
+				//ライフが0になったら
+				if (m_nLife <= 0)
+				{
+					//消す
+					Uninit();
 				}
 			}
 		}
