@@ -220,7 +220,6 @@ void CGame01::ConnectLading(bool *bConnect)
 	{
 
 	}
-	int n = 0;
 }
 
 //================================================
