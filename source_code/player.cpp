@@ -35,7 +35,7 @@
 #define PLAYER_GRAVITY						(1.2f)									//重力の大きさ
 #define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
-#define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
+#define PLAYER_ADS_WALK_SPEED				(20.0f)									//ADS中の移動速度
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
 #define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
@@ -614,15 +614,6 @@ void CPlayer::Shot(void)
 
 			//弾の生成
 			pBullet = CBullet::Create();
-
-			// 弾を使ってなかったら
-			if (pData->Bullet.bUse == false)
-			{
-				// 情報を設定
-				pData->Bullet.nCollEnemy = pBullet->GetHitPlayerNum();
-				pData->Bullet.nDamage = pBullet->GetDamage();
-				pData->Bullet.bUse = true;
-			}
 		}
 	}
 	else

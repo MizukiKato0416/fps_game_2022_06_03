@@ -20,6 +20,7 @@
 class CXanimModel;
 class CModelSingle;
 class CModelCollision;
+class CGunModel;
 
 //*****************************************************************************
 // クラス定義
@@ -49,7 +50,7 @@ private:
 	void Move(void);	// 移動
 	CCommunicationData m_commu_data;	// 通信データ
 	CXanimModel *m_model;	// モデル
-	CModelSingle *m_pGunModel;			// 銃モデル
+	CGunModel *m_pGunModel;			// 銃モデル
 	D3DXVECTOR3 m_pos;		// 位置
 	D3DXVECTOR3 m_rot;		// 向き
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス

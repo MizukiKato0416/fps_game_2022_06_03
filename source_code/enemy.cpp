@@ -14,8 +14,11 @@
 #include "xanimmodel.h"
 #include "model.h"
 #include "model_single.h"
+#include "gunmodel.h"
 #include "model_collision.h"
 #include "player.h"
+#include "PresetSetEffect.h"
+#include "ballistic.h"
 #include <thread>
 
 //=============================================================================
@@ -47,7 +50,8 @@ HRESULT CEnemy::Init(void)
 
 	m_model = CXanimModel::Create("data/motion.x");
 	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
-	m_pGunModel = CModelSingle::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "asult_gun.x", nullptr, false);
+	//銃モデルの生成
+	m_pGunModel = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 	//当たり判定ボックスの生成
 	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
@@ -119,11 +123,14 @@ void CEnemy::Draw(void)
 
 	//マトリックスを取得
 	D3DXMATRIX *hand = nullptr;
-	hand = m_model->GetMatrix("handL");
-
+	hand = m_model->GetMatrix("handR");
+	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
 	//銃と親子関係をつける
-	m_pGunModel->GetModel()->SetMtxParent(hand);
-	m_pGunModel->GetModel()->SetObjParent(true);
+	m_pGunModel->GetModel()->GetModel()->SetMtxParent(hand);
+	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+	m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+	m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+	m_pGunModel->GetModel()->SetCulliMode(false);
 
 	//親子関係をつける
 	m_pCollModel->GetModel()->SetMtxParent(&m_mtx_wld);
@@ -184,8 +191,17 @@ void CEnemy::Attack(void)
 {
 	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
 
+	//敵が撃ってきたら
 	if (pData->Bullet.bUse == true)
 	{
+		//弾の軌道エフェクトを生成
+		CBallistic::Create(pData->Ballistic.BigenPos, pData->Ballistic.size, pData->Ballistic.rot, pData->Ballistic.EndPos,
+			               pData->Ballistic.fSpeed, pData->Ballistic.sTexPas1, pData->Ballistic.sTexPas2);
+
+		//マズルフラッシュエフェクトの生成
+		CPresetEffect::SetEffect3D(0, pData->Ballistic.BigenPos, {}, {});
+		CPresetEffect::SetEffect3D(1, pData->Ballistic.BigenPos, {}, {});
+
 		pData->Bullet.bUse = false;
 	}
 }
