@@ -54,7 +54,6 @@ public:
 		float fSpeed;			// 速さ
 		string sTexPas1;		// テクスチャ
 		string sTexPas2;		// テクスチャ
-		bool bUse;				// 使ってるかどうか
 	} BALLISTIC_DATA;
 
 	typedef struct

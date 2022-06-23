@@ -9,7 +9,7 @@
 #include "model_single.h"
 #include "model_collision.h"
 #include "camera.h"
-#include "PresetSetEffect.h"ad
+#include "PresetSetEffect.h"
 #include "ballistic.h"
 #include "renderer.h"
 #include "player.h"
@@ -22,7 +22,7 @@
 //================================================
 //マクロ定義
 //================================================
-#define BULLET_MOVE_SPEED		(80.0f)		//軌道の速さ
+#define BULLET_MOVE_SPEED		(100.0f)		//軌道の速さ
 #define BULLET_SIZE_X			(300.0f)		//軌道のサイズ
 #define BULLET_SIZE_Y			(3.0f)			//軌道のサイズ
 #define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
@@ -344,6 +344,25 @@ HRESULT CBullet::Init(void)
 
 	//弾の軌道エフェクトを生成
 	CBallistic::Create(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, rotCamera, m_endPos, BULLET_MOVE_SPEED, "bullet_00.png", "bullet_01.png");
+
+	//通信データに情報を突っ込む
+	CCommunicationData::COMMUNICATION_DATA *pData = pPlayerObj->GetCommuData();
+
+	// 弾を使ってなかったら
+	if (pData->Bullet.bUse == false)
+	{
+		// 情報を設定
+		pData->Bullet.nCollEnemy = m_nPlayer;
+		pData->Bullet.nDamage = m_nDamage;
+		pData->Bullet.bUse = true;
+		pData->Ballistic.BigenPos = gunPos;
+		pData->Ballistic.size = { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f };
+		pData->Ballistic.rot = rotCamera;
+		pData->Ballistic.EndPos = m_endPos;
+		pData->Ballistic.fSpeed = BULLET_MOVE_SPEED;
+		pData->Ballistic.sTexPas1 = "bullet_00.png";
+		pData->Ballistic.sTexPas2 = "bullet_01.png";
+	}
 
 	return S_OK;
 }
