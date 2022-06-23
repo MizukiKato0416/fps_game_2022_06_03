@@ -151,10 +151,12 @@ void CXanimModel::Draw(void)
 						&m_mtx_wold,
 						&trans_matrix);
 
+	mtx_parent = m_mtx_pearent;
+
 	//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
 	D3DXMatrixMultiply(	&m_mtx_wold,
 						&m_mtx_wold,
-						&mtx_parent);
+						&m_mtx_pearent);
 
 	DrawMatrix(&m_mtx_wold);
 }

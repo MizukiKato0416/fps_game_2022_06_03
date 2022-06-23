@@ -34,6 +34,7 @@ public:
 		MESH_FIELD,			// メッシュフィールド
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
+		GUN,				// 銃
 		MODEL,				// モデル
 		BULLET,				// 弾
 		POLYGON_3D,			// 3Dポリゴン

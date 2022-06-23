@@ -17,10 +17,6 @@
 //========================================================
 //マクロ定義
 //========================================================
-#define CAMERA_V_SPEED_Y			(0.03f)									//カメラの横移動スピード
-#define CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
-#define CAMERA_V_SPEED_XZ			(0.01f)									//カメラの縦移動スピード
-#define CAMERA_V__MOUSE_SPEED_XZ	(-0.0005f)								//カメラの横移動スピード（マウスの時）
 #define CAMERA_RESULT_DISTANCE		(200.0f)								//リザルトの視点と注視点の距離
 #define CAMERA_V_MAX_POS_Y			(400.0f)								//視点のy座標最大値
 #define CAMERA_V_MIN_POS_Y			(50.0f)									//視点のy座標最小値
@@ -188,7 +184,7 @@ void CCamera::Set(void)
 			//プレイヤーにキャスト
 			CPlayer *pPlayer = (CPlayer*)object[count_object];
 
-			pPlayer->GetAnimModel()->Draw();
+			//pPlayer->GetAnimModel()->Draw();
 		}
 	}
 }
@@ -436,25 +432,7 @@ void CCamera::MainCameraUpdate(void)
 	m_posR.y = m_posV.y + m_fDifferVR * cosf(m_rot.x);
 
 	
-	//マウス取得処理
-	CInputMouse *pInputMouse;
-	pInputMouse = CManager::GetInstance()->GetInputMouse();
-
-	//マウスの移動量取得
-	D3DXVECTOR2 mouseVelocity = pInputMouse->GetMouseVelocity();
-
-	//================================================
-	//マウスによる視点移動処理
-	//================================================
-	if (mouseVelocity.x != 0.0f)
-	{
-		m_rot.y += mouseVelocity.x * CAMERA_V__MOUSE_SPEED_Y;
-	}
-	if (mouseVelocity.y != 0.0f)
-	{
-		m_rot.x -= mouseVelocity.y * CAMERA_V__MOUSE_SPEED_XZ;
-	}
-
+	
 
 	//回転処理
 	Rotate();

@@ -24,7 +24,7 @@ class CModelSingle;
 class CGunModel : CObject
 {
 public:
-	CGunModel(CObject::PRIORITY Priority = CObject::PRIORITY::MODEL);	// デフォルトコンストラクタ
+	CGunModel(CObject::PRIORITY Priority = CObject::PRIORITY::GUN);	// デフォルトコンストラクタ
 	~CGunModel();	// デフォルトデストラクタ
 	HRESULT Init(void);	// ポリゴンの初期化
 	void Uninit(void);	// ポリゴンの終了

@@ -52,6 +52,8 @@ HRESULT CEnemy::Init(void)
 	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
+	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+
 	//当たり判定ボックスの生成
 	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
@@ -119,6 +121,7 @@ void CEnemy::Draw(void)
 	pDevice->SetTransform(D3DTS_WORLD,
 		&m_mtx_wld);
 
+	m_model->SetMatrix(&m_mtx_wld);
 	m_model->Draw();
 
 	//マトリックスを取得
@@ -228,6 +231,6 @@ void CEnemy::Move(void)
 	}
 	else
 	{
-		m_pos.y = 100;
+		m_pos = { 0.0f, 100.0f, 0.0f };
 	}
 }
