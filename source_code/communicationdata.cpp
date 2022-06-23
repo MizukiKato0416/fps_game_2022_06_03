@@ -24,8 +24,8 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Bullet.bUse = false;
 	m_CommuData.Ballistic.BigenPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Ballistic.EndPos = { 0.0f, 0.0f, 0.0f };
-	m_CommuData.Ballistic.size = { 0.0f, 0.0f, 0.0f };
-	m_CommuData.Ballistic.rot = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.Size = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.Rot = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Ballistic.fSpeed = 0.0f;
 	m_CommuData.Ballistic.sTexPas1.clear();
 	m_CommuData.Ballistic.sTexPas2.clear();
