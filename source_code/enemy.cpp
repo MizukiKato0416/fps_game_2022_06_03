@@ -204,8 +204,6 @@ void CEnemy::Attack(void)
 		//マズルフラッシュエフェクトの生成
 		CPresetEffect::SetEffect3D(0, pData->Ballistic.BigenPos, {}, {});
 		CPresetEffect::SetEffect3D(1, pData->Ballistic.BigenPos, {}, {});
-
-		pData->Bullet.bUse = false;
 	}
 }
 
