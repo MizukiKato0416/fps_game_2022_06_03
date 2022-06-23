@@ -18,7 +18,7 @@
 #define MAX_PLAYER (3)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
-#define MAX_COMMU_DATA (2048)
+#define MAX_COMMU_DATA (256)
 
 //-------------------------------
 // Classの定義
@@ -40,8 +40,6 @@ public:
 
 	typedef struct
 	{
-		D3DXVECTOR3 BigenPos;	// 弾の位置
-		D3DXVECTOR3 EndPos;	// 弾の位置
 		int nCollEnemy;	// 当てた相手の番号
 		int nDamage;	// ダメージ
 		bool bUse;	// 使ってるかどうか
@@ -49,8 +47,21 @@ public:
 
 	typedef struct
 	{
+		D3DXVECTOR3 BigenPos;	// 弾の始点
+		D3DXVECTOR3 EndPos;		// 弾の終点
+		D3DXVECTOR3 rot;		// 弾の向き
+		D3DXVECTOR3 size;		// 弾のサイズ
+		float fSpeed;			// 速さ
+		string sTexPas1;		// テクスチャ
+		string sTexPas2;		// テクスチャ
+		bool bUse;				// 使ってるかどうか
+	} BALLISTIC_DATA;
+
+	typedef struct
+	{
 		PLAYUER_DATA Player;	// プレイヤーデータ
 		BULLET_DATA Bullet;	// 弾データ
+		BALLISTIC_DATA Ballistic;	// 弾道
 		bool bConnect;	// 接続確認
 	} COMMUNICATION_DATA;
 

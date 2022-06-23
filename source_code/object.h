@@ -54,6 +54,8 @@ public:
 		EFFECT_2D,			// 2Dエフェクト
 		MODEL,				// モデル
 		MODEL_COLLISION,	// 当たり判定用モデル
+		BALLISTIC,			// 弾道
+		BULLET,				// 弾
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
 		UI,					// UI

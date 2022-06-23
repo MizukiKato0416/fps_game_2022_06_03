@@ -9,8 +9,8 @@
 #include "model_single.h"
 #include "model_collision.h"
 #include "camera.h"
-#include "PresetSetEffect.h"
-#include "Object3D.h"
+#include "PresetSetEffect.h"ad
+#include "ballistic.h"
 #include "renderer.h"
 #include "player.h"
 #include "gunmodel.h"
@@ -22,7 +22,7 @@
 //================================================
 //マクロ定義
 //================================================
-#define BULLET_MOVE_SPEED		(350.0f)		//軌道の速さ
+#define BULLET_MOVE_SPEED		(80.0f)		//軌道の速さ
 #define BULLET_SIZE_X			(300.0f)		//軌道のサイズ
 #define BULLET_SIZE_Y			(3.0f)			//軌道のサイズ
 #define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
@@ -40,7 +40,6 @@ CBullet::CBullet(CObject::PRIORITY Priority) :CObject(Priority)
 	m_bigenPos = { 0.0f, 0.0f, 0.0f };
 	m_endPos = {0.0f, 0.0f, 0.0f};
 	m_rayVec = { 0.0f, 0.0f, 0.0f };
-	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BULLET_MAX_ORBIT]));
 	m_fDiffer = 0.0f;
 	m_nPlayer = 0;
 	m_nDamage = 0;
@@ -64,6 +63,9 @@ CBullet::~CBullet()
 //================================================
 HRESULT CBullet::Init(void)
 {
+	//オブジェクトの種類を設定
+	SetObjType(CObject::OBJTYPE::BULLET);
+
 	//カメラの位置保存用
 	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
@@ -320,8 +322,8 @@ HRESULT CBullet::Init(void)
 			//終点を設定
 			m_endPos = meshHitPos;
 			//メッシュフィールドの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, meshHitPos, {}, {});
-			CPresetEffect::SetEffect3D(3, meshHitPos, {}, {});
+			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
+			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 		}
 	}
 	else if(!bCollMesh && bHitAny)
@@ -340,27 +342,8 @@ HRESULT CBullet::Init(void)
 		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 	}
 
-
 	//弾の軌道エフェクトを生成
-	m_apOrbit[0] = CObject3D::Create(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, { 0.0f, rotCamera.y + D3DX_PI / 2.0f, rotCamera.x + D3DX_PI / 2.0f });
-	m_apOrbit[0]->BindTexture(CManager::GetTexture()->GetTexture("bullet_00.png"));
-	m_apOrbit[0]->SetOriginType(CObject3D::ORIGIN_TYPE::LEFT);
-	m_apOrbit[0]->SetPos(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f });
-
-	m_apOrbit[1] = CObject3D::Create(gunPos, { BULLET_SIZE_Y, BULLET_SIZE_X, 0.0f }, { rotCamera.x, rotCamera.y, 0.0f });
-	m_apOrbit[1]->BindTexture(CManager::GetTexture()->GetTexture("bullet_01.png"));
-	m_apOrbit[1]->SetOriginType(CObject3D::ORIGIN_TYPE::LOWER);
-	m_apOrbit[1]->SetPos(gunPos, { BULLET_SIZE_Y, BULLET_SIZE_X, 0.0f });
-
-	//カリングをオフにする
-	m_apOrbit[0]->SetCulling(false);
-	m_apOrbit[1]->SetCulling(false);
-	//ライティングオフにする
-	m_apOrbit[0]->SetLighting(false);
-	m_apOrbit[1]->SetLighting(false);
-	//ライティングオフにする
-	m_apOrbit[0]->SetAlphaTest(true);
-	m_apOrbit[1]->SetAlphaTest(true);
+	CBallistic::Create(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, rotCamera, m_endPos, BULLET_MOVE_SPEED, "bullet_00.png", "bullet_01.png");
 
 	return S_OK;
 }
@@ -379,77 +362,7 @@ void CBullet::Uninit(void)
 //================================================
 void CBullet::Update(void)
 {
-	//プレイヤーのポインタ
-	CPlayer *pPlayerObj = nullptr;
 
-	//オブジェクト情報を入れるポインタ
-	vector<CObject*> object;
-
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
-	int nProprty_Size = object.size();
-
-	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
-	{
-		//オブジェクトの種類がプレイヤーだったら
-		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::PLAYER)
-		{
-			//プレイヤーにキャスト
-			pPlayerObj = nullptr;
-			pPlayerObj = (CPlayer*)object[nCnt];
-		}
-	}
-
-
-	for (int nCntOrbit = 0; nCntOrbit < BULLET_MAX_ORBIT; nCntOrbit++)
-	{
-		if (m_apOrbit[nCntOrbit] != nullptr)
-		{
-			//位置とサイズを取得
-			D3DXVECTOR3 pos = m_apOrbit[nCntOrbit]->GetPos();
-
-			//移動した位置から終点までのベクトルを算出
-			D3DXVECTOR3 differVec = m_endPos - pos;
-			float fDiffer = D3DXVec3Length(&differVec);
-
-			if (fDiffer < BULLET_SIZE_X)
-			{
-				//消す
-				m_apOrbit[nCntOrbit]->Uninit();
-				m_apOrbit[nCntOrbit] = nullptr;
-				break;
-			}
-
-			D3DXVECTOR3 size = m_apOrbit[nCntOrbit]->GetSize();
-
-			//銃口のマトリックス
-			D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
-			D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
-			//飛ばす方向を設定
-			D3DXVECTOR3 vec = m_endPos - gunPos;
-			//正規化
-			D3DXVec3Normalize(&vec, &vec);
-			//移動量を設定
-			D3DXVECTOR3 move = vec * BULLET_MOVE_SPEED;
-			pos += move;
-
-			//移動した位置から終点までのベクトルを算出
-			differVec = m_endPos - pos;
-			fDiffer = D3DXVec3Length(&differVec);
-
-			if (fDiffer < BULLET_SIZE_X)
-			{
-				//消す
-				m_apOrbit[nCntOrbit]->Uninit();
-				m_apOrbit[nCntOrbit] = nullptr;
-			}
-			else
-			{
-				//位置を設定
-				m_apOrbit[nCntOrbit]->SetPos(pos, size);
-			}
-		}
-	}
 }
 
 //================================================

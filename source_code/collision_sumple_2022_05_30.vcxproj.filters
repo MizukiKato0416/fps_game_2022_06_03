@@ -216,6 +216,9 @@
     <ClCompile Include="model_collision.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="ballistic.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h">
@@ -393,6 +396,9 @@
       <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
     </ClInclude>
     <ClInclude Include="model_collision.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="ballistic.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ActiveBillboard.cpp" />
+    <ClCompile Include="ballistic.cpp" />
     <ClCompile Include="BezierBill.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="billeffect.cpp" />
@@ -215,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveBillboard.h" />
+    <ClInclude Include="ballistic.h" />
     <ClInclude Include="BezierBillh.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="billeffect.h" />
