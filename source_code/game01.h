@@ -36,6 +36,7 @@ public:
 	void Draw(void);
 	bool MapLimit(CObject* pObj);		//マップの移動制限
 	void FirstContact(void);
+	static void ConnectLading(bool *bConnect);
 	//敵のモデル取得処理
 	vector<CEnemy*> GetEnemy(void);
 
@@ -46,6 +47,7 @@ private:
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
 	CMeshField *m_pMeshField;			//メッシュフィールドのポインタ
 	vector<CEnemy*> m_pEnemy;					//敵のモデルのポインタ
+	bool m_bAllConnect;
 };	
 
 #endif // !_GAME01_H_

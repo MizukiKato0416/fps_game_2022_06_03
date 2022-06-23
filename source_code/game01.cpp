@@ -2,6 +2,9 @@
 //ÉQÅ[ÉÄ01èàóù
 //Author: â¡ì°êêà®
 //================================================
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <thread>
 #include "game01.h"
 #include "manager.h"
 #include "input_keyboard.h"
@@ -31,6 +34,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 {
 	m_pPlayer = nullptr;
 	m_pMeshField = nullptr;
+	m_bAllConnect = false;
 	m_pEnemy.clear();
 }
 
@@ -172,6 +176,10 @@ void CGame01::FirstContact(void)
 	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
 	char recv[MAX_COMMU_DATA];
 
+	thread ConnectLoading(ConnectLading, &m_bAllConnect);
+
+	ConnectLoading.detach();
+
 	pClient->Connect();
 
 	if (pClient->GetConnect() == true)
@@ -202,6 +210,17 @@ void CGame01::FirstContact(void)
 	m_pEnemy.push_back(CEnemy::Create());
 	m_pEnemy.push_back(CEnemy::Create());
 	m_pEnemy.push_back(CEnemy::Create());
+
+	m_bAllConnect = true;
+}
+
+void CGame01::ConnectLading(bool *bConnect)
+{
+	while (*bConnect == false)
+	{
+
+	}
+	int n = 0;
 }
 
 //================================================
