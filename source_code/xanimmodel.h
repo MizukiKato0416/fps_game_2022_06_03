@@ -43,7 +43,7 @@ public:
 	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }	// セッター
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
 	D3DXMATRIX *GetMatrix(string name);	// ゲッダー
-	void SetMatrix(string name, D3DXMATRIX *mtx);	// セッター
+	void SetMatrix(D3DXMATRIX *pearent) { m_mtx_pearent = *pearent; }	// セッター
 	LPD3DXFRAME GetRootFrame(void) { return m_root_frame; }	// ゲッダー
 	D3DXVECTOR3 GetPos(void) { return m_pos; }	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
@@ -59,6 +59,7 @@ private:
 	vector<pair<string, int>> m_anim_type;	// アニメーションのタイプ
 	pair<string, int> m_anim_now_type;	// 現在のアニメーションのタイプ
 	D3DXMATRIX m_mtx_wold;	// ワールドマトリックス
+	D3DXMATRIX m_mtx_pearent;	// 親
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 回転
 	D3DXVECTOR3 m_size;	// サイズ

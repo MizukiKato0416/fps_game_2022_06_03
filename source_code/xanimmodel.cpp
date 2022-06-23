@@ -151,8 +151,6 @@ void CXanimModel::Draw(void)
 						&m_mtx_wold,
 						&trans_matrix);
 
-	device->GetTransform(D3DTS_WORLD, &mtx_parent);
-
 	//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
 	D3DXMatrixMultiply(	&m_mtx_wold,
 						&m_mtx_wold,
@@ -555,12 +553,4 @@ D3DXMATRIX *CXanimModel::GetMatrix(string name)
 	CheckContainer(m_root_frame, buf, name);
 
 	return buf;
-}
-
-//=============================================================================
-// 指定オブジェクトのマトリックス設定
-//=============================================================================
-void CXanimModel::SetMatrix(string name, D3DXMATRIX * mtx)
-{
-
 }
