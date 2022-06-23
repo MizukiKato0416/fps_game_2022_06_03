@@ -31,11 +31,11 @@ public:
 	//---------------------------
 	typedef struct
 	{
+		D3DXVECTOR3 Pos;	// プレイヤーの位置
+		D3DXVECTOR3 Rot;	// 角度
 		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
-		D3DXVECTOR3 Pos;	// プレイヤーの位置
-		D3DXVECTOR3 Rot;	// 角度
 	} PLAYUER_DATA;
 
 	typedef struct
@@ -47,13 +47,13 @@ public:
 
 	typedef struct
 	{
-		D3DXVECTOR3 BigenPos;	// 弾の始点
-		D3DXVECTOR3 EndPos;		// 弾の終点
-		D3DXVECTOR3 rot;		// 弾の向き
-		D3DXVECTOR3 size;		// 弾のサイズ
-		float fSpeed;			// 速さ
 		string sTexPas1;		// テクスチャ
 		string sTexPas2;		// テクスチャ
+		D3DXVECTOR3 BigenPos;	// 弾の始点
+		D3DXVECTOR3 EndPos;		// 弾の終点
+		D3DXVECTOR3 Rot;		// 弾の向き
+		D3DXVECTOR3 Size;		// 弾のサイズ
+		float fSpeed;			// 速さ
 		bool bUse;				// 使ってるかどうか
 	} BALLISTIC_DATA;
 
