@@ -356,8 +356,8 @@ HRESULT CBullet::Init(void)
 		pData->Bullet.nDamage = m_nDamage;
 		pData->Bullet.bUse = true;
 		pData->Ballistic.BigenPos = gunPos;
-		pData->Ballistic.size = { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f };
-		pData->Ballistic.rot = rotCamera;
+		pData->Ballistic.Size = { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f };
+		pData->Ballistic.Rot = rotCamera;
 		pData->Ballistic.EndPos = m_endPos;
 		pData->Ballistic.fSpeed = BULLET_MOVE_SPEED;
 		pData->Ballistic.sTexPas1 = "bullet_00.png";

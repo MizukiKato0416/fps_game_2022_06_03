@@ -54,7 +54,6 @@ public:
 		D3DXVECTOR3 Rot;		// 弾の向き
 		D3DXVECTOR3 Size;		// 弾のサイズ
 		float fSpeed;			// 速さ
-		bool bUse;				// 使ってるかどうか
 	} BALLISTIC_DATA;
 
 	typedef struct

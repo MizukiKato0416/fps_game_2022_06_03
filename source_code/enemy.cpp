@@ -195,7 +195,7 @@ void CEnemy::Attack(void)
 	if (pData->Bullet.bUse == true)
 	{
 		//弾の軌道エフェクトを生成
-		CBallistic::Create(pData->Ballistic.BigenPos, pData->Ballistic.size, pData->Ballistic.rot, pData->Ballistic.EndPos,
+		CBallistic::Create(pData->Ballistic.BigenPos, pData->Ballistic.Size, pData->Ballistic.Rot, pData->Ballistic.EndPos,
 			               pData->Ballistic.fSpeed, pData->Ballistic.sTexPas1, pData->Ballistic.sTexPas2);
 
 		//マズルフラッシュエフェクトの生成
