@@ -359,11 +359,6 @@ void CPlayer::Draw(void)
 {
 	//éÀåÇèàóù
 	Shot();
-
-	if (m_pBullet != nullptr)
-	{
-		m_pBullet->Uninit();
-	}
 }
 
 //================================================
@@ -643,8 +638,10 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(0, pos, {}, {});
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
+			CBullet *pBullet;	// íeÇÃÉ|ÉCÉìÉ^
+
 			//íeÇÃê∂ê¨
-			m_pBullet = CBullet::Create();
+			pBullet = CBullet::Create();
 		}
 	}
 	else
