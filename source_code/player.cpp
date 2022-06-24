@@ -360,7 +360,10 @@ void CPlayer::Draw(void)
 	//ŽËŒ‚ˆ—
 	Shot();
 
-	m_pBullet->Uninit();
+	if (m_pBullet != nullptr)
+	{
+		m_pBullet->Uninit();
+	}
 }
 
 //================================================
