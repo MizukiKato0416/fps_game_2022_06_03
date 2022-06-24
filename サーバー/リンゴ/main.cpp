@@ -120,47 +120,17 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	}
 
 	// 初期化データの送信
-	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[0]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[1]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[2]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-	memcpy(&send_data[0], data[3], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[1], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	memcpy(&send_data[0], data[2], sizeof(CCommunicationData::COMMUNICATION_DATA));
-	communication[3]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	for (int nCnt = 0; nCnt < MAX_PLAYER + 1; nCnt++)
+	{
+		memcpy(&send_data[0], data[nCnt], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		communication[nCnt]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	}
 
 	// ソケットの入手
-	sock.push_back(communication[0]->GetSocket());
-	sock.push_back(communication[1]->GetSocket());
-	sock.push_back(communication[2]->GetSocket());
-	sock.push_back(communication[3]->GetSocket());
+	for (int nCnt = 0; nCnt < MAX_PLAYER + 1; nCnt++)
+	{
+		sock.push_back(communication[nCnt]->GetSocket());
+	}
 
 	for (int nCnt = 0; nCnt < MAX_PLAYER + 1; nCnt++)
 	{
@@ -192,49 +162,32 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			break;
 		}
 
-		// プレイヤー1にsendされていたら
-		if (FD_ISSET(sock[0], &fds))
+		// プレイヤー分回す
+		for (int nCntRecv = 0; nCntRecv < MAX_PLAYER + 1; nCntRecv++)
 		{
-			recv = communication[0]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			memcpy(data[0], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[0].SetCmmuData(*data[0]);
-
-			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		}
-		// プレイヤー2にsendされていたら
-		if (FD_ISSET(sock[1], &fds))
-		{
-			recv = communication[1]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			memcpy(data[1], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[1].SetCmmuData(*data[1]);
-
-			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		}
-		// プレイヤー3にsendされていたら
-		if (FD_ISSET(sock[2], &fds))
-		{
-			recv = communication[2]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			memcpy(data[2], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[2].SetCmmuData(*data[2]);
-
-			communication[3]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		}
-		// プレイヤー4にsendされていたら
-		if (FD_ISSET(sock[3], &fds))
-		{
-			recv = communication[3]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			memcpy(data[3], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			commu_data[3].SetCmmuData(*data[3]);
-
-			communication[0]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[1]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			communication[2]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			// ソケットにsendされていたら
+			if (FD_ISSET(sock[nCntRecv], &fds))
+			{
+				// レシーブ
+				recv = communication[nCntRecv]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				memcpy(data[nCntRecv], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				commu_data[nCntRecv].SetCmmuData(*data[nCntRecv]);
+				// プレイヤー分回す
+				for (int nCntSend = 0; nCntSend < MAX_PLAYER + 1; nCntSend++)
+				{
+					// ソケットが同じなら
+					if (nCntSend == nCntRecv )
+					{
+						continue;
+					}
+					// 違うソケットなら
+					else
+					{
+						// sendする
+						communication[nCntSend]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					}
+				}
+			}
 		}
 
 		// 指定した秒数に一回
@@ -249,10 +202,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			cout << "Player : 1->rot" << data[0]->Player.Rot.x << " : " << data[0]->Player.Rot.y << " : " << data[0]->Player.Rot.z << endl;
 			cout << "Player : 2->pos" << data[1]->Player.Pos.x << " : " << data[1]->Player.Pos.y << " : " << data[1]->Player.Pos.z << endl;
 			cout << "Player : 2->rot" << data[1]->Player.Rot.x << " : " << data[1]->Player.Rot.y << " : " << data[1]->Player.Rot.z << endl;
-			cout << "Player : 3->pos" << data[2]->Player.Pos.x << " : " << data[2]->Player.Pos.y << " : " << data[2]->Player.Pos.z << endl;
-			cout << "Player : 3->rot" << data[2]->Player.Rot.x << " : " << data[2]->Player.Rot.y << " : " << data[2]->Player.Rot.z << endl;
-			cout << "Player : 4->pos" << data[3]->Player.Pos.x << " : " << data[3]->Player.Pos.y << " : " << data[3]->Player.Pos.z << endl;
-			cout << "Player : 4->rot" << data[3]->Player.Rot.x << " : " << data[3]->Player.Rot.y << " : " << data[3]->Player.Rot.z << endl;
+			//cout << "Player : 3->pos" << data[2]->Player.Pos.x << " : " << data[2]->Player.Pos.y << " : " << data[2]->Player.Pos.z << endl;
+			//cout << "Player : 3->rot" << data[2]->Player.Rot.x << " : " << data[2]->Player.Rot.y << " : " << data[2]->Player.Rot.z << endl;
+			//cout << "Player : 4->pos" << data[3]->Player.Pos.x << " : " << data[3]->Player.Pos.y << " : " << data[3]->Player.Pos.z << endl;
+			//cout << "Player : 4->rot" << data[3]->Player.Rot.x << " : " << data[3]->Player.Rot.y << " : " << data[3]->Player.Rot.z << endl;
 			cout << "=======================================================" << endl;
 		}
 	}
