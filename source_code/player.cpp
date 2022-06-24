@@ -256,11 +256,6 @@ void CPlayer::Update(void)
 
 	m_pAnimModel->Update();
 
-	pData->Player.Pos = m_pos;
-	pData->Player.Rot = m_rot;
-	pData->Player.fMotionSpeed = m_fAnimSpeed;
-	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
-
 	//ADSˆ—
 	ADS();
 
@@ -351,7 +346,10 @@ void CPlayer::Update(void)
 		m_pGunModel->GetModel()->SetCulliMode(true);
 	}
 
-	
+	pData->Player.Pos = m_pos;
+	pData->Player.Rot = m_rot;
+	pData->Player.fMotionSpeed = m_fAnimSpeed;
+	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 }
 
 //================================================

@@ -399,6 +399,7 @@ void CBullet::Uninit(void)
 	//通信データに情報を突っ込む
 	CCommunicationData::COMMUNICATION_DATA *pData = pPlayerObj->GetCommuData();
 
+	//弾を使ってない
 	pData->Bullet.bUse = false;
 
 	//オブジェクトの破棄
