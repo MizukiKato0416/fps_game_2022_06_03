@@ -361,6 +361,8 @@ void CPlayer::Draw(void)
 {
 	//射撃処理
 	Shot();
+
+	m_pBullet->Uninit();
 }
 
 //================================================
@@ -614,8 +616,6 @@ void CPlayer::Shot(void)
 	CCommunicationData::COMMUNICATION_DATA *pData;	
 	pData = m_commu_data.GetCmmuData();
 
-	CBullet *pBullet;	// 弾のポインタ
-
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
 		//撃つアニメーションでなかったら
@@ -643,11 +643,14 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			//弾の生成
-			pBullet = CBullet::Create();
+			m_pBullet = CBullet::Create();
 		}
 	}
 	else
 	{
+		//弾を使ってない
+		pData->Bullet.bUse = false;
+
 		//撃つアニメーションだったら
 		if (m_pAnimModel->GetAnimation() == "fireneutral")
 		{

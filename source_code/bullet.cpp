@@ -372,6 +372,35 @@ HRESULT CBullet::Init(void)
 //================================================
 void CBullet::Uninit(void)
 {	
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//プレイヤーのポインタ
+	CPlayer *pPlayerObj = nullptr;
+
+	//オブジェクト情報を入れるポインタ
+	object.clear();
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
+	int nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+	{
+		//オブジェクトの種類がプレイヤーだったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::PLAYER)
+		{
+			//プレイヤーにキャスト
+			pPlayerObj = nullptr;
+			pPlayerObj = (CPlayer*)object[nCnt];
+		}
+	}
+
+	//通信データに情報を突っ込む
+	CCommunicationData::COMMUNICATION_DATA *pData = pPlayerObj->GetCommuData();
+
+	pData->Bullet.bUse = false;
+
 	//オブジェクトの破棄
 	Release();
 }

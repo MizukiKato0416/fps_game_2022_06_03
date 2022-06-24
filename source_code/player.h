@@ -13,6 +13,7 @@ class CSparkle;
 class CWind;
 class CXanimModel;
 class CObject2D;
+class CBullet;
 
 //================================================
 //マクロ定義
@@ -87,6 +88,7 @@ private:
 	int m_nCounter;									//次の弾が出るまでのカウンター
 	bool m_bAds;									//ADSしているかどうか
 	CObject2D *m_pCloss;							//クロスヘア
+	CBullet *m_pBullet;								// 弾のポインタ
 	int m_nLife;									//体力
 };
 
