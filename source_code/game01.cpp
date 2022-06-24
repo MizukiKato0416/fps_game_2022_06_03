@@ -207,9 +207,11 @@ void CGame01::FirstContact(void)
 	{
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	}
-	m_pEnemy.push_back(CEnemy::Create());
-	m_pEnemy.push_back(CEnemy::Create());
-	m_pEnemy.push_back(CEnemy::Create());
+
+	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
+	{
+		m_pEnemy.push_back(CEnemy::Create());
+	}
 
 	m_bAllConnect = true;
 }
