@@ -171,6 +171,7 @@ void CEnemy::Recv(CCommunicationData *data)
 		char recv[MAX_COMMU_DATA];
 
 		CCommunicationData::COMMUNICATION_DATA *pData = data->GetCmmuData();
+		CCommunicationData::COMMUNICATION_DATA *pDataBuf = new CCommunicationData::COMMUNICATION_DATA;
 
 		size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 		if (size <= 0)
@@ -179,7 +180,15 @@ void CEnemy::Recv(CCommunicationData *data)
 		}
 		else
 		{
-			memcpy(pData, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			memcpy(pDataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+			if (pData->Player.nNumber == 0)
+			{
+				pData = pDataBuf;
+			}
+			else if (pData->Player.nNumber == pDataBuf->Player.nNumber)
+			{
+				pData = pDataBuf;
+			}
 			data->SetCmmuData(*pData);
 		}
 	}
