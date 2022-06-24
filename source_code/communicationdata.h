@@ -31,7 +31,6 @@ public:
 	//---------------------------
 	typedef struct
 	{
-		pair<int, bool>	EnemyBulletInfo[MAX_PLAYER];	// 敵の弾の情報
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 		int nNumber;	// プレイヤーのインデックス

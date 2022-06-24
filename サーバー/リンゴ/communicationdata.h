@@ -36,7 +36,7 @@ public:
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
 		int nNumber;	// プレイヤーのインデックス
-		float fMotionSpeed;	// モーションのスピード
+		float fMotionSpeed;	// モーションのスピードz
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
 	} PLAYUER_DATA;
 
