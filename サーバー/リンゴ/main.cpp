@@ -198,14 +198,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 			cout << "=======================================================" << endl;
 			cout << "ルーム : " << room_num << endl;
-			cout << "Player : 1->pos" << data[0]->Player.Pos.x << " : " << data[0]->Player.Pos.y << " : " << data[0]->Player.Pos.z << endl;
-			cout << "Player : 1->rot" << data[0]->Player.Rot.x << " : " << data[0]->Player.Rot.y << " : " << data[0]->Player.Rot.z << endl;
-			cout << "Player : 2->pos" << data[1]->Player.Pos.x << " : " << data[1]->Player.Pos.y << " : " << data[1]->Player.Pos.z << endl;
-			cout << "Player : 2->rot" << data[1]->Player.Rot.x << " : " << data[1]->Player.Rot.y << " : " << data[1]->Player.Rot.z << endl;
-			//cout << "Player : 3->pos" << data[2]->Player.Pos.x << " : " << data[2]->Player.Pos.y << " : " << data[2]->Player.Pos.z << endl;
-			//cout << "Player : 3->rot" << data[2]->Player.Rot.x << " : " << data[2]->Player.Rot.y << " : " << data[2]->Player.Rot.z << endl;
-			//cout << "Player : 4->pos" << data[3]->Player.Pos.x << " : " << data[3]->Player.Pos.y << " : " << data[3]->Player.Pos.z << endl;
-			//cout << "Player : 4->rot" << data[3]->Player.Rot.x << " : " << data[3]->Player.Rot.y << " : " << data[3]->Player.Rot.z << endl;
+			// プレイヤー分回す
+			for (int nCntSend = 0; nCntSend < MAX_PLAYER + 1; nCntSend++)
+			{
+				cout << "Player : "<< nCntSend << "->pos" << data[nCntSend]->Player.Pos.x << " : " << data[nCntSend]->Player.Pos.y << " : " << data[nCntSend]->Player.Pos.z << endl;
+				cout << "Player : " << nCntSend << "->rot" << data[nCntSend]->Player.Rot.x << " : " << data[nCntSend]->Player.Rot.y << " : " << data[nCntSend]->Player.Rot.z << endl;
+			}
 			cout << "=======================================================" << endl;
 		}
 	}
