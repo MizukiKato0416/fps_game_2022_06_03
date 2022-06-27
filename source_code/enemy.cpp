@@ -282,7 +282,22 @@ void CEnemy::Move(void)
 
 	//受け取った位置から元の位置までのヴェクトルを算出
 	D3DXVECTOR3 posVec = m_recvPos - m_posOld;
-	D3DXVECTOR3 rotVec = m_recvRot - m_rotOld;
+	D3DXVECTOR3 rotVec = { 0.0f, 0.0f, 0.0f };
+
+	//現在の向きごとにそれぞれ向きを変える量を計算
+	if (m_rotOld.y < 0.0f && -m_rotOld.y + m_recvPos.y > D3DX_PI)
+	{
+		rotVec.y = (-D3DX_PI - m_rotOld.y) + -(D3DX_PI - m_recvPos.y);
+	}
+	else if (m_rotOld.y >= D3DX_PI / 2.0f && m_rotOld.y - m_recvPos.y > D3DX_PI)
+	{
+		rotVec.y = (D3DX_PI - m_rotOld.y) - (-D3DX_PI - m_recvPos.y);
+	}
+	else
+	{
+		rotVec.y = (m_recvPos.y - m_rotOld.y);
+	}
+
 	//ベクトルを既定の数で割る
 	posVec /= 10.0f;
 	rotVec /= 10.0f;
