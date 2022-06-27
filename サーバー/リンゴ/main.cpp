@@ -181,7 +181,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// 指定した秒数に一回
-		if ((g_display_count % 30/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0)
+		if ((g_display_count % SEND_SOUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0)
 		{
 			// スクリーン消去
 			system("cls");
