@@ -172,21 +172,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[nCntRecv]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[nCntRecv], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[nCntRecv].SetCmmuData(*data[nCntRecv]);
-				// プレイヤー分回す
-				for (int nCntSend = 0; nCntSend < MAX_PLAYER + 1; nCntSend++)
-				{
-					// ソケットが同じなら
-					if (nCntSend == nCntRecv )
-					{
-						continue;
-					}
-					// 違うソケットなら
-					else
-					{
-						// sendする
-						communication[nCntSend]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-					}
-				}
 			}
 		}
 
@@ -205,6 +190,21 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				cout << "Player : " << nCntSend << "->rot" << data[nCntSend]->Player.Rot.x << " : " << data[nCntSend]->Player.Rot.y << " : " << data[nCntSend]->Player.Rot.z << endl;
 			}
 			cout << "=======================================================" << endl;
+
+			// プレイヤー分回す
+			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
+			{
+
+				// 敵分回す
+				for (int count_send = 0; count_send < MAX_PLAYER; count_send++)
+				{
+					// メモリのコピー
+					memcpy(&recv_data[0], data[count_send], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+					// sendする
+					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				}
+			}
 		}
 	}
 
