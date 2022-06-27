@@ -31,6 +31,8 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_recvPos = { 0.0f, 0.0f, 0.0f };
 	m_posOld = { 0.0f, 0.0f, 0.0f };
 	m_rot = { 0.0f, 0.0f, 0.0f };
+	m_recvRot = { 0.0f, 0.0f, 0.0f };
+	m_rotOld = { 0.0f, 0.0f, 0.0f };
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_nLife = 0;
 	m_pCollModel = nullptr;
@@ -51,6 +53,9 @@ HRESULT CEnemy::Init(void)
 {
 	m_posOld = m_pos;
 	m_recvPos = m_pos;
+
+	m_rotOld = m_rot;
+	m_recvRot = m_rot;
 
 	SetObjType(CObject::OBJTYPE::ENEMY);
 	m_nLife = PLAYER_LIFE;
@@ -255,7 +260,7 @@ void CEnemy::Move(void)
 	{
 		m_posOld = m_pos;
 		m_recvPos = pData->Player.Pos;
-		m_rot = pData->Player.Rot;
+		m_recvRot = pData->Player.Rot;
 
 		now_motion = m_model->GetAnimation();
 		if (now_motion != commu_motion && pData->bConnect == true)
@@ -270,8 +275,11 @@ void CEnemy::Move(void)
 
 	//受け取った位置から元の位置までのヴェクトルを算出
 	D3DXVECTOR3 posVec = m_recvPos - m_posOld;
+	D3DXVECTOR3 rotVec = m_recvRot - m_rotOld;
 	//ベクトルを既定の数で割る
 	posVec /= 10.0f;
+	rotVec /= 10.0f;
 	//現在位置からベクトル分位置を移動
 	m_pos += posVec;
+	m_rot += rotVec;
 }

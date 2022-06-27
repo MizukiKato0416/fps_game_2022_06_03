@@ -794,7 +794,7 @@ void CPlayer::RecvEnemyData(void)
 				if (m_nLife <= 0)
 				{
 					//Á‚·
-					Uninit();
+					m_pos = { 0.0f, 0.0f, 0.0f };
 				}
 			}
 		}

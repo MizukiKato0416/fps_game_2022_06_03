@@ -55,6 +55,8 @@ private:
 	D3DXVECTOR3 m_recvPos;	// 受け取った位置
 	D3DXVECTOR3 m_posOld;	// 前の位置
 	D3DXVECTOR3 m_rot;		// 向き
+	D3DXVECTOR3 m_recvRot;	// 受け取った向き
+	D3DXVECTOR3 m_rotOld;	// 前の向き
 	D3DXVECTOR3 m_size;		// サイズ
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
 	int m_nLife;			//ライフ
