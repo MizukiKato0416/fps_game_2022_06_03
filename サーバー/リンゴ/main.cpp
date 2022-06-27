@@ -28,6 +28,7 @@
 //------------------------
 int g_room_count;	// 部屋数
 int g_display_count;	// 表示するためのカウント
+bool g_is_collision;	// 当たったら
 string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
 
@@ -180,8 +181,95 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			}
 		}
 
+		D3DXVECTOR3 ray_vec_hit;
+		D3DXVECTOR3 hit_posV;
+		int save_hit_enemy; 		// 当たった敵
+		float save_differ = 100000.0f;
+
+		// プレイヤー分回す
+		for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
+		{
+			// 弾を使ってるなら
+			if (data[cout_player]->Bullet.bUse == true)
+			{
+				// プレイヤー分回す
+				for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
+				{
+					if (cout_player != cout_enemy)
+					{
+						D3DXMATRIX modelInvMtx;
+						D3DXMATRIX modelMtx = data[cout_enemy]->Player.ModelMatrix;
+						BOOL is_hit = false;
+						float differ = 0.0f;
+
+						D3DXMatrixIdentity(&modelInvMtx);
+						D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
+
+						//レイを飛ばす方向を算出
+						D3DXVECTOR3 ray_vec = data[cout_enemy]->Player.CamR - data[cout_enemy]->Player.CamV;
+
+						//ベクトルを正規化
+						D3DXVec3Normalize(&ray_vec, &ray_vec);
+
+						D3DXVECTOR3 posV = data[cout_enemy]->Player.CamV;
+
+						D3DXVECTOR3 endPos = posV + ray_vec;
+						D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
+						D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
+
+						D3DXVECTOR3 vec = endPos - posV;
+
+						//レイとメッシュの当たり判定
+						if (D3DXIntersect(data[cout_enemy]->Player.Mesh, &posV, &vec, &is_hit, NULL, NULL, NULL, &differ, NULL, NULL) == D3D_OK)
+						{
+							//当たったとき
+							if (is_hit == true)
+							{
+								if (save_differ > differ)
+								{
+									//距離を保存
+									save_differ = differ;
+
+									//レイの方向を保存
+									ray_vec_hit = vec;
+
+									//カメラのローカル座標を保存
+									hit_posV = posV;
+
+									//敵の番号保存
+									data[cout_player]->Bullet.nCollEnemy  = cout_enemy;
+									save_hit_enemy = cout_enemy;
+
+									// 当たった
+									g_is_collision = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// 当たってたら
+		if (g_is_collision == true)
+		{
+			D3DXVec3Normalize(&ray_vec_hit, &ray_vec_hit);
+
+			// レイのベクトルを算出した距離の分伸ばす
+			ray_vec_hit *= save_differ;
+
+			// カメラの位置から伸ばしたベクトルを足して当たった位置を算出
+			D3DXVECTOR3 HitPos = hit_posV + ray_vec_hit;
+			D3DXMATRIX hitModelMtx = data[save_hit_enemy]->Player.ModelMatrix;
+			D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
+
+			// 終点を設定
+			//m_endPos = HitPos;
+		}
+
 		// 指定した秒数に一回
-		if ((g_display_count % SEND_SOUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0)
+		if ((g_display_count % SEND_SOUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
+			g_is_collision == true)
 		{
 			// スクリーン消去
 			system("cls");
@@ -214,6 +302,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					}
 				}
 			}
+			g_is_collision = false;
 		}
 	}
 

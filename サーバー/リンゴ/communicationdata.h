@@ -35,6 +35,10 @@ public:
 	{
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
+		D3DXVECTOR3 CamV;	// カメラの位置
+		D3DXVECTOR3 CamR;	// カメラの注視点
+		LPD3DXMESH Mesh;	// メッシュ情報
+		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピードz
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
