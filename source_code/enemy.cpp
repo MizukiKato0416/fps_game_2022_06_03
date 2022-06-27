@@ -304,4 +304,14 @@ void CEnemy::Move(void)
 	//現在位置からベクトル分位置を移動
 	m_pos += posVec;
 	m_rot += rotVec;
+
+	//πより大きくなったら-2πする
+	if (m_rot.y > D3DX_PI)
+	{
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y < -D3DX_PI)
+	{	//-πより小さくなったら+2πする
+		m_rot.y += D3DX_PI * 2.0f;
+	}
 }
