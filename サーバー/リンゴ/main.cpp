@@ -21,7 +21,7 @@
 #define TIME_OUT (50)	// タイムアウト
 #define FPS (60)	// fps
 #define DISPLAY_ON (400000000 / FPS)	// 表示まで
-#define SEND_SOUNTER (10)	// 表示まで
+#define SEND_COUNTER (10)	// 表示まで
 
 //------------------------
 // グローバル変数
@@ -268,7 +268,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// 指定した秒数に一回
-		if ((g_display_count % SEND_SOUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
+		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
 			g_is_collision == true)
 		{
 			// スクリーン消去

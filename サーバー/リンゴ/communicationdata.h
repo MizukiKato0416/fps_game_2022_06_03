@@ -41,7 +41,7 @@ public:
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピードz
-		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
+		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
 	} PLAYUER_DATA;
 
 	typedef struct
