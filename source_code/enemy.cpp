@@ -112,6 +112,8 @@ void CEnemy::Update(void)
 	Move();
 	Attack();
 
+	SetPos(m_pos);
+
 	CPlayer::Collision(this, m_size.x / 2.0f);
 }
 
@@ -259,6 +261,7 @@ void CEnemy::Move(void)
 	if (pData->bConnect == true)
 	{
 		m_posOld = m_pos;
+		m_rotOld = m_rot;
 		m_recvPos = pData->Player.Pos;
 		m_recvRot = pData->Player.Rot;
 

@@ -795,6 +795,7 @@ void CPlayer::RecvEnemyData(void)
 				{
 					//è¡Ç∑
 					m_pos = { 0.0f, 0.0f, 0.0f };
+					SetPos(m_pos);
 				}
 			}
 		}
