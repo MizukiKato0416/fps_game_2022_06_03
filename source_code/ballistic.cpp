@@ -27,6 +27,7 @@ CBallistic::CBallistic(CObject::PRIORITY Priority) :CObject(Priority)
 	m_sTexPas1.clear();
 	m_sTexPas2.clear();
 	memset(m_apOrbit, NULL, sizeof(m_apOrbit[BALLISTIC_MAX_ORBIT]));
+	m_bMove = false;
 }
 
 //================================================
@@ -47,6 +48,9 @@ CBallistic::~CBallistic()
 //================================================
 HRESULT CBallistic::Init(void)
 {
+	//変数初期化
+	m_bMove = false;
+
 	//オブジェクトの種類を設定
 	SetObjType(CObject::OBJTYPE::BALLISTIC);
 
@@ -88,51 +92,58 @@ void CBallistic::Uninit(void)
 //================================================
 void CBallistic::Update(void)
 {
-	for (int nCntOrbit = 0; nCntOrbit < BALLISTIC_MAX_ORBIT; nCntOrbit++)
+	if (m_bMove)
 	{
-		if (m_apOrbit[nCntOrbit] != nullptr)
+		for (int nCntOrbit = 0; nCntOrbit < BALLISTIC_MAX_ORBIT; nCntOrbit++)
 		{
-			//位置とサイズを取得
-			D3DXVECTOR3 pos = m_apOrbit[nCntOrbit]->GetPos();
-
-			//移動した位置から終点までのベクトルを算出
-			D3DXVECTOR3 differVec = m_endPos - pos;
-			float fDiffer = D3DXVec3Length(&differVec);
-
-			if (fDiffer < m_size.x)
+			if (m_apOrbit[nCntOrbit] != nullptr)
 			{
-				//消す
-				m_apOrbit[nCntOrbit]->Uninit();
-				m_apOrbit[nCntOrbit] = nullptr;
-				break;
-			}
+				//位置とサイズを取得
+				D3DXVECTOR3 pos = m_apOrbit[nCntOrbit]->GetPos();
 
-			D3DXVECTOR3 size = m_apOrbit[nCntOrbit]->GetSize();
+				//移動した位置から終点までのベクトルを算出
+				D3DXVECTOR3 differVec = m_endPos - pos;
+				float fDiffer = D3DXVec3Length(&differVec);
 
-			//飛ばす方向を設定
-			D3DXVECTOR3 vec = m_endPos - m_bigenPos;
-			//正規化
-			D3DXVec3Normalize(&vec, &vec);
-			//移動量を設定
-			D3DXVECTOR3 move = vec * m_fSpeed;
-			pos += move;
+				if (fDiffer < m_size.x)
+				{
+					//消す
+					m_apOrbit[nCntOrbit]->Uninit();
+					m_apOrbit[nCntOrbit] = nullptr;
+					break;
+				}
 
-			//移動した位置から終点までのベクトルを算出
-			differVec = m_endPos - pos;
-			fDiffer = D3DXVec3Length(&differVec);
+				D3DXVECTOR3 size = m_apOrbit[nCntOrbit]->GetSize();
 
-			if (fDiffer < size.x)
-			{
-				//消す
-				m_apOrbit[nCntOrbit]->Uninit();
-				m_apOrbit[nCntOrbit] = nullptr;
-			}
-			else
-			{
-				//位置を設定
-				m_apOrbit[nCntOrbit]->SetPos(pos, size);
+				//飛ばす方向を設定
+				D3DXVECTOR3 vec = m_endPos - m_bigenPos;
+				//正規化
+				D3DXVec3Normalize(&vec, &vec);
+				//移動量を設定
+				D3DXVECTOR3 move = vec * m_fSpeed;
+				pos += move;
+
+				//移動した位置から終点までのベクトルを算出
+				differVec = m_endPos - pos;
+				fDiffer = D3DXVec3Length(&differVec);
+
+				if (fDiffer < size.x)
+				{
+					//消す
+					m_apOrbit[nCntOrbit]->Uninit();
+					m_apOrbit[nCntOrbit] = nullptr;
+				}
+				else
+				{
+					//位置を設定
+					m_apOrbit[nCntOrbit]->SetPos(pos, size);
+				}
 			}
 		}
+	}
+	else
+	{
+		m_bMove = true;
 	}
 }
 

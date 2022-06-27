@@ -50,6 +50,7 @@ private:
 	string m_sTexPas1;							//弾のテクスチャ
 	string m_sTexPas2;							//弾のテクスチャ
 	CObject3D *m_apOrbit[BALLISTIC_MAX_ORBIT];	//軌道エフェクトのポインタ
+	bool m_bMove;								//移動し始めるかどうか
 };
 
 //================================================
