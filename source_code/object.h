@@ -31,15 +31,16 @@ public:
 	enum class PRIORITY
 	{
 		NONE = 0,			// なし
+		MESH_FIELD,			// メッシュフィールド
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
+		GUN,				// 銃
 		MODEL,				// モデル
 		BULLET,				// 弾
 		POLYGON_3D,			// 3Dポリゴン
 		SHADOW,				// 影
 		EFFECT3D,			// パーティクル
 		EFFECT2D,			// パーティクル
-		MESH_FIELD,			// メッシュフィールド
 		UI,					// UI
 		FADE,				// フェード
 		MAX
@@ -53,6 +54,9 @@ public:
 		EFFECT_3D,			// 3Dエフェクト
 		EFFECT_2D,			// 2Dエフェクト
 		MODEL,				// モデル
+		MODEL_COLLISION,	// 当たり判定用モデル
+		BALLISTIC,			// 弾道
+		BULLET,				// 弾
 		PLAYER,				// プレイヤー
 		ENEMY,				// 敵
 		UI,					// UI

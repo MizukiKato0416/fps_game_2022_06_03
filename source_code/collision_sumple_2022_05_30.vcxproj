@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ActiveBillboard.cpp" />
+    <ClCompile Include="ballistic.cpp" />
     <ClCompile Include="BezierBill.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="billeffect.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="mesh_field.cpp" />
     <ClCompile Include="meshsphere.cpp" />
     <ClCompile Include="model.cpp" />
+    <ClCompile Include="model_collision.cpp" />
     <ClCompile Include="model_single.cpp" />
     <ClCompile Include="MouseTracking.cpp" />
     <ClCompile Include="object.cpp" />
@@ -214,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveBillboard.h" />
+    <ClInclude Include="ballistic.h" />
     <ClInclude Include="BezierBillh.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="billeffect.h" />
@@ -244,6 +247,7 @@
     <ClInclude Include="mesh_field.h" />
     <ClInclude Include="meshsphere.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="model_collision.h" />
     <ClInclude Include="model_single.h" />
     <ClInclude Include="MouseTracking.h" />
     <ClInclude Include="object.h" />

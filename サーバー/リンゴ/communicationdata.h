@@ -17,11 +17,10 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_BULLET (30)
-#define MAX_PLAYER (3)
+#define MAX_PLAYER (1)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
-#define MAX_COMMU_DATA (2048)
+#define MAX_COMMU_DATA (256)
 
 //-------------------------------
 // Classの定義
@@ -34,27 +33,34 @@ public:
 	//---------------------------
 	typedef struct
 	{
-		int nNumber;	// プレイヤーのインデックス
-		float fMotionSpeed;	// モーションのスピード
-		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
 		D3DXVECTOR3 Pos;	// プレイヤーの位置
 		D3DXVECTOR3 Rot;	// 角度
+		int nNumber;	// プレイヤーのインデックス
+		float fMotionSpeed;	// モーションのスピードz
+		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの
 	} PLAYUER_DATA;
 
 	typedef struct
 	{
-		D3DXVECTOR3 BigenPos;	// 弾の位置
-		D3DXVECTOR3 EndPos;	// 弾の位置
 		int nCollEnemy;	// 当てた相手の番号
 		int nDamage;	// ダメージ
-		bool bHit;	// 当たったかどうか
 		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
 
 	typedef struct
 	{
+		D3DXVECTOR3 BigenPos;	// 弾の始点
+		D3DXVECTOR3 EndPos;		// 弾の終点
+		D3DXVECTOR3 Rot;		// 弾の向き
+		D3DXVECTOR3 Size;		// 弾のサイズ
+		float fSpeed;			// 速さ
+	} BALLISTIC_DATA;
+
+	typedef struct
+	{
 		PLAYUER_DATA Player;	// プレイヤーデータ
-		BULLET_DATA Bullet[MAX_BULLET];	// 弾データ
+		BULLET_DATA Bullet;	// 弾データ
+		BALLISTIC_DATA Ballistic;	// 弾道
 		bool bConnect;	// 接続確認
 	} COMMUNICATION_DATA;
 

@@ -21,7 +21,6 @@ CXanimModel::CXanimModel()
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_vtx_min = { 100000.0f, 100000.0f, 100000.0f };
 	m_vtx_max = { -100000.0f, -100000.0f, -100000.0f };
-	m_is_first = false;
 }
 
 //=============================================================================
@@ -123,8 +122,6 @@ void CXanimModel::DrawMatrix(LPD3DXMATRIX matrix)
 	UpdateFrame(m_root_frame, matrix);
 	// フレーム描画
 	DrawFrame(m_root_frame);
-	SaveMeshContainer(m_root_frame);
-	m_is_first = true;
 }
 
 //=============================================================================
@@ -154,12 +151,12 @@ void CXanimModel::Draw(void)
 						&m_mtx_wold,
 						&trans_matrix);
 
-	device->GetTransform(D3DTS_WORLD, &mtx_parent);
+	mtx_parent = m_mtx_pearent;
 
 	//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
 	D3DXMatrixMultiply(	&m_mtx_wold,
 						&m_mtx_wold,
-						&mtx_parent);
+						&m_mtx_pearent);
 
 	DrawMatrix(&m_mtx_wold);
 }
@@ -549,37 +546,6 @@ void CXanimModel::CheckContainer(LPD3DXFRAME frame)
 }
 
 //=============================================================================
-// 当たり判定用コンテナのセーブ
-//=============================================================================
-void CXanimModel::SaveMeshContainer(LPD3DXFRAME frame)
-{
-	FrameData *frame_data = (FrameData*)frame;
-	LPD3DXMESHCONTAINER container_data = frame_data->pMeshContainer;
-	MeshContainer *mesh_container = (MeshContainer*)container_data;
-
-	// コンテナの数だけ描画する
-	while (container_data != NULL)
-	{
-		m_mesh.push_back(*mesh_container);
-		m_matx_bone.push_back(frame_data->TransformationMatrix);
-
-		container_data = container_data->pNextMeshContainer;
-	}
-
-	// 兄弟がいれば再帰で呼び出す
-	if (frame_data->pFrameSibling != NULL)
-	{
-		SaveMeshContainer(frame_data->pFrameSibling);
-	}
-
-	// 子がいれば再帰で呼び出す
-	if (frame_data->pFrameFirstChild != NULL)
-	{
-		SaveMeshContainer(frame_data->pFrameFirstChild);
-	}
-}
-
-//=============================================================================
 // 指定オブジェクトのマトリックス入手
 //=============================================================================
 D3DXMATRIX *CXanimModel::GetMatrix(string name)
@@ -589,12 +555,4 @@ D3DXMATRIX *CXanimModel::GetMatrix(string name)
 	CheckContainer(m_root_frame, buf, name);
 
 	return buf;
-}
-
-//=============================================================================
-// 指定オブジェクトのマトリックス設定
-//=============================================================================
-void CXanimModel::SetMatrix(string name, D3DXMATRIX * mtx)
-{
-
 }

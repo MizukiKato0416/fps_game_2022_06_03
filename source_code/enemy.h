@@ -19,6 +19,8 @@
 //*****************************************************************************
 class CXanimModel;
 class CModelSingle;
+class CModelCollision;
+class CGunModel;
 
 //*****************************************************************************
 // クラス定義
@@ -33,29 +35,32 @@ public:
 	void Update(void);	// ポリゴンの更新
 	void Draw(void);	// ポリゴンの描画
 	static CEnemy *Create(void);	// 生成
-	static void Recv(void);	// レシーブスレッド
-	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data, int number) { m_commu_data[number].SetCmmuData(data); }	// 通信データ設定処理
-	static CCommunicationData::COMMUNICATION_DATA *GetCommuData(int number) { return m_commu_data[number].GetCmmuData(); }	// 通信データ取得処理
+	static void Recv(CCommunicationData *data);	// レシーブスレッド
+	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data) { m_commu_data.SetCmmuData(data); }	// 通信データ設定処理
+	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// 通信データ取得処理
 	CXanimModel *GetSelfModel(void) { return m_model; }
-	int GetPlayerNumber(void) { CCommunicationData::COMMUNICATION_DATA *data = m_commu_data[m_my_index].GetCmmuData(); return data->Player.nNumber; }
-	//ライフ取得処理
-	int GetLife(void) { return m_nLife; }
-	//ライフ設定処理
-	void SetLife(const int nLife) { m_nLife = nLife; }
+	int GetPlayerNumber(void) { CCommunicationData::COMMUNICATION_DATA *data = m_commu_data.GetCmmuData(); return data->Player.nNumber; }
+	int GetLife(void) { return m_nLife; }		//ライフ取得処理
+	void SetLife(const int nLife) { m_nLife = nLife; }	//ライフ設定処理
+	D3DXMATRIX GetMtx(void) { return m_mtx_wld; }	//ワールドマトリックス取得処理
+	CModelCollision *GetModelCollision(void) { return m_pCollModel; }	//当たり判定用モデル取得処理
 
 private:
 	void Attack(void);	// 攻撃
 	void Move(void);	// 移動
-	static CCommunicationData m_commu_data[MAX_PLAYER];	// 通信データ
-	static int m_create_count;	// 生成した数
-	static bool m_create_thread;	// スレッドを分けたか
+	CCommunicationData m_commu_data;	// 通信データ
 	CXanimModel *m_model;	// モデル
-	CModelSingle *m_pGunModel;			// 銃モデル
+	CGunModel *m_pGunModel;			// 銃モデル
 	D3DXVECTOR3 m_pos;		// 位置
+	D3DXVECTOR3 m_recvPos;	// 受け取った位置
+	D3DXVECTOR3 m_posOld;	// 前の位置
 	D3DXVECTOR3 m_rot;		// 向き
+	D3DXVECTOR3 m_recvRot;	// 受け取った向き
+	D3DXVECTOR3 m_rotOld;	// 前の向き
+	D3DXVECTOR3 m_size;		// サイズ
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
-	int m_my_index;	// 自分のプレイヤー番号
 	int m_nLife;			//ライフ
+	CModelCollision *m_pCollModel;	//当たり判定のボックス
 };
 
 #endif

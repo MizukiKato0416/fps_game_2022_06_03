@@ -92,9 +92,10 @@ HRESULT CModel::Init(D3DXVECTOR3 pos, D3DXVECTOR3 rot, string sPas)
 				if (strcmp(sTexturePas.c_str(), pMat[nCntMat].pTextureFilename) == 0)
 				{
 					texbuf = CManager::GetInstance()->GetTexture()->GetTexture(nCntTex);
-					m_pTexture.push_back(texbuf);
+					break;
 				}
 			}
+			m_pTexture.push_back(texbuf);
 		}
 		else
 		{

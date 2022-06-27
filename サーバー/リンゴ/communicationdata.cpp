@@ -14,19 +14,19 @@
 //-------------------------------
 CCommunicationData::CCommunicationData()
 {
+	sizeof(COMMUNICATION_DATA);
 	m_CommuData.bConnect = false;
 	m_CommuData.Player.fMotionSpeed = 0.0f;
 	m_CommuData.Player.nNumber = 0;
 	m_CommuData.Player.Pos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Player.Rot = { 0.0f, 0.0f, 0.0f };
-	for (int nCnt = 0; nCnt < MAX_BULLET; nCnt++)
-	{
-		m_CommuData.Bullet[nCnt].BigenPos = { 0.0f, 0.0f, 0.0f };
-		m_CommuData.Bullet[nCnt].EndPos = { 0.0f, 0.0f, 0.0f };
-		m_CommuData.Bullet[nCnt].nCollEnemy = 0;
-		m_CommuData.Bullet[nCnt].bHit = false;
-		m_CommuData.Bullet[nCnt].bUse = false;
-	}
+	m_CommuData.Bullet.nCollEnemy = 0;
+	m_CommuData.Bullet.bUse = false;
+	m_CommuData.Ballistic.BigenPos = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.EndPos = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.Size = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.Rot = { 0.0f, 0.0f, 0.0f };
+	m_CommuData.Ballistic.fSpeed = 0.0f;
 }
 
 //-------------------------------

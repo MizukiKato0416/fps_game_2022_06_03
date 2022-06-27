@@ -26,6 +26,7 @@
 #include "bullet.h"
 #include "gunmodel.h"
 #include "object2D.h"
+#include "enemy.h"
 
 //================================================
 //マクロ定義
@@ -35,12 +36,14 @@
 #define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
-#define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.0f, 2.0f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
-#define PLAYER_LIFE							(100)									//体力
+#define CAMERA_V_SPEED_Y			(0.03f)											//カメラの横移動スピード
+#define CAMERA_V__MOUSE_SPEED_Y		(0.002f)										//カメラの横移動スピード（マウスの時）
+#define CAMERA_V_SPEED_XZ			(0.01f)											//カメラの縦移動スピード
+#define CAMERA_V__MOUSE_SPEED_XZ	(-0.0005f)										//カメラの横移動スピード（マウスの時）
 
 //================================================
 //デフォルトコンストラクタ
@@ -96,6 +99,7 @@ HRESULT CPlayer::Init(void)
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
+	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
 
 	//位置の設定
 	SetPos(m_pos);
@@ -157,6 +161,9 @@ void CPlayer::Uninit(void)
 //================================================
 void CPlayer::Update(void)
 {
+	//敵から受け取ったデータについての処理
+	RecvEnemyData();
+
 	CSound *sound;
 	sound = CManager::GetInstance()->GetSound();
 	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
@@ -174,6 +181,9 @@ void CPlayer::Update(void)
 	//腰の処理
 	Chest();
 
+	//回転の慣性
+	Rotate();
+
 	//移動処理
 	Move();
 
@@ -181,9 +191,6 @@ void CPlayer::Update(void)
 	m_move.y -= PLAYER_GRAVITY;
 
 	m_pos += m_move;		//移動量反映
-
-	//回転の慣性
-	Rotate();
 
 	//位置反映
 	SetPos(m_pos);
@@ -248,23 +255,9 @@ void CPlayer::Update(void)
 
 	m_pAnimModel->Update();
 
-	pData->Player.Pos = m_pos;
-	pData->Player.Rot = m_rot;
-	pData->Player.fMotionSpeed = m_fAnimSpeed;
-	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-	//射撃処理
-	Shot();
-
 	//ADS処理
 	ADS();
-}
 
-//================================================
-//描画処理
-//================================================
-void CPlayer::Draw(void)
-{
 	//デバイスのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 	//デバイスの取得
@@ -274,7 +267,8 @@ void CPlayer::Draw(void)
 
 	D3DXMatrixIdentity(&m_mtxWorld);		//プレイヤーのワールドマトリックスの初期化
 
-	D3DXVECTOR3 pos, rot;
+	
+	D3DXVECTOR3 rot;
 
 	//親子関係がつけられていたら
 	if (m_bObjParent == true)
@@ -288,29 +282,9 @@ void CPlayer::Draw(void)
 		rot = m_rot;
 	}
 
-	D3DXMATRIX *cameraMtx = nullptr;
-	//cameraのポインタ配列1番目のアドレス取得
-	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
-
-	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
-	{
-		//cameraの取得
-		CCamera *pCamera = &**pCameraAddress;
-		if (pCamera != nullptr)
-		{
-			D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-			//cameraの向き取得
-			rotCamera = pCamera->GetRotV();
-
-			rotCamera.x -= D3DX_PI / 2.0f;
-
-			//プレイヤーの向きを反映
-			D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-			cameraMtx = pCamera->GetMtxPoint();
-		}
-	}
+	//プレイヤーの向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
 
 	//プレイヤーの位置を反映
 	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
@@ -327,7 +301,26 @@ void CPlayer::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//m_pAnimModel->Draw();
+
+	D3DXMATRIX *cameraMtx = nullptr;
+	//cameraのポインタ配列1番目のアドレス取得
+	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	{
+		//cameraの取得
+		CCamera *pCamera = &**pCameraAddress;
+		if (pCamera != nullptr)
+		{
+			//カメラのマトリックス取得
+			cameraMtx = pCamera->GetMtxPoint();
+			//カメラのマトリックスと親子関係をつける
+			m_pAnimModel->SetMatrix(cameraMtx);
+		}
+	}
+
+	//腕の描画
+	m_pAnimModel->Draw();
 
 	if (!m_bAds)
 	{
@@ -340,6 +333,7 @@ void CPlayer::Draw(void)
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+		m_pGunModel->GetModel()->SetCulliMode(false);
 	}
 	else
 	{
@@ -348,7 +342,22 @@ void CPlayer::Draw(void)
 		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+		m_pGunModel->GetModel()->SetCulliMode(true);
 	}
+
+	pData->Player.Pos = m_pos;
+	pData->Player.Rot = m_rot;
+	pData->Player.fMotionSpeed = m_fAnimSpeed;
+	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
+}
+
+//================================================
+//描画処理
+//================================================
+void CPlayer::Draw(void)
+{
+	//射撃処理
+	Shot();
 }
 
 //================================================
@@ -530,8 +539,32 @@ void CPlayer::Rotate(void)
 		//cameraの取得
 		CCamera *pCamera = &**pCameraAddress;
 		if (pCamera != nullptr)
-
 		{
+			//マウス取得処理
+			CInputMouse *pInputMouse;
+			pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+			//マウスの移動量取得
+			D3DXVECTOR2 mouseVelocity = pInputMouse->GetMouseVelocity();
+
+			//カメラの向き取得
+			D3DXVECTOR3 cameraRot = pCamera->GetRotV();
+
+			//================================================
+			//マウスによる視点移動処理
+			//================================================
+			if (mouseVelocity.x != 0.0f)
+			{
+				cameraRot.y += mouseVelocity.x * CAMERA_V__MOUSE_SPEED_Y;
+			}
+			if (mouseVelocity.y != 0.0f)
+			{
+				cameraRot.x -= mouseVelocity.y * CAMERA_V__MOUSE_SPEED_XZ;
+			}
+
+			pCamera->SetRotV(cameraRot);
+
+
 			//cameraの向き取得
 			m_rot.y = pCamera->GetRotV().y + D3DX_PI;
 		}
@@ -578,8 +611,6 @@ void CPlayer::Shot(void)
 	CCommunicationData::COMMUNICATION_DATA *pData;	
 	pData = m_commu_data.GetCmmuData();
 
-	CBullet *pBullet;	// 弾のポインタ
-
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
 		//撃つアニメーションでなかったら
@@ -601,31 +632,22 @@ void CPlayer::Shot(void)
 
 			//オフセット位置設定
 			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
-			pos += m_posOld - m_pos;
 
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {}, {});
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
+			CBullet *pBullet;	// 弾のポインタ
+
 			//弾の生成
 			pBullet = CBullet::Create();
-
-			for (int nBullet = 0; nBullet < MAX_BULLET; nBullet++)
-			{
-				// 弾を使ってなかったら
-				if (pData->Bullet[nBullet].bUse == false)
-				{
-					// 情報を設定
-					pData->Bullet[nBullet].nCollEnemy = pBullet->GetHitPlayerNum();
-					pData->Bullet[nBullet].nDamage = pBullet->GetHitPlayerNum();
-					pData->Bullet[nBullet].bHit = true;
-					pData->Bullet[nBullet].bUse = true;
-				}
-			}
 		}
 	}
 	else
 	{
+		//弾を使ってない
+		pData->Bullet.bUse = false;
+
 		//撃つアニメーションだったら
 		if (m_pAnimModel->GetAnimation() == "fireneutral")
 		{
@@ -735,32 +757,47 @@ void CPlayer::ADS(void)
 //================================================
 void CPlayer::Chest(void)
 {
-	//cameraのポインタ配列1番目のアドレス取得
-	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+	
+}
 
-	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+//================================================
+//敵のデータ取得処理
+//================================================
+void CPlayer::RecvEnemyData(void)
+{
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
+	int nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
 	{
-		//cameraの取得
-		CCamera *pCamera = &**pCameraAddress;
-		if (pCamera != nullptr)
+		//オブジェクトの種類が敵だったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
 		{
-			D3DXVECTOR3 rotCamera = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-			//cameraの向き取得
-			rotCamera = pCamera->GetRotV();
+			//プレイヤーにキャスト
+			CEnemy *pEnemy = nullptr;
+			pEnemy = (CEnemy*)object[nCnt];
 
-			D3DXMATRIX cameraMtx;
-			D3DXMatrixIdentity(&cameraMtx);
-			D3DXMatrixRotationYawPitchRoll(&cameraMtx, 0.0f, rotCamera.x, 0.0f);
+			//サーバーから敵に送られてきた情報を取得
+			CCommunicationData::COMMUNICATION_DATA *pData = pEnemy->GetCommuData();
 
-			//マトリックスを取得
-			D3DXMATRIX *handR = nullptr;
-			handR = m_pAnimModel->GetMatrix("handR");
+			// 弾を使ってなかったら且つ弾が当たったプレイヤー番号が自身と一致していたら
+			if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == m_commu_data.GetCmmuData()->Player.nNumber)
+			{
+				//ライフを減らす
+				m_nLife -= pData->Bullet.nDamage;
 
-			handR->_11 = 10050.0f;
-
-			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &cameraMtx);
-
-			//m_pAnimModel->SetMatrix("handR", handR);
+				//ライフが0になったら
+				if (m_nLife <= 0)
+				{
+					//消す
+					m_pos = { 0.0f, 0.0f, 0.0f };
+					SetPos(m_pos);
+				}
+			}
 		}
 	}
 }
@@ -768,7 +805,7 @@ void CPlayer::Chest(void)
 //================================================
 //プレイヤーとの当たり判定
 //================================================
-void CPlayer::Collision(CObject *&pSubjectObject, const float &fObjRadius)
+void CPlayer::Collision(CObject *pSubjectObject, const float &fObjRadius)
 {
 	//オブジェクト情報を入れるポインタ
 	vector<CObject*> object;
@@ -806,7 +843,24 @@ void CPlayer::Collision(CObject *&pSubjectObject, const float &fObjRadius)
 				pPlayerObj->SetPos(pPlayerObj->m_pos);
 
 				//モデルとの当たり判定
-				CModelSingle::Collision(pPlayerObj);
+				int nHit = CModelSingle::Collision(pPlayerObj, pPlayerObj->m_size.x / 2.0f, 150.0f);
+				//上からあたったとき
+				if (nHit == 1)
+				{
+					//重力を0にする
+					pPlayerObj->m_move.y = 0.0f;
+
+					//ジャンプをしていない状態にする
+					pPlayerObj->m_bJump = false;
+
+					//ジャンプ処理
+					pPlayerObj->Jump();
+				}
+				else if (nHit == 2)
+				{//下からあたったとき
+				 //重力を0にする
+					pPlayerObj->m_move.y = 0.0f;
+				}
 			}
 		}
 	}
