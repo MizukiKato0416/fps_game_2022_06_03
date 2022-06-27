@@ -21,7 +21,7 @@
 #define TIME_OUT (50)	// タイムアウト
 #define FPS (60)	// fps
 #define DISPLAY_ON (400000000 / FPS)	// 表示まで
-#define SEND_SOUNTER (30)	// 表示まで
+#define SEND_SOUNTER (10)	// 表示まで
 
 //------------------------
 // グローバル変数
