@@ -253,11 +253,6 @@ void CPlayer::Update(void)
 	pos = GetPos();
 	m_pos = pos;
 
-	m_pAnimModel->Update();
-
-	//ADS処理
-	ADS();
-
 	//デバイスのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 	//デバイスの取得
@@ -345,6 +340,14 @@ void CPlayer::Update(void)
 		m_pGunModel->GetModel()->SetCulliMode(true);
 	}
 
+	//射撃処理
+	Shot();
+
+	m_pAnimModel->Update();
+
+	//ADS処理
+	ADS();
+
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
@@ -356,8 +359,7 @@ void CPlayer::Update(void)
 //================================================
 void CPlayer::Draw(void)
 {
-	//射撃処理
-	Shot();
+	
 }
 
 //================================================
