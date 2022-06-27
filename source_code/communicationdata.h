@@ -15,7 +15,7 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (1)
+#define MAX_PLAYER (3)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (256)
@@ -47,8 +47,6 @@ public:
 
 	typedef struct
 	{
-		string sTexPas1;		// テクスチャ
-		string sTexPas2;		// テクスチャ
 		D3DXVECTOR3 BigenPos;	// 弾の始点
 		D3DXVECTOR3 EndPos;		// 弾の終点
 		D3DXVECTOR3 Rot;		// 弾の向き

@@ -152,6 +152,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	// レシーブでなんも来なかったら
 	while (recv > 0)
 	{
+		// フレームカウント
+		g_display_count++;
+
 		// メモリーのコピー
 		memcpy(&fds, &readfds, sizeof(fd_set));
 
@@ -178,7 +181,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// 指定した秒数に一回
-		if ((g_display_count % (DISPLAY_ON * SEND_SOUNTER)) == 0)
+		if ((g_display_count % 30/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0)
 		{
 			// スクリーン消去
 			system("cls");
@@ -198,13 +201,17 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			{
 
 				// 敵分回す
-				for (int count_send = 0; count_send < MAX_PLAYER; count_send++)
+				for (int count_send = 0; count_send < MAX_PLAYER + 1; count_send++)
 				{
-					// メモリのコピー
-					memcpy(&recv_data[0], data[count_send], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					// そのプレイヤーじゃなかったら
+					if (data[count_send] != data[count_player])
+					{
+						// メモリのコピー
+						memcpy(&recv_data[0], data[count_send], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
-					// sendする
-					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+						// sendする
+						communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					}
 				}
 			}
 		}
