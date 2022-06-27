@@ -271,7 +271,7 @@ void CEnemy::Move(void)
 	//受け取った位置から元の位置までのヴェクトルを算出
 	D3DXVECTOR3 posVec = m_recvPos - m_posOld;
 	//ベクトルを既定の数で割る
-	posVec /= 30.0f;
+	posVec /= 10.0f;
 	//現在位置からベクトル分位置を移動
 	m_pos += posVec;
 }
