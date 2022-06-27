@@ -260,7 +260,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 			// カメラの位置から伸ばしたベクトルを足して当たった位置を算出
 			D3DXVECTOR3 HitPos = hit_posV + ray_vec_hit;
-			D3DXMATRIX hitModelMtx = data[save_hit_enemy]->Player.ModelMatrix();
+			D3DXMATRIX hitModelMtx = data[save_hit_enemy]->Player.ModelMatrix;
 			D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
 
 			// 終点を設定
