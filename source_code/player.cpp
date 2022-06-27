@@ -36,7 +36,6 @@
 #define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
-#define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 #define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
 #define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
@@ -805,7 +804,7 @@ void CPlayer::RecvEnemyData(void)
 //================================================
 //プレイヤーとの当たり判定
 //================================================
-void CPlayer::Collision(CObject *&pSubjectObject, const float &fObjRadius)
+void CPlayer::Collision(CObject *pSubjectObject, const float &fObjRadius)
 {
 	//オブジェクト情報を入れるポインタ
 	vector<CObject*> object;
@@ -843,7 +842,24 @@ void CPlayer::Collision(CObject *&pSubjectObject, const float &fObjRadius)
 				pPlayerObj->SetPos(pPlayerObj->m_pos);
 
 				//モデルとの当たり判定
-				CModelSingle::Collision(pPlayerObj);
+				int nHit = CModelSingle::Collision(pPlayerObj, pPlayerObj->m_size.x / 2.0f, 150.0f);
+				//上からあたったとき
+				if (nHit == 1)
+				{
+					//重力を0にする
+					pPlayerObj->m_move.y = 0.0f;
+
+					//ジャンプをしていない状態にする
+					pPlayerObj->m_bJump = false;
+
+					//ジャンプ処理
+					pPlayerObj->Jump();
+				}
+				else if (nHit == 2)
+				{//下からあたったとき
+				 //重力を0にする
+					pPlayerObj->m_move.y = 0.0f;
+				}
 			}
 		}
 	}

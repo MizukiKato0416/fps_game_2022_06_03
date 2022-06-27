@@ -19,6 +19,7 @@
 #include "player.h"
 #include "PresetSetEffect.h"
 #include "ballistic.h"
+#include "player.h"
 #include <thread>
 
 //=============================================================================
@@ -28,6 +29,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 {
 	m_pos = { 0.0f, 0.0f, 0.0f };
 	m_rot = { 0.0f, 0.0f, 0.0f };
+	m_size = { 0.0f, 0.0f, 0.0f };
 	m_nLife = 0;
 	m_pCollModel = nullptr;
 }
@@ -57,6 +59,23 @@ HRESULT CEnemy::Init(void)
 	//当たり判定ボックスの生成
 	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
+	//サイズを取得
+	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	modelSize = m_model->GetSize();
+
+	//サイズのXとZを比べて大きいほうをXとZそれぞれに割り当てる
+	if (modelSize.x >= modelSize.z)
+	{
+		m_size = D3DXVECTOR3(modelSize.x + PLAYER_SIZE, modelSize.y, modelSize.x + PLAYER_SIZE);
+	}
+	else
+	{
+		m_size = D3DXVECTOR3(modelSize.z + PLAYER_SIZE, modelSize.y, modelSize.z + PLAYER_SIZE);
+	}
+
+	//サイズの設定
+	SetSize(m_size);
+
 	std::thread th(Recv, &m_commu_data);
 
 	th.detach();
@@ -82,6 +101,8 @@ void CEnemy::Update(void)
 	
 	Move();
 	Attack();
+
+	CPlayer::Collision(this, m_size.x / 2.0f);
 }
 
 //=============================================================================

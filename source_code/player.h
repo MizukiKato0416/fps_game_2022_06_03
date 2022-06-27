@@ -19,6 +19,7 @@ class CObject2D;
 //================================================
 #define MAX_PLAYER_MODEL					(5)			//モデルの数
 #define PLAYER_LIFE							(100)									//体力
+#define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 
 //================================================
 //クラスの定義
@@ -43,7 +44,7 @@ public:
 	void SetOffsetPos(const D3DXVECTOR3 &offsetPos) { m_offsetPos = offsetPos; }			//プレイヤーのオフセット位置設定処理
 	void SetMove(const D3DXVECTOR3 &move) { m_move = move; }								//移動量設定処理
 	D3DXVECTOR3 GetMove(void) { return m_move; }											//移動量取得処理
-	static void CPlayer::Collision(CObject *&pSubjectObject, const float &fObjRadius);		//当たり判定処理
+	static void CPlayer::Collision(CObject *pSubjectObject, const float &fObjRadius);		//当たり判定処理
 	bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius);			//衝突判定のみの処理
 	D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }										//ワールドマトリックス取得処理
 	void SetObjParent(const bool bObjeParent) { m_bObjParent = bObjeParent; }				//オブジェクトとの親子関係設定処理

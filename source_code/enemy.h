@@ -53,6 +53,7 @@ private:
 	CGunModel *m_pGunModel;			// 銃モデル
 	D3DXVECTOR3 m_pos;		// 位置
 	D3DXVECTOR3 m_rot;		// 向き
+	D3DXVECTOR3 m_size;		// サイズ
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
 	int m_nLife;			//ライフ
 	CModelCollision *m_pCollModel;	//当たり判定のボックス
