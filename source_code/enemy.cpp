@@ -285,17 +285,17 @@ void CEnemy::Move(void)
 	D3DXVECTOR3 rotVec = { 0.0f, 0.0f, 0.0f };
 
 	//現在の向きごとにそれぞれ向きを変える量を計算
-	if (m_rotOld.y < 0.0f && -m_rotOld.y + m_recvPos.y > D3DX_PI)
+	if (m_rotOld.y < 0.0f && -m_rotOld.y + m_recvRot.y > D3DX_PI)
 	{
-		rotVec.y = (-D3DX_PI - m_rotOld.y) + -(D3DX_PI - m_recvPos.y);
+		rotVec.y = (-D3DX_PI - m_rotOld.y) + -(D3DX_PI - m_recvRot.y);
 	}
-	else if (m_rotOld.y >= D3DX_PI / 2.0f && m_rotOld.y - m_recvPos.y > D3DX_PI)
+	else if (m_rotOld.y >= D3DX_PI / 2.0f && m_rotOld.y - m_recvRot.y > D3DX_PI)
 	{
-		rotVec.y = (D3DX_PI - m_rotOld.y) - (-D3DX_PI - m_recvPos.y);
+		rotVec.y = (D3DX_PI - m_rotOld.y) - (-D3DX_PI - m_recvRot.y);
 	}
 	else
 	{
-		rotVec.y = (m_recvPos.y - m_rotOld.y);
+		rotVec.y = (m_recvRot.y - m_rotOld.y);
 	}
 
 	//ベクトルを既定の数で割る
