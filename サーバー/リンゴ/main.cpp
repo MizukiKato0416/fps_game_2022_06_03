@@ -19,7 +19,9 @@
 // マクロ定義
 //------------------------
 #define TIME_OUT (50)	// タイムアウト
-#define DISOLAY_ON (1)	// 表示まで
+#define FPS (60)	// fps
+#define DISPLAY_ON (400000000 / FPS)	// 表示まで
+#define SEND_SOUNTER (30)	// 表示まで
 
 //------------------------
 // グローバル変数
@@ -176,7 +178,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// 指定した秒数に一回
-		if ((g_display_count % DISOLAY_ON) == 0)
+		if ((g_display_count % (DISPLAY_ON * SEND_SOUNTER)) == 0)
 		{
 			// スクリーン消去
 			system("cls");
