@@ -239,13 +239,17 @@ void CEnemy::Attack(void)
 	//敵が撃ってきたら
 	if (pData->Bullet.bUse == true)
 	{
+		//銃口のマトリックス
+		D3DXMATRIX mtx = m_pGunModel->GetMuzzleMtx();
+		D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
+
 		//弾の軌道エフェクトを生成
-		CBallistic::Create(pData->Ballistic.BigenPos, pData->Ballistic.Size, pData->Ballistic.Rot, pData->Ballistic.EndPos,
+		CBallistic::Create(gunPos, pData->Ballistic.Size, pData->Ballistic.Rot, pData->Ballistic.EndPos,
 			               pData->Ballistic.fSpeed, "bullet_00.png", "bullet_01.png");
 
 		//マズルフラッシュエフェクトの生成
-		CPresetEffect::SetEffect3D(0, pData->Ballistic.BigenPos, {}, {});
-		CPresetEffect::SetEffect3D(1, pData->Ballistic.BigenPos, {}, {});
+		CPresetEffect::SetEffect3D(0, gunPos, {}, {});
+		CPresetEffect::SetEffect3D(1, gunPos, {}, {});
 	}
 }
 
