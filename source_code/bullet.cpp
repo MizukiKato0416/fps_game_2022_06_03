@@ -357,8 +357,6 @@ HRESULT CBullet::Init(void)
 	pData->Ballistic.Rot = rotCamera;
 	pData->Ballistic.EndPos = m_endPos;
 	pData->Ballistic.fSpeed = BULLET_MOVE_SPEED;
-	pData->Ballistic.sTexPas1 = "bullet_00.png";
-	pData->Ballistic.sTexPas2 = "bullet_01.png";
 
 	return S_OK;
 }
