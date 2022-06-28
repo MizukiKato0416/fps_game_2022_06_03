@@ -86,7 +86,7 @@ HRESULT CEnemy::Init(void)
 	//ÉTÉCÉYÇÃê›íË
 	SetSize(m_size);
 
-	std::thread th(Recv, &m_commu_data);
+	thread th(Recv, &m_commu_data);
 
 	th.detach();
 
