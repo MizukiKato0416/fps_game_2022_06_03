@@ -27,6 +27,16 @@ class CCommunicationData
 {
 public:
 	//---------------------------
+	// 列挙型
+	//---------------------------
+	enum class COMMUNICATION_TYPE
+	{
+		SEND_TO_PLAYER = 0,	// プレイヤーにsend
+		SEND_TO_ENEMY,	// 敵にsend
+		MAX,
+	};
+
+	//---------------------------
 	// 構造体
 	//---------------------------
 	typedef struct
@@ -40,6 +50,7 @@ public:
 		int nNumber;	// プレイヤーのインデックス
 		float fMotionSpeed;	// モーションのスピードz
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
+		bool bHit;	// 当たったか
 	} PLAYUER_DATA;
 
 	typedef struct
@@ -63,6 +74,7 @@ public:
 		PLAYUER_DATA Player;	// プレイヤーデータ
 		BULLET_DATA Bullet;	// 弾データ
 		BALLISTIC_DATA Ballistic;	// 弾道
+		COMMUNICATION_TYPE SendType;	// sendoの種類
 		bool bConnect;	// 接続確認
 	} COMMUNICATION_DATA;
 

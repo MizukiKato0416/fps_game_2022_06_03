@@ -20,7 +20,13 @@
 #include "PresetSetEffect.h"
 #include "ballistic.h"
 #include "player.h"
-#include <thread>
+#include "networkmanager.h"
+#include "manager.h"
+
+//=============================================================================
+// 静的メンバ変数宣言
+//=============================================================================
+int CEnemy::m_all_count = 0;	// 敵のカウンター
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -35,7 +41,9 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_rotOld = { 0.0f, 0.0f, 0.0f };
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_nLife = 0;
+	m_my_number = m_all_count;
 	m_pCollModel = nullptr;
+	m_all_count++;
 }
 
 //=============================================================================
@@ -85,10 +93,6 @@ HRESULT CEnemy::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
-
-	thread th(Recv, &m_commu_data);
-
-	th.detach();
 
 	return S_OK;
 }
@@ -192,60 +196,22 @@ CEnemy *CEnemy::Create(void)
 }
 
 //=============================================================================
-// レシーブスレッド
-//=============================================================================
-void CEnemy::Recv(CCommunicationData *data)
-{
-	int size = 1;
-
-	while (size >= 0)
-	{
-		CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
-		char recv[MAX_COMMU_DATA];
-
-		CCommunicationData::COMMUNICATION_DATA *pData = data->GetCmmuData();
-		CCommunicationData::COMMUNICATION_DATA *pDataBuf = new CCommunicationData::COMMUNICATION_DATA;
-
-		size = pTcp->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		if (size <= 0)
-		{
-			break;
-		}
-		else
-		{
-			memcpy(pDataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-			if (pData->Player.nNumber == 0)
-			{
-				pData = pDataBuf;
-			}
-			else if (pData->Player.nNumber == pDataBuf->Player.nNumber)
-			{
-				pData = pDataBuf;
-			}
-			data->SetCmmuData(*pData);
-		}
-	}
-	CCommunicationData::COMMUNICATION_DATA *pData = data->GetCmmuData();
-	pData->bConnect = false;
-}
-
-//=============================================================================
 // 攻撃
 //=============================================================================
 void CEnemy::Attack(void)
 {
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
 
 	//敵が撃ってきたら
-	if (pData->Bullet.bUse == true)
+	if (data[m_my_number].GetCmmuData()->Bullet.bUse == true)
 	{
 		//銃口のマトリックス
 		D3DXMATRIX mtx = m_pGunModel->GetMuzzleMtx();
 		D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
 
 		//弾の軌道エフェクトを生成
-		CBallistic::Create(gunPos, pData->Ballistic.Size, pData->Ballistic.Rot, pData->Ballistic.EndPos,
-			               pData->Ballistic.fSpeed, "bullet_00.png", "bullet_01.png");
+		CBallistic::Create(gunPos, data[m_my_number].GetCmmuData()->Ballistic.Size, data[m_my_number].GetCmmuData()->Ballistic.Rot, data[m_my_number].GetCmmuData()->Ballistic.EndPos,
+			data[m_my_number].GetCmmuData()->Ballistic.fSpeed, "bullet_00.png", "bullet_01.png");
 
 		//マズルフラッシュエフェクトの生成
 		CPresetEffect::SetEffect3D(0, gunPos, {}, {});
@@ -258,21 +224,21 @@ void CEnemy::Attack(void)
 //=============================================================================
 void CEnemy::Move(void)
 {
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData(); 
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
 	string now_motion;
-	string commu_motion = pData->Player.aMotion[0];
+	string commu_motion = data[m_my_number].GetCmmuData()->Player.aMotion[0];
 
-	if (pData->bConnect == true)
+	if (data[m_my_number].GetCmmuData()->bConnect == true)
 	{
 		m_posOld = m_pos;
 		m_rotOld = m_rot;
-		m_recvPos = pData->Player.Pos;
-		m_recvRot = pData->Player.Rot;
+		m_recvPos = data[m_my_number].GetCmmuData()->Player.Pos;
+		m_recvRot = data[m_my_number].GetCmmuData()->Player.Rot;
 
 		now_motion = m_model->GetAnimation();
-		if (now_motion != commu_motion && pData->bConnect == true)
+		if (now_motion != commu_motion && data[m_my_number].GetCmmuData()->bConnect == true)
 		{
-			m_model->ChangeAnimation(commu_motion, pData->Player.fMotionSpeed);
+			m_model->ChangeAnimation(commu_motion, data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
 		}
 	}
 	else

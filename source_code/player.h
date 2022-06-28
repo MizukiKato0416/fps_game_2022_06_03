@@ -52,8 +52,6 @@ public:
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
 	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
-	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data) { m_commu_data.SetCmmuData(data); }	// 通信データ設定処理
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// 通信データ取得処理
 	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
 
 private:
@@ -67,7 +65,6 @@ private:
 	void RecvEnemyData(void);						//敵のデータ取得処理
 
 	//メンバ変数
-	CCommunicationData m_commu_data;	// 通信データ
 	D3DXVECTOR3 m_pos;								//位置
 	D3DXVECTOR3 m_offsetPos;						//プレイヤーが子になったときのオフセット位置
 	D3DXVECTOR3 m_posOld;							//1フレーム前の位置

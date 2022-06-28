@@ -102,9 +102,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	vector<SOCKET> sock;	// 監視ソケット
 	CCommunicationData commu_data[MAX_PLAYER + 1];	// 全員分の通信データクラス
 	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];	// 全員分の通信データ
+	D3DXVECTOR3 ray_vec_hit;	// 当たったレイ
+	D3DXVECTOR3 hit_posV;	// 当たったpos
+	int save_hit_enemy;	// 当たった敵
+	int recv = 1;	// 最初のループに入る為の初期化
+	float save_differ = 100000.0f;	// 距離
 	char recv_data[MAX_COMMU_DATA];	// レシーブ用
 	char send_data[MAX_COMMU_DATA];	// センド用
-	int recv = 1;	// 最初のループに入る為の初期化
 
 	// select用変数の初期化
 	FD_ZERO(&readfds);
@@ -119,6 +123,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 	{
 		data[count_playr]->Player.nNumber = count_playr + 1;
+		data[count_playr]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 		data[count_playr]->bConnect = true;
 	}
 
@@ -181,10 +186,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			}
 		}
 
-		D3DXVECTOR3 ray_vec_hit;
-		D3DXVECTOR3 hit_posV;
-		int save_hit_enemy; 		// 当たった敵
-		float save_differ = 100000.0f;
+		// 初期化
+		save_differ = 100000.0f;
 
 		// プレイヤー分回す
 		for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
@@ -223,7 +226,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						if (D3DXIntersect(data[cout_enemy]->Player.Mesh, &posV, &vec, &is_hit, NULL, NULL, NULL, &differ, NULL, NULL) == D3D_OK)
 						{
 							//当たったとき
-							if (is_hit == true)
+							if (is_hit == TRUE)
 							{
 								if (save_differ > differ)
 								{
@@ -242,11 +245,17 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 									// 当たった
 									g_is_collision = true;
+									data[cout_enemy]->Player.bHit = true;
+									data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 								}
 							}
 						}
 					}
 				}
+			}
+			if (data[cout_player]->Player.bHit != true)
+			{
+				data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
 			}
 		}
 
@@ -266,11 +275,41 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			// 終点を設定
 			//m_endPos = HitPos;
 		}
-
 		// 指定した秒数に一回
 		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
 			g_is_collision == true)
 		{
+			// プレイヤー分回す
+			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
+			{
+				// プレイヤーにsendoする
+				if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
+				{
+					// メモリのコピー
+					memcpy(&recv_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+					// sendする
+					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				}
+				// 敵にsendoする
+				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
+				{
+					// 敵分回す
+					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
+					{
+						// そのプレイヤーじゃなかったら
+						if (countenemy != count_player)
+						{
+							// メモリのコピー
+							memcpy(&recv_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+							// sendする
+							communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+						}
+					}
+				}
+			}
+
 			// スクリーン消去
 			system("cls");
 
@@ -284,24 +323,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			}
 			cout << "=======================================================" << endl;
 
-			// プレイヤー分回す
-			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
-			{
-
-				// 敵分回す
-				for (int count_send = 0; count_send < MAX_PLAYER + 1; count_send++)
-				{
-					// そのプレイヤーじゃなかったら
-					if (data[count_send] != data[count_player])
-					{
-						// メモリのコピー
-						memcpy(&recv_data[0], data[count_send], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-						// sendする
-						communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-					}
-				}
-			}
+			// 当たってない
 			g_is_collision = false;
 		}
 	}

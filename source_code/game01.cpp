@@ -17,6 +17,7 @@
 #include "tcp_client.h"
 #include "enemy.h"
 #include "object3D.h"
+#include "networkmanager.h"
 
 //================================================
 //マクロ定義
@@ -85,7 +86,7 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
 	pClient->Uninit();
 	//オブジェクトの破棄
 	Release();
@@ -171,21 +172,18 @@ bool CGame01::MapLimit(CObject* pObj)
 //================================================
 void CGame01::FirstContact(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
-	CCommunicationData *DataClass = new CCommunicationData;
-	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
-	char recv[MAX_COMMU_DATA];
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
 
 	thread ConnectLoading(ConnectLading, &m_bAllConnect);
 
 	ConnectLoading.detach();
 
 	pClient->Connect();
+	CManager::GetInstance()->GetNetWorkmanager()->CreateThread();
 
 	if (pClient->GetConnect() == true)
 	{
-		pClient->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		memcpy(DataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		CCommunicationData::COMMUNICATION_DATA *DataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 		switch (DataBuf->Player.nNumber)
 		{
 		case 1:
@@ -200,8 +198,10 @@ void CGame01::FirstContact(void)
 		case 4:
 			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 			break;
+		default:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
 		}
-		m_pPlayer->SetCommuData(*DataBuf);
 	}
 	else
 	{

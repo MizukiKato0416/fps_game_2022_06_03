@@ -27,6 +27,7 @@
 #include "gunmodel.h"
 #include "object2D.h"
 #include "enemy.h"
+#include "networkmanager.h"
 
 //================================================
 //マクロ定義
@@ -163,11 +164,11 @@ void CPlayer::Update(void)
 {
 	//敵から受け取ったデータについての処理
 	RecvEnemyData();
+	char Send[MAX_COMMU_DATA];
 
 	CSound *sound;
 	sound = CManager::GetInstance()->GetSound();
-	CTcpClient *pTcp = CManager::GetInstance()->GetCommunication();
-	CCommunicationData::COMMUNICATION_DATA *pData = m_commu_data.GetCmmuData();
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	//位置取得
 	D3DXVECTOR3 pos = GetPos();
@@ -348,10 +349,20 @@ void CPlayer::Update(void)
 	//ADS処理
 	ADS();
 
+	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
+	{
+		if (pData->Player.bHit == true)
+		{
+			m_pos = { 0.0f, 1000.0f, 0.0f };
+		}
+	}
+
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
-	pTcp->Send((char*)pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
+	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 }
 
 //================================================
@@ -610,8 +621,7 @@ void CPlayer::Shot(void)
 	pInputMouse = CManager::GetInstance()->GetInputMouse();
 
 	// 通信データ取得処理
-	CCommunicationData::COMMUNICATION_DATA *pData;	
-	pData = m_commu_data.GetCmmuData();
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
@@ -767,38 +777,26 @@ void CPlayer::Chest(void)
 //================================================
 void CPlayer::RecvEnemyData(void)
 {
-	//オブジェクト情報を入れるポインタ
-	vector<CObject*> object;
+	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	int EnemySize = EnemyData.size();
 
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
-	int nProprty_Size = object.size();
-
-	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+	for (int nCnt = 0; nCnt < EnemySize; nCnt++)
 	{
-		//オブジェクトの種類が敵だったら
-		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
+		//サーバーから敵に送られてきた情報を取得
+		CCommunicationData::COMMUNICATION_DATA *pData = EnemyData[nCnt].GetCmmuData();
+
+		// 弾を使ってたら且つ弾が当たったプレイヤー番号が自身と一致していたら
+		if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData()->Player.nNumber)
 		{
-			//プレイヤーにキャスト
-			CEnemy *pEnemy = nullptr;
-			pEnemy = (CEnemy*)object[nCnt];
+			//ライフを減らす
+			m_nLife -= pData->Bullet.nDamage;
 
-			//サーバーから敵に送られてきた情報を取得
-			CCommunicationData::COMMUNICATION_DATA *pData = pEnemy->GetCommuData();
-
-			// 弾を使ってなかったら且つ弾が当たったプレイヤー番号が自身と一致していたら
-			if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == m_commu_data.GetCmmuData()->Player.nNumber)
+			//ライフが0になったら
+			if (m_nLife <= 0)
 			{
-				//ライフを減らす
-				m_nLife -= pData->Bullet.nDamage;
-
-				//ライフが0になったら
-				if (m_nLife <= 0)
-				{
-					//消す
-					m_pos = { 0.0f, 0.0f, 0.0f };
-					SetPos(m_pos);
-				}
+				//消す
+				m_pos = { 0.0f, 0.0f, 0.0f };
+				SetPos(m_pos);
 			}
 		}
 	}

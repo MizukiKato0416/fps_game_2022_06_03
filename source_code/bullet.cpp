@@ -18,6 +18,7 @@
 #include "xanimmodel.h"
 #include "hierarchydata.h"
 #include "enemy.h"
+#include "networkmanager.h"
 
 //================================================
 //マクロ定義
@@ -248,7 +249,7 @@ HRESULT CBullet::Init(void)
 							bHitEnemy = true;
 
 							//敵の番号保存
-							m_nPlayer = pEnemy->GetPlayerNumber();
+							//m_nPlayer = pEnemy->GetPlayerNumber();
 						}
 					}
 				}
@@ -346,9 +347,13 @@ HRESULT CBullet::Init(void)
 	CBallistic::Create(gunPos, { BULLET_SIZE_X, BULLET_SIZE_Y, 0.0f }, rotCamera, m_endPos, BULLET_MOVE_SPEED, "bullet_00.png", "bullet_01.png");
 
 	//通信データに情報を突っ込む
-	CCommunicationData::COMMUNICATION_DATA *pData = pPlayerObj->GetCommuData();
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	// 情報を設定
+	pData->Player.CamV = posCameraV;
+	pData->Player.CamR = posCameraR;
+	//pData->Player.Mesh = pModel->GetModel()->GetMesh();
+	//pData->Player.ModelMatrix = pModel->GetModel()->GetMtx();
 	pData->Bullet.nCollEnemy = m_nPlayer;
 	pData->Bullet.nDamage = m_nDamage;
 	pData->Bullet.bUse = true;
