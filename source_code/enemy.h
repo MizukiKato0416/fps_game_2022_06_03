@@ -19,7 +19,6 @@
 //*****************************************************************************
 class CXanimModel;
 class CModelSingle;
-class CModelCollision;
 class CGunModel;
 
 //*****************************************************************************
@@ -39,7 +38,6 @@ public:
 	int GetLife(void) { return m_nLife; }		//ライフ取得処理
 	void SetLife(const int nLife) { m_nLife = nLife; }	//ライフ設定処理
 	D3DXMATRIX GetMtx(void) { return m_mtx_wld; }	//ワールドマトリックス取得処理
-	CModelCollision *GetModelCollision(void) { return m_pCollModel; }	//当たり判定用モデル取得処理
 
 private:
 	void Attack(void);	// 攻撃
@@ -55,7 +53,6 @@ private:
 	D3DXVECTOR3 m_rotOld;	// 前の向き
 	D3DXVECTOR3 m_size;		// サイズ
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
-	CModelCollision *m_pCollModel;	//当たり判定のボックス
 	int m_my_number;	// 自分の配列
 	int m_nLife;			//ライフ
 };

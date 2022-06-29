@@ -15,7 +15,6 @@
 #include "model.h"
 #include "model_single.h"
 #include "gunmodel.h"
-#include "model_collision.h"
 #include "player.h"
 #include "PresetSetEffect.h"
 #include "ballistic.h"
@@ -42,7 +41,6 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_nLife = 0;
 	m_my_number = m_all_count;
-	m_pCollModel = nullptr;
 	m_all_count++;
 }
 
@@ -73,9 +71,6 @@ HRESULT CEnemy::Init(void)
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
-
-	//当たり判定ボックスの生成
-	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -171,10 +166,6 @@ void CEnemy::Draw(void)
 	m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
 	m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
 	m_pGunModel->GetModel()->SetCulliMode(false);
-
-	//親子関係をつける
-	m_pCollModel->GetModel()->SetMtxParent(&m_mtx_wld);
-	m_pCollModel->GetModel()->SetObjParent(true);
 }
 
 //=============================================================================

@@ -13,6 +13,7 @@ class CSparkle;
 class CWind;
 class CXanimModel;
 class CObject2D;
+class CModelCollision;
 
 //================================================
 //マクロ定義
@@ -53,6 +54,7 @@ public:
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
 	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
 	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
+	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
 
 private:
 	//メンバ関数
@@ -86,6 +88,7 @@ private:
 	bool m_bAds;									//ADSしているかどうか
 	CObject2D *m_pCloss;							//クロスヘア
 	int m_nLife;									//体力
+	CModelCollision *m_pCollModel;					//当たり判定のボックス
 };
 
 #endif // !_PLAYER_H_

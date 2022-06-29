@@ -28,6 +28,7 @@
 #include "object2D.h"
 #include "enemy.h"
 #include "networkmanager.h"
+#include "model_collision.h"
 
 //================================================
 //マクロ定義
@@ -67,6 +68,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_bAds = false;
 	m_pCloss = nullptr;
 	m_nLife = 0;
+	m_pCollModel = nullptr;
 }
 
 //================================================
@@ -113,6 +115,9 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel = CXanimModel::Create("data/armmotion.x");
 	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
+
+	//当たり判定ボックスの生成
+	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -354,6 +359,7 @@ void CPlayer::Update(void)
 		if (pData->Player.bHit == true)
 		{
 			m_pos = { 0.0f, 1000.0f, 0.0f };
+			pData->Player.bHit = false;
 		}
 	}
 
@@ -370,7 +376,9 @@ void CPlayer::Update(void)
 //================================================
 void CPlayer::Draw(void)
 {
-	
+	//親子関係をつける
+	m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
+	m_pCollModel->GetModel()->SetObjParent(true);
 }
 
 //================================================

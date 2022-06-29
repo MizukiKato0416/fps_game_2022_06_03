@@ -125,7 +125,7 @@ HRESULT CBullet::Init(void)
 	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
 	{
 		//オブジェクトの種類がモデルだったら
-		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL || object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL_COLLISION)
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL)
 		{
 			if (object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL)
 			{
@@ -197,68 +197,6 @@ HRESULT CBullet::Init(void)
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
 
 
-	object.clear();
-
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
-	nProprty_Size = object.size();
-
-	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
-	{
-		//オブジェクトの種類が敵だったら
-		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
-		{
-			//敵にキャスト
-			CEnemy *pEnemy = (CEnemy*)object[nCnt];
-
-			//モデル取得
-			CModelCollision *pModel = pEnemy->GetModelCollision();
-
-			if (pModel->GetColl() == true)
-			{
-				D3DXMATRIX modelInvMtx;
-				D3DXMATRIX modelMtx = pModel->GetModel()->GetMtx();
-				D3DXMatrixIdentity(&modelInvMtx);
-				D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
-
-				D3DXVECTOR3 posV = posCameraV;
-
-				D3DXVECTOR3 endPos = posV + m_rayVec;
-				D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-				D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
-
-				D3DXVECTOR3 vec = endPos - posV;
-
-				//レイとメッシュの当たり判定
-				if (D3DXIntersect(pModel->GetModel()->GetMesh(), &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
-				{
-					//当たったとき
-					if (bHit)
-					{
-						if (m_fDiffer > fDiffer)
-						{
-							//距離を保存
-							m_fDiffer = fDiffer;
-							//当たったオブジェクトを保存
-							pHitObject = pModel;
-							//レイの方向を保存
-							rayVecHit = vec;
-							//カメラのローカル座標を保存
-							hitPosV = posV;
-							bHitAny = false;
-							bHitEnemy = true;
-
-							//敵の番号保存
-							//m_nPlayer = pEnemy->GetPlayerNumber();
-						}
-					}
-				}
-			}
-		}
-	}
-
-
-
 
 
 	//モデルと当たっていて敵に当たっていないとき
@@ -304,6 +242,8 @@ HRESULT CBullet::Init(void)
 
 	float fMeshDiffer = 0.0f;
 	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
+
+	//メッシュフィールドの当たり判定
 	bool bCollMesh = CMeshField::Collision(meshHitPos, fMeshDiffer, posCameraV, m_endPos);
 	//メッシュフィールドに当たったら
 	if (bCollMesh)
@@ -352,8 +292,8 @@ HRESULT CBullet::Init(void)
 	// 情報を設定
 	pData->Player.CamV = posCameraV;
 	pData->Player.CamR = posCameraR;
-	//pData->Player.Mesh = pModel->GetModel()->GetMesh();
-	//pData->Player.ModelMatrix = pModel->GetModel()->GetMtx();
+	pData->Player.Mesh = pPlayerObj->GetModelCollision()->GetModel()->GetMesh();
+	pData->Player.ModelMatrix = pPlayerObj->GetModelCollision()->GetModel()->GetMtx();
 	pData->Bullet.nCollEnemy = m_nPlayer;
 	pData->Bullet.nDamage = m_nDamage;
 	pData->Bullet.bUse = true;
