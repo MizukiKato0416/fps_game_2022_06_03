@@ -225,8 +225,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							               modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43, 100.0f, HitPos.x, HitPos.y, HitPos.z, 
 							               EndPos.x, EndPos.y, EndPos.z))
 						{
-							int nCnt = 0;
-
 							//“–‚½‚Á‚½êŠ‚Ü‚Å‚Ì‹——£‚ğZo
 							D3DXVECTOR3 differVec = HitPos - posV;
 							differ = D3DXVec3Length(&differVec);
