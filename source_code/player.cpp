@@ -365,7 +365,9 @@ void CPlayer::Update(void)
 		if (pData->Player.bHit == true)
 		{
 			m_pos = { 0.0f, 1000.0f, 0.0f };
+			SetPos(m_pos);
 			pData->Player.bHit = false;
+			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
 		}
 	}
 
