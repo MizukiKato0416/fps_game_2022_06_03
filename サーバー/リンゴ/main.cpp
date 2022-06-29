@@ -110,6 +110,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	float save_differ = 100000.0f;	// 距離
 	char recv_data[MAX_COMMU_DATA];	// レシーブ用
 	char send_data[MAX_COMMU_DATA];	// センド用
+	bool hit = false;	// あったっか
 
 	// select用変数の初期化
 	FD_ZERO(&readfds);
@@ -221,9 +222,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 						D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 						//レイとカプセルの当たり判定
-						if (calcRayCapsule(posV.x, posV.y, posV.z, ray_vec.x, ray_vec.y, ray_vec.z, modelMtx._41, modelMtx._42, modelMtx._43,
-							               modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43, 100.0f, HitPos.x, HitPos.y, HitPos.z, 
-							               EndPos.x, EndPos.y, EndPos.z))
+						if (calcRayCapsule(	posV.x, posV.y, posV.z,
+											ray_vec.x, ray_vec.y, ray_vec.z,
+											modelMtx._41, modelMtx._42, modelMtx._43,
+											modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
+											100.0f,
+											HitPos.x, HitPos.y, HitPos.z, 
+											EndPos.x, EndPos.y, EndPos.z))
 						{
 							//当たった場所までの距離を算出
 							D3DXVECTOR3 differVec = HitPos - posV;
@@ -235,29 +240,30 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 								save_differ = differ;
 
 								//敵の番号保存
-								data[cout_player]->Bullet.nCollEnemy = cout_enemy;
+								data[cout_player]->Bullet.nCollEnemy = cout_enemy + 1;
 								save_hit_enemy = cout_enemy;
 
 								// 当たった
-								g_is_collision = true;
-								data[cout_enemy]->Player.bHit = true;
-								data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+								hit = true;
 							}
 						}
 					}
 				}
+
+				// 誰かしら当ててたら
+				if (hit == true)
+				{
+					data[save_hit_enemy]->Player.bHit = true;
+					data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+				}
 			}
-			if (data[cout_player]->Player.bHit != true)
+			// 弾を使ってない且当たってなかつたら
+			else if (data[cout_player]->Player.bHit != true)
 			{
 				data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
 			}
 		}
 
-		// 当たってたら
-		if (g_is_collision == true)
-		{
-			HitPos.x++;
-		}
 		// 指定した秒数に一回
 		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
 			g_is_collision == true)

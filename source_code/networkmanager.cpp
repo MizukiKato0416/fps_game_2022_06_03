@@ -127,6 +127,7 @@ void CNetWorkManager::Recv(void)
 								// î•ñ‚ğ“ü‚ê‚é
 								*data = *pDataBuf;
 							}
+							// Š„‚èU‚ç‚ê‚Ä‚¢‚½‚ç
 							else if (data->Player.nNumber == pDataBuf->Player.nNumber)
 							{
 								// î•ñ‚ğ“ü‚ê‚é
