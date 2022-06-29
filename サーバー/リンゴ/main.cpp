@@ -218,10 +218,19 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						D3DXVECTOR3 posV = data[cout_player]->Player.CamV;
 
 						D3DXVECTOR3 endPos = posV + ray_vec;
-						D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-						D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
+						//D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
+						//D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
 
 						D3DXVECTOR3 vec = endPos - posV;
+						D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
+						D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
+						//レイとカプセルの当たり判定
+						if (calcRayCapsule(posV.x, posV.y, posV.z, vec.x, vec.x, vec.x, modelMtx._41, modelMtx._42, modelMtx._43,
+							               modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43, 100.0f, HitPos.x, HitPos.y, HitPos.z, 
+							               EndPos.x, EndPos.y, EndPos.z))
+						{
+							int nCnt = 0;
+						}
 
 						//レイとメッシュの当たり判定
 						if (D3DXIntersect(data[cout_enemy]->Player.Mesh, &posV, &vec, &is_hit, NULL, NULL, NULL, &differ, NULL, NULL) == D3D_OK)
@@ -405,4 +414,214 @@ void KeyWait(void)
 {
 	rewind(stdin);
 	getchar();
+}
+
+// ∠P1P2P3の内積を算出
+// x1, y1, z1: 点P1
+// x2, y2, z2: 点P2
+// x3, y3, z3: 点P3
+float checkDot(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
+	return (x1 - x2) * (x3 - x2) + (y1 - y2) * (y3 - y2) + (z1 - z2) * (z3 - z2);
+}
+
+// レイとカプセルの貫通点を算出
+// lx, ly, lz : レイの始点
+// vx, vy, vz : レイの方向ベクトル
+// p1x, p1y, p1z: カプセル軸の端点P1
+// p2x, p2y, p2z: カプセル軸の端点P2
+// r : カプセルの半径
+// q1x, q1y, q1z: 貫通開始点（戻り値）
+// q2x, q2y, q2z: 貫通終了点（戻り値）
+bool calcRayCapsule(
+	float lx, float ly, float lz,
+	float vx, float vy, float vz,
+	float p1x, float p1y, float p1z,
+	float p2x, float p2y, float p2z,
+	float r,
+	float &q1x, float &q1y, float &q1z,
+	float &q2x, float &q2y, float &q2z
+) {
+	bool Q1inP1 = false;
+	bool Q1inP2 = false;
+	bool Q1inCld = false;
+
+	// Q1の検査
+	if (
+		calcRaySphere(lx, ly, lz, vx, vy, vz, p1x, p1y, p1z, r, q1x, q1y, q1z, q2x, q2y, q2z) == true &&
+		checkDot(p2x, p2y, p2z, p1x, p1y, p1z, q1x, q1y, q1z) <= 0.0f
+		) {
+		Q1inP1 = true; // Q1は球面P1上にある
+
+	}
+	else if (
+		calcRaySphere(lx, ly, lz, vx, vy, vz, p2x, p2y, p2z, r, q1x, q1y, q1z, q2x, q2y, q2z) == true &&
+		checkDot(p1x, p1y, p1z, p2x, p2y, p2z, q1x, q1y, q1z) <= 0.0f
+		) {
+		Q1inP2 = true; // Q1は球面P2上にある
+
+	}
+	else if (
+		calcRayInfCilinder(lx, ly, lz, vx, vy, vz, p1x, p1y, p1z, p2x, p2y, p2z, r, q1x, q1y, q1z, q2x, q2y, q2z) == true &&
+		checkDot(p1x, p1y, p1z, p2x, p2y, p2z, q1x, q1y, q1z) > 0.0f &&
+		checkDot(p2x, p2y, p2z, p1x, p1y, p1z, q1x, q1y, q1z) > 0.0f
+		) {
+		Q1inCld = true; // Q1は円柱面にある
+
+	}
+	else
+		return false; // レイは衝突していない
+
+					  // Q2の検査
+	float tx, ty, tz; // ダミー
+	if (Q1inP1 && checkDot(p2x, p2y, p2z, p1x, p1y, p1z, q2x, q2y, q2z) <= 0.0f) {
+		// Q1、Q2共球P1上にある
+		return true;
+
+	}
+	else if (Q1inP2 && checkDot(p1x, p1y, p1z, p2x, p2y, p2z, q2x, q2y, q2z) <= 0.0f) {
+		// Q1、Q2共球P2上にある
+		return true;
+
+	}
+	else if (
+		Q1inCld &&
+		checkDot(p1x, p1y, p1z, p2x, p2y, p2z, q2x, q2y, q2z) > 0.0f &&
+		checkDot(p2x, p2y, p2z, p1x, p1y, p1z, q2x, q2y, q2z) > 0.0f
+		) {
+		// Q1、Q2共球円柱面にある
+		return true;
+
+	}
+	else if (
+		calcRaySphere(lx, ly, lz, vx, vy, vz, p1x, p1y, p1z, r, tx, ty, tz, q2x, q2y, q2z) == true &&
+		checkDot(p2x, p2y, p2z, p1x, p1y, p1z, q2x, q2y, q2z) <= 0.0f
+		) {
+		// Q2は球P1上にある
+		return true;
+
+	}
+	else if (
+		calcRaySphere(lx, ly, lz, vx, vy, vz, p2x, p2y, p2z, r, tx, ty, tz, q2x, q2y, q2z) == true &&
+		checkDot(p1x, p1y, p1z, p2x, p2y, p2z, q2x, q2y, q2z) <= 0.0f
+		) {
+		// Q2は球P2上にある
+		return true;
+
+	}
+
+	// Q2が円柱上にある事が確定
+	calcRayInfCilinder(lx, ly, lz, vx, vy, vz, p1x, p1y, p1z, p2x, p2y, p2z, r, tx, ty, tz, q2x, q2y, q2z);
+
+	return true;
+}
+
+// lx, ly, lz : レイの始点
+// vx, vy, vz : レイの方向ベクトル
+// p1x, p1y, p1z: 円柱軸の1点
+// p2x, p2y, p2z: 円柱軸のもう1点
+// r : 円柱の半径
+// q1x, q1y, q1z: 貫通開始点（戻り値）
+// q2x, q2y, q2z: 貫通終了点（戻り値）
+
+bool calcRayInfCilinder(
+	float lx, float ly, float lz,
+	float vx, float vy, float vz,
+	float p1x, float p1y, float p1z,
+	float p2x, float p2y, float p2z,
+	float r,
+	float &q1x, float &q1y, float &q1z,
+	float &q2x, float &q2y, float &q2z
+) {
+	float px = p1x - lx;
+	float py = p1y - ly;
+	float pz = p1z - lz;
+	p2x = p2x - lx;
+	p2y = p2y - ly;
+	p2z = p2z - lz;
+	float sx = p2x - px;
+	float sy = p2y - py;
+	float sz = p2z - pz;
+
+	// 各種内積値
+	float Dvv = vx * vx + vy * vy + vz * vz;
+	float Dsv = sx * vx + sy * vy + sz * vz;
+	float Dpv = px * vx + py * vy + pz * vz;
+	float Dss = sx * sx + sy * sy + sz * sz;
+	float Dps = px * sx + py * sy + pz * sz;
+	float Dpp = px * px + py * py + pz * pz;
+	float rr = r * r;
+
+	if (Dss == 0.0f)
+		return false; // 円柱が定義されない
+
+	float A = Dvv - Dsv * Dsv / Dss;
+	float B = Dpv - Dps * Dsv / Dss;
+	float C = Dpp - Dps * Dps / Dss - rr;
+
+	if (A == 0.0f)
+		return false;
+
+	float s = B * B - A * C;
+	if (s < 0.0f)
+		return false; // レイが円柱と衝突していない
+	s = sqrtf(s);
+
+	float a1 = (B - s) / A;
+	float a2 = (B + s) / A;
+
+	q1x = lx + a1 * vx;
+	q1y = ly + a1 * vy;
+	q1z = lz + a1 * vz;
+	q2x = lx + a2 * vx;
+	q2y = ly + a2 * vy;
+	q2z = lz + a2 * vz;
+
+	return true;
+}
+
+// lx, ly, lz : レイの始点
+// vx, vy, vz : レイの方向ベクトル
+// px, py, pz : 球の中心点の座標
+// r : 球の半径
+// q1x, q1y, q1z: 衝突開始点（戻り値）
+// q2x, q2y, q2z: 衝突終了点（戻り値）
+
+bool calcRaySphere(
+	float lx, float ly, float lz,
+	float vx, float vy, float vz,
+	float px, float py, float pz,
+	float r,
+	float &q1x, float &q1y, float &q1z,
+	float &q2x, float &q2y, float &q2z
+) {
+	px = px - lx;
+	py = py - ly;
+	pz = pz - lz;
+
+	float A = vx * vx + vy * vy + vz * vz;
+	float B = vx * px + vy * py + vz * pz;
+	float C = px * px + py * py + pz * pz - r * r;
+
+	if (A == 0.0f)
+		return false; // レイの長さが0
+
+	float s = B * B - A * C;
+	if (s < 0.0f)
+		return false; // 衝突していない
+
+	s = sqrtf(s);
+	float a1 = (B - s) / A;
+	float a2 = (B + s) / A;
+
+	if (a1 < 0.0f || a2 < 0.0f)
+		return false; // レイの反対で衝突
+
+	q1x = lx + a1 * vx;
+	q1y = ly + a1 * vy;
+	q1z = lz + a1 * vz;
+	q2x = lx + a2 * vx;
+	q2y = ly + a2 * vy;
+	q2z = lz + a2 * vz;
+
+	return true;
 }
