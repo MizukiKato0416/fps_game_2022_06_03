@@ -190,6 +190,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		// 初期化
 		save_differ = 100000.0f;
 
+		D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
+
 		// プレイヤー分回す
 		for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
 		{
@@ -217,47 +219,31 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 						D3DXVECTOR3 posV = data[cout_player]->Player.CamV;
 
-						D3DXVECTOR3 endPos = posV + ray_vec;
-						//D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-						//D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
-
-						D3DXVECTOR3 vec = endPos - posV;
-						D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
 						D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 						//レイとカプセルの当たり判定
-						if (calcRayCapsule(posV.x, posV.y, posV.z, ray_vec.x, ray_vec.x, ray_vec.x, modelMtx._41, modelMtx._42, modelMtx._43,
+						if (calcRayCapsule(posV.x, posV.y, posV.z, ray_vec.x, ray_vec.y, ray_vec.z, modelMtx._41, modelMtx._42, modelMtx._43,
 							               modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43, 100.0f, HitPos.x, HitPos.y, HitPos.z, 
 							               EndPos.x, EndPos.y, EndPos.z))
 						{
 							int nCnt = 0;
-						}
 
-						//レイとメッシュの当たり判定
-						if (D3DXIntersect(data[cout_enemy]->Player.Mesh, &posV, &vec, &is_hit, NULL, NULL, NULL, &differ, NULL, NULL) == D3D_OK)
-						{
-							//当たったとき
-							if (is_hit == TRUE)
+							//当たった場所までの距離を算出
+							D3DXVECTOR3 differVec = HitPos - posV;
+							differ = D3DXVec3Length(&differVec);
+
+							if (save_differ > differ)
 							{
-								if (save_differ > differ)
-								{
-									//距離を保存
-									save_differ = differ;
+								//距離を保存
+								save_differ = differ;
 
-									//レイの方向を保存
-									ray_vec_hit = vec;
+								//敵の番号保存
+								data[cout_player]->Bullet.nCollEnemy = cout_enemy;
+								save_hit_enemy = cout_enemy;
 
-									//カメラのローカル座標を保存
-									hit_posV = posV;
-
-									//敵の番号保存
-									data[cout_player]->Bullet.nCollEnemy  = cout_enemy;
-									save_hit_enemy = cout_enemy;
-
-									// 当たった
-									g_is_collision = true;
-									data[cout_enemy]->Player.bHit = true;
-									data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
-								}
+								// 当たった
+								g_is_collision = true;
+								data[cout_enemy]->Player.bHit = true;
+								data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 							}
 						}
 					}
@@ -272,18 +258,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		// 当たってたら
 		if (g_is_collision == true)
 		{
-			D3DXVec3Normalize(&ray_vec_hit, &ray_vec_hit);
-
-			// レイのベクトルを算出した距離の分伸ばす
-			ray_vec_hit *= save_differ;
-
-			// カメラの位置から伸ばしたベクトルを足して当たった位置を算出
-			D3DXVECTOR3 HitPos = hit_posV + ray_vec_hit;
-			D3DXMATRIX hitModelMtx = data[save_hit_enemy]->Player.ModelMatrix;
-			D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
-
-			// 終点を設定
-			//m_endPos = HitPos;
+			HitPos.x++;
 		}
 		// 指定した秒数に一回
 		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
