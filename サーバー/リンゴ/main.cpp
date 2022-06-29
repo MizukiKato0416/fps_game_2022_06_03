@@ -225,7 +225,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
 						D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 						//レイとカプセルの当たり判定
-						if (calcRayCapsule(posV.x, posV.y, posV.z, vec.x, vec.x, vec.x, modelMtx._41, modelMtx._42, modelMtx._43,
+						if (calcRayCapsule(posV.x, posV.y, posV.z, ray_vec.x, ray_vec.x, ray_vec.x, modelMtx._41, modelMtx._42, modelMtx._43,
 							               modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43, 100.0f, HitPos.x, HitPos.y, HitPos.z, 
 							               EndPos.x, EndPos.y, EndPos.z))
 						{
