@@ -203,13 +203,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				{
 					if (cout_player != cout_enemy)
 					{
-						D3DXMATRIX modelInvMtx;
+						//D3DXMATRIX modelInvMtx;
 						D3DXMATRIX modelMtx = data[cout_enemy]->Player.ModelMatrix;
 						BOOL is_hit = false;
 						float differ = 0.0f;
 
-						D3DXMatrixIdentity(&modelInvMtx);
-						D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
+						//D3DXMatrixIdentity(&modelInvMtx);
+						//D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
 
 						//ƒŒƒC‚ð”ò‚Î‚·•ûŒü‚ðŽZo
 						D3DXVECTOR3 ray_vec = data[cout_player]->Player.CamR - data[cout_player]->Player.CamV;
