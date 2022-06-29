@@ -232,7 +232,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							int nCnt = 0;
 						}
 
-						//レイとメッシュの当たり判定
+						/*//レイとメッシュの当たり判定
 						if (D3DXIntersect(data[cout_enemy]->Player.Mesh, &posV, &vec, &is_hit, NULL, NULL, NULL, &differ, NULL, NULL) == D3D_OK)
 						{
 							//当たったとき
@@ -259,7 +259,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 									data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 								}
 							}
-						}
+						}*/
 					}
 				}
 			}
@@ -270,7 +270,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// 当たってたら
-		if (g_is_collision == true)
+		/*if (g_is_collision == true)
 		{
 			D3DXVec3Normalize(&ray_vec_hit, &ray_vec_hit);
 
@@ -284,7 +284,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 			// 終点を設定
 			//m_endPos = HitPos;
-		}
+		}*/
 		// 指定した秒数に一回
 		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
 			g_is_collision == true)
