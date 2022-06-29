@@ -306,6 +306,9 @@ void CPlayer::Update(void)
 	D3DXMATRIX *cameraMtx = nullptr;
 	//cameraのポインタ配列1番目のアドレス取得
 	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+	//カメラの位置保存用
+	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
+	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
 	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
 	{
@@ -317,6 +320,9 @@ void CPlayer::Update(void)
 			cameraMtx = pCamera->GetMtxPoint();
 			//カメラのマトリックスと親子関係をつける
 			m_pAnimModel->SetMatrix(cameraMtx);
+			//カメラの位置取得
+			posCameraV = pCamera->GetPosV();
+			posCameraR = pCamera->GetPosR();
 		}
 	}
 
@@ -363,9 +369,15 @@ void CPlayer::Update(void)
 		}
 	}
 
+	LPD3DXMESH buf = m_pCollModel->GetModel()->GetMesh();
+
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
+	pData->Player.CamV = posCameraV;
+	pData->Player.CamR = posCameraR;
+	pData->Player.Mesh = buf;
+	pData->Player.ModelMatrix = m_pCollModel->GetModel()->GetMtx();
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));

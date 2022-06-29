@@ -29,6 +29,7 @@
 int g_room_count;	// 部屋数
 int g_display_count;	// 表示するためのカウント
 bool g_is_collision;	// 当たったら
+LPD3DXMESH g_mesh;	// メッシュ
 string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
 
@@ -209,12 +210,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
 
 						//レイを飛ばす方向を算出
-						D3DXVECTOR3 ray_vec = data[cout_enemy]->Player.CamR - data[cout_enemy]->Player.CamV;
+						D3DXVECTOR3 ray_vec = data[cout_player]->Player.CamR - data[cout_player]->Player.CamV;
 
 						//ベクトルを正規化
 						D3DXVec3Normalize(&ray_vec, &ray_vec);
 
-						D3DXVECTOR3 posV = data[cout_enemy]->Player.CamV;
+						D3DXVECTOR3 posV = data[cout_player]->Player.CamV;
 
 						D3DXVECTOR3 endPos = posV + ray_vec;
 						D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);

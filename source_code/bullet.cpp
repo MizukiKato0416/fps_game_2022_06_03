@@ -290,10 +290,6 @@ HRESULT CBullet::Init(void)
 	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	// î•ñ‚ðÝ’è
-	pData->Player.CamV = posCameraV;
-	pData->Player.CamR = posCameraR;
-	pData->Player.Mesh = pPlayerObj->GetModelCollision()->GetModel()->GetMesh();
-	pData->Player.ModelMatrix = pPlayerObj->GetModelCollision()->GetModel()->GetMtx();
 	pData->Bullet.nCollEnemy = m_nPlayer;
 	pData->Bullet.nDamage = m_nDamage;
 	pData->Bullet.bUse = true;

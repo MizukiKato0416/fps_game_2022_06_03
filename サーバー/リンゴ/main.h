@@ -16,6 +16,7 @@
 #include <winsock2.h>
 #include <iostream>
 #include <vector>
+#include "d3dx9.h"
 
 using namespace std;
 
@@ -34,6 +35,7 @@ class CTcpListener;
 // ライブラリのリンク
 //------------------------
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib,"d3d9.lib")			//描画に必要
 #pragma comment(lib,"d3dx9.lib")		//[d3d9.lib]の拡張ライブラリ
 
 //------------------------
