@@ -256,8 +256,8 @@ void CEnemy::Move(void)
 	}
 
 	//ベクトルを既定の数で割る
-	posVec /= 10.0f;
-	rotVec /= 10.0f;
+	posVec /= (float)SEND_COUNTER;
+	rotVec /= (float)SEND_COUNTER;
 	//現在位置からベクトル分位置を移動
 	m_pos += posVec;
 	m_rot += rotVec;

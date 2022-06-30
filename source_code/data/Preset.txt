@@ -42,7 +42,7 @@ EFFECTSTATE3D
 	POS = 0.0 0.0 0.0			//出現位置
 	COLOR = 255 135 0 255			//カラー
 	CHANGECOLOR = 0 -15 0 -25			//カラー変動値
-	LIFE = 7						//ライフ
+	LIFE = 3						//ライフ
 	TEXTURE = MuzzleflashLow.png						//テクスチャ
 	SYNTHETIC = 0						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動

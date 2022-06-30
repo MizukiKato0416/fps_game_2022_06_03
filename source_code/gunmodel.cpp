@@ -53,6 +53,14 @@ void CGunModel::Uninit(void)
 //=============================================================================
 void CGunModel::Update(void)
 {
+	
+}
+
+//=============================================================================
+// モデルの描画処理
+//=============================================================================
+void CGunModel::Draw(void)
+{
 	LPDIRECT3DDEVICE9 pDevice; // デバイスのポインタ
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスを取得する
 
@@ -84,22 +92,20 @@ void CGunModel::Update(void)
 						&m_mtx_muzzle_world,
 						&mtx_trans);
 	//マトリックスの設定
-	pDevice->SetTransform(	D3DTS_WORLD,
-							&m_mtx_muzzle_world);
+	pDevice->SetTransform(D3DTS_WORLD,
+						  &m_mtx_muzzle_world);
 
+	m_model->GetModel()->SetMtx();
+	*m_mtxParent = m_model->GetModel()->GetMtx();
 	mtx_parent = *m_mtxParent;
 
-	D3DXMatrixMultiply(	&m_mtx_muzzle_world,
+	D3DXMatrixMultiply(&m_mtx_muzzle_world,
 						&m_mtx_muzzle_world,
 						&mtx_parent);
-}
 
-//=============================================================================
-// モデルの描画処理
-//=============================================================================
-void CGunModel::Draw(void)
-{
-	
+	//マトリックスの設定
+	pDevice->SetTransform(	D3DTS_WORLD,
+							&m_mtx_muzzle_world);
 }
 
 //=============================================================================

@@ -35,9 +35,9 @@ public:
 	D3DXVECTOR3 GetPos(void) { return m_pos; }											//位置取得処理
 	void SetRot(const D3DXVECTOR3 &rot) { m_rot = rot; }								//回転設定処理
 	D3DXVECTOR3 GetRot(void) { return m_rot; }											//回転取得処理
-	D3DXMATRIX GetMuzzleMtx(void) { return m_mtx_muzzle_world; }
+	D3DXMATRIX GetMuzzleMtx(void) { return m_mtx_muzzle_world; }						//マズルのマトリックス取得処理
 	CModelSingle *GetModel(void) { return m_model; }									//モデル取得処理
-	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxParent = mtx; }
+	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxParent = mtx; }							//親のマトリックス取得処理
 
 private:
 	D3DXVECTOR3 m_pos;
