@@ -51,7 +51,8 @@ public:
 		LPD3DXMESH Mesh;	// メッシュ情報
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
-		float fMotionSpeed;	// モーションのスピードz
+		int nFrameCount;	// フレームカウント
+		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
 		bool bHit;	// 当たったか
 	} PLAYUER_DATA;
