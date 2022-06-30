@@ -471,7 +471,7 @@ bool calcRayCapsule(float lx, float ly, float lz,
 }
 
 //------------------------
-// lx, ly, lz : レイの始点
+// レイと円柱の貫通点を算出
 //------------------------
 bool calcRayInfCilinder(float lx, float ly, float lz,
 						float vx, float vy, float vz,
