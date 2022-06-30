@@ -197,6 +197,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 			save_differ = 100000.0f;
 			g_display_count = 0;
+			save_hit_enemy = -1;
+			hit = false;
 
 			// プレイヤー分回す
 			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
@@ -217,19 +219,19 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							float differ = 0.0f;
 
 							// レイを飛ばす方向を算出
-							D3DXVECTOR3 ray_vec = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+							D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
 
 							// ベクトルを正規化
 							D3DXVec3Normalize(&ray_vec, &ray_vec);
 
-							D3DXVECTOR3 posV = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+							D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
 
 							// レイとカプセルの当たり判定
 							if (calcRayCapsule(	posV.x, posV.y, posV.z,
 												ray_vec.x, ray_vec.y, ray_vec.z,
 												modelMtx._41, modelMtx._42, modelMtx._43,
 												modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
-												100.0f,
+												50.0f,
 												HitPos.x, HitPos.y, HitPos.z,
 												EndPos.x, EndPos.y, EndPos.z))
 							{
@@ -243,7 +245,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 									save_differ = differ;
 
 									// 敵の番号保存
-									frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
+									frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
 									save_hit_enemy = cout_enemy;
 
 									// 当たった
@@ -257,6 +259,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					{
 						data[save_hit_enemy]->Player.bHit = true;
 						data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+						hit = false;
 					}
 				}
 				// 当たってなかつたら
