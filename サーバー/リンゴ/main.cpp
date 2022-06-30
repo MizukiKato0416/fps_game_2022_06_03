@@ -149,7 +149,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 	// 最大ソケット
 	SOCKET max_socket = maxfd[0];
-	int recv_count = 0;
 
 	// レシーブでなんも来なかったら
 	while (recv > 0)
@@ -185,11 +184,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				if (data[count_player]->Bullet.bUse == true)
 				{
 					// フレーム数の保存
-					g_save_display_count[count_player].push_back(recv_count);
+					g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
 				}
 			}
 		}
-		recv_count++;
 
 		// 指定した秒数に一回
 		if ((g_display_count % SEND_COUNTER) == 0)
@@ -199,7 +197,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 			save_differ = 100000.0f;
 			g_display_count = 0;
-			recv_count = 0;
 
 			// プレイヤー分回す
 			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)

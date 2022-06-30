@@ -383,7 +383,12 @@ void CPlayer::Update(void)
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	pData->Player.nFrameCount++;
 	pData->Bullet.bUse = false;
+	if (pData->Player.nFrameCount <= SEND_COUNTER - 1)
+	{
+		pData->Player.nFrameCount = 0;
+	}
 }
 
 //================================================
