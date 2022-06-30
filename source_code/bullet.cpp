@@ -23,9 +23,9 @@
 //================================================
 //マクロ定義
 //================================================
-#define BULLET_MOVE_SPEED		(300.0f)		//軌道の速さ
+#define BULLET_MOVE_SPEED		(450.0f)		//軌道の速さ
 #define BULLET_SIZE_X			(200.0f)		//軌道のサイズ
-#define BULLET_SIZE_Y			(2.0f)			//軌道のサイズ
+#define BULLET_SIZE_Y			(2.5f)			//軌道のサイズ
 #define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
 #define BULLET_DAMAGE			(20)			//ダメージ
 

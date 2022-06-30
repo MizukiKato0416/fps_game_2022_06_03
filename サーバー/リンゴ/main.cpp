@@ -169,22 +169,22 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		// プレイヤー分回す
-		for (int nCntRecv = 0; nCntRecv < MAX_PLAYER + 1; nCntRecv++)
+		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 		{
 			// ソケットにsendされていたら
-			if (FD_ISSET(sock[nCntRecv], &fds))
+			if (FD_ISSET(sock[count_player], &fds))
 			{
 				// レシーブ
-				recv = communication[nCntRecv]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-				memcpy(data[nCntRecv], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-				commu_data[nCntRecv].SetCmmuData(*data[nCntRecv]);
-				frame_lag[nCntRecv].push_back(*data[nCntRecv]);
+				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+				commu_data[count_player].SetCmmuData(*data[count_player]);
+				frame_lag[count_player].push_back(*data[count_player]);
 
 				// 弾を使ってたら
-				if (data[nCntRecv]->Bullet.bUse == true)
+				if (data[count_player]->Bullet.bUse == true)
 				{
 					// フレーム数の保存
-					g_save_display_count[nCntRecv].push_back(g_display_count - 1);
+					g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
 				}
 			}
 		}
@@ -216,15 +216,15 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
 							float differ = 0.0f;
 
-							//レイを飛ばす方向を算出
+							// レイを飛ばす方向を算出
 							D3DXVECTOR3 ray_vec = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
 
-							//ベクトルを正規化
+							// ベクトルを正規化
 							D3DXVec3Normalize(&ray_vec, &ray_vec);
 
 							D3DXVECTOR3 posV = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
 
-							//レイとカプセルの当たり判定
+							// レイとカプセルの当たり判定
 							if (calcRayCapsule(	posV.x, posV.y, posV.z,
 												ray_vec.x, ray_vec.y, ray_vec.z,
 												modelMtx._41, modelMtx._42, modelMtx._43,
@@ -233,16 +233,16 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 												HitPos.x, HitPos.y, HitPos.z,
 												EndPos.x, EndPos.y, EndPos.z))
 							{
-								//当たった場所までの距離を算出
+								// 当たった場所までの距離を算出
 								D3DXVECTOR3 differVec = HitPos - posV;
 								differ = D3DXVec3Length(&differVec);
 
 								if (save_differ > differ)
 								{
-									//距離を保存
+									// 距離を保存
 									save_differ = differ;
 
-									//敵の番号保存
+									// 敵の番号保存
 									frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
 									save_hit_enemy = cout_enemy;
 

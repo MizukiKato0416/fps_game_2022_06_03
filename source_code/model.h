@@ -33,7 +33,7 @@ public:
 	void SetParent(CModel *pModel);													//親設定処理
 	CModel *GetParent(void) { return m_pParent; }									//親取得処理
 	D3DXMATRIX GetMtx(void);														//ワールドマトリックス取得処理
-	void SetMtx(const D3DXMATRIX &mtx) { m_mtxWorld = mtx; }						//ワールドマトリックス設定処理
+	void SetMtx(void);																//ワールドマトリックス設定処理
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }						//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }					//ワールドマトリックス設定処理
 	D3DXMATRIX *GetMtxPoint(void) { return &m_mtxWorld; }							//ワールドマトリックス取得処理

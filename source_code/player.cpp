@@ -341,6 +341,7 @@ void CPlayer::Update(void)
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->SetCulliMode(false);
+		m_pGunModel->Draw();
 	}
 	else
 	{
@@ -350,6 +351,7 @@ void CPlayer::Update(void)
 		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
 		m_pGunModel->GetModel()->SetCulliMode(true);
+		m_pGunModel->Draw();
 	}
 
 	//射撃処理
@@ -383,7 +385,12 @@ void CPlayer::Update(void)
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	pData->Player.nFrameCount++;
 	pData->Bullet.bUse = false;
+	if (pData->Player.nFrameCount <= SEND_COUNTER - 1)
+	{
+		pData->Player.nFrameCount = 0;
+	}
 }
 
 //================================================
@@ -665,6 +672,7 @@ void CPlayer::Shot(void)
 			//既定の値にする
 			m_nCounter = PLAYER_SHOT_COUNTER;
 
+			m_pGunModel->GetModel()->GetModel()->SetMtx();
 			//オフセット位置設定
 			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
 
