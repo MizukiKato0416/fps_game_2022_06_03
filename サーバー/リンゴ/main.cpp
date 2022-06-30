@@ -19,9 +19,6 @@
 // マクロ定義
 //------------------------
 #define TIME_OUT (50)	// タイムアウト
-#define FPS (60)	// fps
-#define DISPLAY_ON (400000000 / FPS)	// 表示まで
-#define SEND_COUNTER (10)	// 表示まで
 
 //------------------------
 // グローバル変数
@@ -30,6 +27,7 @@ int g_room_count;	// 部屋数
 int g_display_count;	// 表示するためのカウント
 bool g_is_collision;	// 当たったら
 LPD3DXMESH g_mesh;	// メッシュ
+vector<int> g_save_display_count[MAX_PLAYER + 1];	// フレームの保存
 string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
 
@@ -101,6 +99,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	fd_set fds, readfds;	// select用変数
 	vector<SOCKET> maxfd;	// 監視ソケット
 	vector<SOCKET> sock;	// 監視ソケット
+	vector<CCommunicationData::COMMUNICATION_DATA> frame_lag[MAX_PLAYER + 1];	// フレームずれ分の情報
 	CCommunicationData commu_data[MAX_PLAYER + 1];	// 全員分の通信データクラス
 	CCommunicationData::COMMUNICATION_DATA *data[MAX_PLAYER + 1];	// 全員分の通信データ
 	D3DXVECTOR3 ray_vec_hit;	// 当たったレイ
@@ -185,89 +184,98 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[nCntRecv]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[nCntRecv], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[nCntRecv].SetCmmuData(*data[nCntRecv]);
+				frame_lag[nCntRecv].push_back(*data[nCntRecv]);
 			}
 		}
 
-		// 初期化
-		save_differ = 100000.0f;
-
-		D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
-
 		// プレイヤー分回す
-		for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
+		for (int nCntRecv = 0; nCntRecv < MAX_PLAYER + 1; nCntRecv++)
 		{
-			// 弾を使ってるなら
-			if (data[cout_player]->Bullet.bUse == true)
+			// 弾を使ってたら
+			if (data[nCntRecv]->Bullet.bUse == true)
 			{
-				// プレイヤー分回す
-				for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
-				{
-					if (cout_player != cout_enemy)
-					{
-						//D3DXMATRIX modelInvMtx;
-						D3DXMATRIX modelMtx = data[cout_enemy]->Player.ModelMatrix;
-						BOOL is_hit = false;
-						float differ = 0.0f;
-
-						//D3DXMatrixIdentity(&modelInvMtx);
-						//D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
-
-						//レイを飛ばす方向を算出
-						D3DXVECTOR3 ray_vec = data[cout_player]->Player.CamR - data[cout_player]->Player.CamV;
-
-						//ベクトルを正規化
-						D3DXVec3Normalize(&ray_vec, &ray_vec);
-
-						D3DXVECTOR3 posV = data[cout_player]->Player.CamV;
-
-						D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
-						//レイとカプセルの当たり判定
-						if (calcRayCapsule(	posV.x, posV.y, posV.z,
-											ray_vec.x, ray_vec.y, ray_vec.z,
-											modelMtx._41, modelMtx._42, modelMtx._43,
-											modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
-											100.0f,
-											HitPos.x, HitPos.y, HitPos.z, 
-											EndPos.x, EndPos.y, EndPos.z))
-						{
-							//当たった場所までの距離を算出
-							D3DXVECTOR3 differVec = HitPos - posV;
-							differ = D3DXVec3Length(&differVec);
-
-							if (save_differ > differ)
-							{
-								//距離を保存
-								save_differ = differ;
-
-								//敵の番号保存
-								data[cout_player]->Bullet.nCollEnemy = cout_enemy + 1;
-								save_hit_enemy = cout_enemy;
-
-								// 当たった
-								hit = true;
-							}
-						}
-					}
-				}
-
-				// 誰かしら当ててたら
-				if (hit == true)
-				{
-					data[save_hit_enemy]->Player.bHit = true;
-					data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
-				}
-			}
-			// 弾を使ってない且当たってなかつたら
-			else if (data[cout_player]->Player.bHit != true)
-			{
-				data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
+				// フレーム数の保存
+				g_save_display_count[nCntRecv].push_back(g_display_count);
 			}
 		}
 
 		// 指定した秒数に一回
-		if ((g_display_count % SEND_COUNTER/*(DISPLAY_ON * SEND_SOUNTER)*/) == 0 ||
-			g_is_collision == true)
+		if ((g_display_count % SEND_COUNTER) == 0)
 		{
+			// 初期化
+			save_differ = 100000.0f;
+			D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
+			g_display_count = 0;
+
+			// プレイヤー分回す
+			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
+			{
+				// プレイヤーの撃った弾の数
+				int cout_bullet = g_save_display_count[cout_player].size();
+
+				// 弾の数分のループ
+				for (int count_bullet = 0; count_bullet < cout_bullet; count_bullet++)
+				{
+					// プレイヤー分回す
+					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
+					{
+						if (cout_player != cout_enemy)
+						{
+							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
+							BOOL is_hit = false;
+							float differ = 0.0f;
+
+							//レイを飛ばす方向を算出
+							D3DXVECTOR3 ray_vec = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+
+							//ベクトルを正規化
+							D3DXVec3Normalize(&ray_vec, &ray_vec);
+
+							D3DXVECTOR3 posV = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+
+							D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
+							//レイとカプセルの当たり判定
+							if (calcRayCapsule(posV.x, posV.y, posV.z,
+								ray_vec.x, ray_vec.y, ray_vec.z,
+								modelMtx._41, modelMtx._42, modelMtx._43,
+								modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
+								100.0f,
+								HitPos.x, HitPos.y, HitPos.z,
+								EndPos.x, EndPos.y, EndPos.z))
+							{
+								//当たった場所までの距離を算出
+								D3DXVECTOR3 differVec = HitPos - posV;
+								differ = D3DXVec3Length(&differVec);
+
+								if (save_differ > differ)
+								{
+									//距離を保存
+									save_differ = differ;
+
+									//敵の番号保存
+									frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
+									save_hit_enemy = cout_enemy;
+
+									// 当たった
+									hit = true;
+								}
+							}
+						}
+					}
+					// 誰かしら当ててたら
+					if (hit == true)
+					{
+						data[save_hit_enemy]->Player.bHit = true;
+						data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+					}
+				}
+				// 当たってなかつたら
+				if (data[cout_player]->Player.bHit != true)
+				{
+					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
+				}
+			}
+
 			// プレイヤー分回す
 			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 			{
