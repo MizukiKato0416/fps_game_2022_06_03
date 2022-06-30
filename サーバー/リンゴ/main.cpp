@@ -58,12 +58,6 @@ void main(void)
 		return;
 	}
 
-	// カウントアップ用
-	thread count_up(CountUp);
-
-	// 切り離す
-	count_up.detach();
-
 	// サーバーを止めるまでループ
 	while (true)
 	{
@@ -185,17 +179,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				memcpy(data[nCntRecv], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[nCntRecv].SetCmmuData(*data[nCntRecv]);
 				frame_lag[nCntRecv].push_back(*data[nCntRecv]);
-			}
-		}
 
-		// プレイヤー分回す
-		for (int nCntRecv = 0; nCntRecv < MAX_PLAYER + 1; nCntRecv++)
-		{
-			// 弾を使ってたら
-			if (data[nCntRecv]->Bullet.bUse == true)
-			{
-				// フレーム数の保存
-				g_save_display_count[nCntRecv].push_back(g_display_count);
+				// 弾を使ってたら
+				if (data[nCntRecv]->Bullet.bUse == true)
+				{
+					// フレーム数の保存
+					g_save_display_count[nCntRecv].push_back(g_display_count - 1);
+				}
 			}
 		}
 
@@ -219,10 +209,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					// プレイヤー分回す
 					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
 					{
+						// プレイヤーじゃなかったら
 						if (cout_player != cout_enemy)
 						{
 							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
-							BOOL is_hit = false;
 							float differ = 0.0f;
 
 							//レイを飛ばす方向を算出
@@ -232,8 +222,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXVec3Normalize(&ray_vec, &ray_vec);
 
 							D3DXVECTOR3 posV = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-
 							D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
+
 							//レイとカプセルの当たり判定
 							if (calcRayCapsule(posV.x, posV.y, posV.z,
 								ray_vec.x, ray_vec.y, ray_vec.z,
@@ -322,6 +312,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 			// 当たってない
 			g_is_collision = false;
+
+			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
+			{
+				frame_lag[cout_player].clear();
+				g_save_display_count[cout_player].clear();
+			}
 		}
 	}
 
@@ -365,18 +361,6 @@ void AllAccept(CTcpListener* listener, int room_num)
 
 	// 切り離す
 	room_communication_th.detach();
-}
-
-//------------------------
-// カウントアップ用
-//------------------------
-void CountUp(void)
-{
-	while (true)
-	{
-		// カウント加算
-		g_display_count++;
-	}
 }
 
 //------------------------

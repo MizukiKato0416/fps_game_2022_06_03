@@ -44,7 +44,6 @@ class CTcpListener;
 void KeyWait(void);	// キー入力待ち
 void CreateRoom(vector<CCommunication*> communication, int room_num);	// 部屋生成処理
 void AllAccept(CTcpListener* listener, int room_num);	// 部屋生成処理
-void CountUp(void);	// カウントアップ用
 void Init(void);	// 初期化
 
 // lx, ly, lz : レイの始点

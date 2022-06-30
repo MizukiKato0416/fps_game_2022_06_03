@@ -383,6 +383,7 @@ void CPlayer::Update(void)
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	pData->Bullet.bUse = false;
 }
 
 //================================================
