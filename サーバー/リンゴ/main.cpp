@@ -225,13 +225,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 
 							//レイとカプセルの当たり判定
-							if (calcRayCapsule(posV.x, posV.y, posV.z,
-								ray_vec.x, ray_vec.y, ray_vec.z,
-								modelMtx._41, modelMtx._42, modelMtx._43,
-								modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
-								100.0f,
-								HitPos.x, HitPos.y, HitPos.z,
-								EndPos.x, EndPos.y, EndPos.z))
+							if (calcRayCapsule(	posV.x, posV.y, posV.z,
+												ray_vec.x, ray_vec.y, ray_vec.z,
+												modelMtx._41, modelMtx._42, modelMtx._43,
+												modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
+												100.0f,
+												HitPos.x, HitPos.y, HitPos.z,
+												EndPos.x, EndPos.y, EndPos.z))
 							{
 								//当たった場所までの距離を算出
 								D3DXVECTOR3 differVec = HitPos - posV;
