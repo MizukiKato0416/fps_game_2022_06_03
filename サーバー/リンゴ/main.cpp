@@ -193,8 +193,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		if ((g_display_count % SEND_COUNTER) == 0)
 		{
 			// 初期化
-			save_differ = 100000.0f;
 			D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
+			D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
+			save_differ = 100000.0f;
 			g_display_count = 0;
 
 			// プレイヤー分回す
@@ -222,7 +223,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXVec3Normalize(&ray_vec, &ray_vec);
 
 							D3DXVECTOR3 posV = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-							D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
 
 							//レイとカプセルの当たり判定
 							if (calcRayCapsule(	posV.x, posV.y, posV.z,
