@@ -82,6 +82,7 @@ void CNetWorkManager::Uninit(void)
 void CNetWorkManager::Recv(void)
 {
 	int recv_size = 1;
+	char send_data[MAX_COMMU_DATA];
 
 	if (m_communication != nullptr)
 	{
@@ -107,15 +108,28 @@ void CNetWorkManager::Recv(void)
 					// プレイヤーの情報なら
 					if (pDataBuf->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 					{
-						CCommunicationData::COMMUNICATION_DATA *data = m_player_data.GetCmmuData();
+						CCommunicationData::COMMUNICATION_DATA *player_data = m_player_data.GetCmmuData();
 
-						// 情報を入れる
-						*data = *pDataBuf;
+						// 割り振られていなかったら
+						if (player_data->Player.nNumber == 0)
+						{
+							// 情報を入れる
+							*player_data = *pDataBuf;
+							player_data->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
+							memcpy(&send_data[0], player_data, sizeof(CCommunicationData::COMMUNICATION_DATA));
+							m_communication->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+						}
+						// 割り振られていたら
+						else if (pDataBuf->Player.nNumber == player_data->Player.nNumber)
+						{
+							// 情報を入れる
+							*player_data = *pDataBuf;
+						}
 					}
 					// 敵の情報なら
 					else if (pDataBuf->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
 					{
-						int enemy_size = m_enemy_data.size();
+						int enemy_size = m_enemy_data.size();	// サイズを取得
 
 						for (int count_enemy = 0; count_enemy < enemy_size; count_enemy++)
 						{
