@@ -225,31 +225,46 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXVec3Normalize(&ray_vec, &ray_vec);
 
 							D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+							D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
 
 							// レイとカプセルの当たり判定
 							if (calcRayCapsule(	posV.x, posV.y, posV.z,
 												ray_vec.x, ray_vec.y, ray_vec.z,
 												modelMtx._41, modelMtx._42, modelMtx._43,
-												modelMtx._41, modelMtx._42 + 150.0f, modelMtx._43,
-												50.0f,
+												modelMtx._41, modelMtx._42 + 90.0f, modelMtx._43,
+												28.0f,
 												HitPos.x, HitPos.y, HitPos.z,
 												EndPos.x, EndPos.y, EndPos.z))
 							{
-								// 当たった場所までの距離を算出
-								D3DXVECTOR3 differVec = HitPos - posV;
-								differ = D3DXVec3Length(&differVec);
+								D3DXVECTOR3 hitVec = HitPos - posV;
+								// ベクトルを正規化
+								D3DXVec3Normalize(&hitVec, &hitVec);
 
-								if (save_differ > differ)
+
+								if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
+									(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
+									(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
 								{
-									// 距離を保存
-									save_differ = differ;
+									//当たっていない
+								}
+								else
+								{//当たってる
+									// 当たった場所までの距離を算出
+									D3DXVECTOR3 differVec = HitPos - posV;
+									differ = D3DXVec3Length(&differVec);
 
-									// 敵の番号保存
-									frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
-									save_hit_enemy = cout_enemy;
+									if (save_differ > differ)
+									{
+										// 距離を保存
+										save_differ = differ;
 
-									// 当たった
-									hit = true;
+										// 敵の番号保存
+										frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
+										save_hit_enemy = cout_enemy;
+
+										// 当たった
+										hit = true;
+									}
 								}
 							}
 						}
@@ -257,6 +272,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					// 誰かしら当ててたら
 					if (hit == true)
 					{
+						data[save_hit_enemy]->Bullet.HitPos = HitPos;
 						data[save_hit_enemy]->Player.bHit = true;
 						data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 						hit = false;
@@ -504,24 +520,18 @@ bool calcRayInfCilinder(float lx, float ly, float lz,
 	float rr = r * r;
 
 	if (Dss == 0.0f)
-	{
 		return false; // 円柱が定義されない
-	}
 
 	float A = Dvv - Dsv * Dsv / Dss;
 	float B = Dpv - Dps * Dsv / Dss;
 	float C = Dpp - Dps * Dps / Dss - rr;
 
 	if (A == 0.0f)
-	{
 		return false;
-	}
 
 	float s = B * B - A * C;
 	if (s < 0.0f)
-	{
 		return false; // レイが円柱と衝突していない
-	}
 	s = sqrtf(s);
 
 	float a1 = (B - s) / A;

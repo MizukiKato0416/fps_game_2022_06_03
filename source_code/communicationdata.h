@@ -57,6 +57,7 @@ public:
 
 	typedef struct
 	{
+		D3DXVECTOR3 HitPos;	// 当てた場所
 		int nCollEnemy;	// 当てた相手の番号
 		int nDamage;	// ダメージ
 		bool bUse;	// 使ってるかどうか

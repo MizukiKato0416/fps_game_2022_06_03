@@ -169,8 +169,6 @@ void CPlayer::Uninit(void)
 //================================================
 void CPlayer::Update(void)
 {
-	//敵から受け取ったデータについての処理
-	RecvEnemyData();
 	char Send[MAX_COMMU_DATA];
 
 	CSound *sound;
@@ -364,26 +362,15 @@ void CPlayer::Update(void)
 	//ADS処理
 	ADS();
 
-	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
-	{
-		if (pData->Player.bHit == true)
-		{
-			m_pos = { 0.0f, 1000.0f, 0.0f };
-			SetPos(m_pos);
-			pData->Player.bHit = false;
-			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
-		}
-	}
-
-	///LPD3DXMESH buf = m_pCollModel->GetModel()->GetMesh();
+	//当たったかどうか
+	HitBullet();
 
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pData->Player.CamV = posCameraV;
 	pData->Player.CamR = posCameraR;
-	//pData->Player.Mesh = buf;aa
-	//pData->Player.ModelMatrix = m_pCollModel->GetModel()->GetMtx();
+	pData->Player.ModelMatrix = m_mtxWorld;
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
@@ -817,29 +804,44 @@ void CPlayer::Chest(void)
 //================================================
 //敵のデータ取得処理
 //================================================
-void CPlayer::RecvEnemyData(void)
+void CPlayer::HitBullet(void)
 {
-	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-	int EnemySize = EnemyData.size();
+	//vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	//int EnemySize = EnemyData.size();
 
-	for (int nCnt = 0; nCnt < EnemySize; nCnt++)
+	//for (int nCnt = 0; nCnt < EnemySize; nCnt++)
+	//{
+	//	//サーバーから敵に送られてきた情報を取得
+	//	CCommunicationData::COMMUNICATION_DATA *pData = EnemyData[nCnt].GetCmmuData();
+
+	//	// 弾を使ってたら且つ弾が当たったプレイヤー番号が自身と一致していたら
+	//	if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData()->Player.nNumber)
+	//	{
+	//		//ライフを減らす
+	//		m_nLife -= pData->Bullet.nDamage;
+
+			
+
+	//		//ライフが0になったら
+	//		if (m_nLife <= 0)
+	//		{
+	//			//消す
+	//			m_pos = { 0.0f, 0.0f, 0.0f };
+	//			SetPos(m_pos);
+	//		}
+	//	}
+	//}
+
+
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 	{
-		//サーバーから敵に送られてきた情報を取得
-		CCommunicationData::COMMUNICATION_DATA *pData = EnemyData[nCnt].GetCmmuData();
-
-		// 弾を使ってたら且つ弾が当たったプレイヤー番号が自身と一致していたら
-		if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData()->Player.nNumber)
+		if (pData->Player.bHit == true)
 		{
-			//ライフを減らす
-			m_nLife -= pData->Bullet.nDamage;
-
-			//ライフが0になったら
-			if (m_nLife <= 0)
-			{
-				//消す
-				m_pos = { 0.0f, 0.0f, 0.0f };
-				SetPos(m_pos);
-			}
+			m_pos = { 0.0f, 1000.0f, 0.0f };
+			SetPos(m_pos);
+			pData->Player.bHit = false;
+			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
 		}
 	}
 }

@@ -64,7 +64,7 @@ private:
 	void Shot(void);								//射撃処理
 	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
-	void RecvEnemyData(void);						//敵のデータ取得処理
+	void HitBullet(void);							//当たったかどうか
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
