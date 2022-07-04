@@ -249,16 +249,7 @@ HRESULT CBullet::Init(void)
 	if (bCollMesh)
 	{
 		//当たったメッシュフィールドまでの距離がモデルの距離より遠いとき
-		if (fMeshDiffer > m_fDiffer)
-		{
-			//モデルの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
-			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
-			//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
-			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
-			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-		else
+		if (fMeshDiffer < m_fDiffer)
 		{
 			//終点を設定
 			m_endPos = meshHitPos;

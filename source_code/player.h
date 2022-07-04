@@ -89,6 +89,7 @@ private:
 	CObject2D *m_pCloss;							//クロスヘア
 	int m_nLife;									//体力
 	CModelCollision *m_pCollModel;					//当たり判定のボックス
+	bool m_bShot;									//撃ったかどうか
 };
 
 #endif // !_PLAYER_H_

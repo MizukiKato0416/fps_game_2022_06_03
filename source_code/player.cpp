@@ -69,6 +69,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_pCloss = nullptr;
 	m_nLife = 0;
 	m_pCollModel = nullptr;
+	m_bShot = false;
 }
 
 //================================================
@@ -99,6 +100,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 	m_bAds = false;
 	m_nLife = PLAYER_LIFE;
+	m_bShot = false;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
@@ -117,7 +119,7 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 
 	//当たり判定ボックスの生成
-	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
+	//m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -373,15 +375,15 @@ void CPlayer::Update(void)
 		}
 	}
 
-	LPD3DXMESH buf = m_pCollModel->GetModel()->GetMesh();
+	///LPD3DXMESH buf = m_pCollModel->GetModel()->GetMesh();
 
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pData->Player.CamV = posCameraV;
 	pData->Player.CamR = posCameraR;
-	pData->Player.Mesh = buf;
-	pData->Player.ModelMatrix = m_pCollModel->GetModel()->GetMtx();
+	//pData->Player.Mesh = buf;aa
+	//pData->Player.ModelMatrix = m_pCollModel->GetModel()->GetMtx();
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
@@ -399,8 +401,8 @@ void CPlayer::Update(void)
 void CPlayer::Draw(void)
 {
 	//親子関係をつける
-	m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
-	m_pCollModel->GetModel()->SetObjParent(true);
+	//m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
+	//m_pCollModel->GetModel()->SetObjParent(true);
 }
 
 //================================================
@@ -666,24 +668,33 @@ void CPlayer::Shot(void)
 		//カウンターを減算
 		m_nCounter--;
 
-		//0より小さくなったら
-		if (m_nCounter < 0)
+		//撃っている状態なら
+		if (m_bShot == true)
 		{
-			//既定の値にする
-			m_nCounter = PLAYER_SHOT_COUNTER;
-
 			m_pGunModel->GetModel()->GetModel()->SetMtx();
 			//オフセット位置設定
-			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
+			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
 
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {}, {});
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			CBullet *pBullet;	// 弾のポインタ
-
-			//弾の生成
+								//弾の生成
 			pBullet = CBullet::Create();
+
+			//撃っていない状態にする
+			m_bShot = false;
+		}
+
+		//0より小さくなったら
+		if (m_nCounter < 0)
+		{
+			//既定の値にする
+			m_nCounter = PLAYER_SHOT_COUNTER;
+
+			//撃ってる状態にする
+			m_bShot = true;
 		}
 	}
 	else
