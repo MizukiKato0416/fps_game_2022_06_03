@@ -57,7 +57,6 @@ bool CTcpClient::Init(void)
 
 	if (pFile != NULL)
 	{
-
 		while (true)
 		{
 			fscanf(pFile, "%s", &aFile[0]);
