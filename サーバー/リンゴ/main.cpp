@@ -342,12 +342,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				cout << "Player : " << nCntSend << "->プレイヤーの回転" << data[nCntSend]->Player.Rot.x << " : " << data[nCntSend]->Player.Rot.y << " : " << data[nCntSend]->Player.Rot.z << endl;
 				cout << "Player : " << nCntSend << "->プレイヤー当たり判定フラグ" << data[nCntSend]->Player.bHit << endl;
 				cout << "Player : " << nCntSend << "->プレイヤーへのダメージ" << data[nCntSend]->Player.nHitDamage << endl;
-				cout << "Player : " << nCntSend << "->弾の位置" << data[nCntSend]->Bullet.Pos << endl;
+				cout << "Player : " << nCntSend << "->弾の位置" << *data[nCntSend]->Bullet.Pos << endl;
 				cout << "Player : " << nCntSend << "->当たった物への距離" << data[nCntSend]->Bullet.fDiffer << endl;
 				cout << "Player : " << nCntSend << "->どれに当たったか" << (int)data[nCntSend]->Bullet.type << endl;
 				cout << "Player : " << nCntSend << "->弾を使ってるか" << data[nCntSend]->Bullet.bUse << endl;
-				cout << "Player : " << nCntSend << "->弾道の始点" << data[nCntSend]->Ballistic.BigenPos << endl;
-				cout << "Player : " << nCntSend << "->弾道の終点" << data[nCntSend]->Ballistic.EndPos << endl;
+				cout << "Player : " << nCntSend << "->弾道の始点" << *data[nCntSend]->Ballistic.BigenPos << endl;
+				cout << "Player : " << nCntSend << "->弾道の終点" << *data[nCntSend]->Ballistic.EndPos << endl;
 				cout << "Player : " << nCntSend << "->サーバーからクライアントへのsendタイプ" << (int)data[nCntSend]->SendType << endl;
 				cout << "Player : " << nCntSend << "->通信が確立されてるか" << data[nCntSend]->bConnect << endl;
 			}
