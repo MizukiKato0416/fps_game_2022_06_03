@@ -667,7 +667,7 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			CBullet *pBullet;	// 弾のポインタ
-								//弾の生成
+			//弾の生成
 			pBullet = CBullet::Create();
 
 			//撃っていない状態にする
@@ -806,43 +806,59 @@ void CPlayer::Chest(void)
 //================================================
 void CPlayer::HitBullet(void)
 {
-	//vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-	//int EnemySize = EnemyData.size();
-
-	//for (int nCnt = 0; nCnt < EnemySize; nCnt++)
-	//{
-	//	//サーバーから敵に送られてきた情報を取得
-	//	CCommunicationData::COMMUNICATION_DATA *pData = EnemyData[nCnt].GetCmmuData();
-
-	//	// 弾を使ってたら且つ弾が当たったプレイヤー番号が自身と一致していたら
-	//	if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData()->Player.nNumber)
-	//	{
-	//		//ライフを減らす
-	//		m_nLife -= pData->Bullet.nDamage;
-
-			
-
-	//		//ライフが0になったら
-	//		if (m_nLife <= 0)
-	//		{
-	//			//消す
-	//			m_pos = { 0.0f, 0.0f, 0.0f };
-	//			SetPos(m_pos);
-	//		}
-	//	}
-	//}
-
-
+	//通信したデータ取得
 	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+	//プレイヤーに送られていたら
 	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 	{
+		//弾が自分に当たっていたら
 		if (pData->Player.bHit == true)
 		{
-			m_pos = { 0.0f, 1000.0f, 0.0f };
-			SetPos(m_pos);
+			//ライフを減らす
+			m_nLife -= pData->Player.nHitDamage;
+			//ライフが0になったら
+			if (m_nLife <= 0)
+			{
+				//リスポーン
+				m_pos = { 100.0f, 1000.0f, 100.0f };
+				SetPos(m_pos);
+				m_nLife = PLAYER_LIFE;
+			}
+			//自分に与えられるダメージを0にリセット
+			pData->Player.nHitDamage = 0;
+			//当たっていない状態にする
 			pData->Player.bHit = false;
+			//敵に送る状態にする
 			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
 		}
+
+		////当てた位置を取得
+		//D3DXVECTOR3 hitPos = pData->Player.HitPos;
+		//switch (pData->Bullet.type)
+		//{
+		//case CCommunicationData::HIT_TYPE::NONE:		//当たっていないなら
+		//	break;
+		//case CCommunicationData::HIT_TYPE::MESHFIELD:	//メッシュフィールドにあてたなら
+		//	//当たった位置にエフェクトを出す
+		//	CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+		//	CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+		//	break;
+		//case CCommunicationData::HIT_TYPE::MODEL:		//モデルにあてたなら
+		//	//モデルの当たった位置にエフェクトを出す
+		//	CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+		//	CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+		//	//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
+		//	CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
+		//	CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, 0.0f , 0.0f));
+		//	break;
+		//case CCommunicationData::HIT_TYPE::ENEMY:		//敵にあてたなら
+		//	//当たった位置にエフェクトを出す
+		//	CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+		//	CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+		//	break;
+		//default:
+		//	break;
+		//}
 	}
 }
 

@@ -34,7 +34,15 @@ public:
 	{
 		SEND_TO_PLAYER = 0,	// プレイヤーにsend
 		SEND_TO_ENEMY,	// 敵にsend
-		MAX,
+		MAX
+	};
+	enum class HIT_TYPE
+	{
+		NONE = 0,	// 当たっていない
+		MESHFIELD,	// メッシュフィールドに当たった
+		MODEL,		// モデルに当たった
+		ENEMY,		// 敵に当たった
+		MAX
 	};
 
 	//---------------------------
@@ -46,10 +54,12 @@ public:
 		D3DXVECTOR3 Rot;	// 角度
 		D3DXVECTOR3 CamV;	// カメラの位置
 		D3DXVECTOR3 CamR;	// カメラの注視点
+		D3DXVECTOR3 HitPos;	// 当てた場所
 		LPD3DXMESH Mesh;	// メッシュ情報
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		int nFrameCount;	// フレームカウント
+		int nHitDamage;
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
 		bool bHit;	// 当たったか
@@ -57,9 +67,10 @@ public:
 
 	typedef struct
 	{
-		D3DXVECTOR3 HitPos;	// 当てた場所
-		int nCollEnemy;	// 当てた相手の番号
-		int nDamage;	// ダメージ
+		D3DXVECTOR3 Pos;
+		HIT_TYPE type;
+		int nDamage;
+		float fDiffer;
 		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
 

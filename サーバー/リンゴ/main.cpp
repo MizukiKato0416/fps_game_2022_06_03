@@ -215,6 +215,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						// プレイヤーじゃなかったら
 						if (cout_player != cout_enemy)
 						{
+							//距離を取得
+							//save_differ = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.fDiffer;
+
 							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
 							float differ = 0.0f;
 
@@ -259,23 +262,33 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										save_differ = differ;
 
 										// 敵の番号保存
-										frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.nCollEnemy = cout_enemy + 1;
+										data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
 										save_hit_enemy = cout_enemy;
 
 										// 当たった
 										hit = true;
+
+										data[cout_player]->Player.HitPos = HitPos;
+										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+										data[cout_enemy]->Player.bHit = true;
+										//data[cout_enemy]->Bullet.type = CCommunicationData::HIT_TYPE::ENEMY;
+										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 									}
 								}
 							}
+							// 敵に当たっていなかったら
+							//if (hit == false)
+							//{
+							//	//当たった場所を取得
+							//	HitPos = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.Pos;
+							//	//当たったものを取得して設定
+							//	data[cout_enemy]->Bullet.type = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.type;
+							//	//当たった場所を設定
+							//	data[cout_player]->Player.HitPos = HitPos;
+							//	data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+							//	data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+							//}
 						}
-					}
-					// 誰かしら当ててたら
-					if (hit == true)
-					{
-						data[save_hit_enemy]->Bullet.HitPos = HitPos;
-						data[save_hit_enemy]->Player.bHit = true;
-						data[save_hit_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
-						hit = false;
 					}
 				}
 				// 当たってなかつたら

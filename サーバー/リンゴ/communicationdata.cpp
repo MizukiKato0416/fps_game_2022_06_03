@@ -21,7 +21,6 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.Pos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Player.Rot = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Player.bHit = false;
-	m_CommuData.Bullet.nCollEnemy = 0;
 	m_CommuData.Bullet.bUse = false;
 	m_CommuData.Ballistic.BigenPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Ballistic.EndPos = { 0.0f, 0.0f, 0.0f };
