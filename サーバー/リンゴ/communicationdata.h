@@ -57,7 +57,6 @@ public:
 		D3DXVECTOR3 CamV;	// カメラの位置
 		D3DXVECTOR3 CamR;	// カメラの注視点
 		D3DXVECTOR3 HitPos;	// 当てた場所
-		LPD3DXMESH Mesh;	// メッシュ情報
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		int nFrameCount;	// フレームカウント
