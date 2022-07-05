@@ -209,15 +209,14 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				// 弾の数分のループ
 				for (int count_bullet = 0; count_bullet < cout_bullet; count_bullet++)
 				{
+					//距離を取得
+					save_differ = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.fDiffer;
 					// プレイヤー分回す
 					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
 					{
 						// プレイヤーじゃなかったら
 						if (cout_player != cout_enemy)
 						{
-							//距離を取得
-							//save_differ = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.fDiffer;
-
 							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
 							float differ = 0.0f;
 
