@@ -168,6 +168,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			break;
 		}
 
+
 		// プレイヤー分回す
 		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 		{
@@ -185,6 +186,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				{
 					// フレーム数の保存
 					g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
+					//弾が当たったオブジェクトを保存
+					data[count_player]->Player.type[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.type;
+					//弾が当たった場所を保存
+					data[count_player]->Player.HitPos[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.hitPos;
+					//撃った数を1増やす
+					data[count_player]->Player.nNumShot++;
 				}
 			}
 		}
@@ -205,6 +212,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			{
 				// プレイヤーの撃った弾の数
 				int cout_bullet = g_save_display_count[cout_player].size();
+
+				//何にもあたっていない弾の数
+				int nCntBullet = 0;
 
 				// 弾の数分のループ
 				for (int count_bullet = 0; count_bullet < cout_bullet; count_bullet++)
@@ -267,33 +277,40 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										// 当たった
 										hit = true;
 
-										data[cout_player]->Player.HitPos = HitPos;
+										//当たった場所を保存
+										data[cout_player]->Player.HitPos[count_bullet] = HitPos;
+										//プレイヤーにデータを送信する状態にする
 										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+										//プレイヤーに当たった状態にする
 										data[cout_enemy]->Player.bHit = true;
-										//data[cout_enemy]->Bullet.type = CCommunicationData::HIT_TYPE::ENEMY;
+										//当たったオブジェクトを敵に設定する
+										data[cout_enemy]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
+										//当たった敵をプレイヤーにデータを送信する状態にする
 										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 									}
 								}
 							}
-							// 敵に当たっていなかったら
-							//if (hit == false)
-							//{
-							//	//当たった場所を取得
-							//	HitPos = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.Pos;
-							//	//当たったものを取得して設定
-							//	data[cout_enemy]->Bullet.type = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.type;
-							//	//当たった場所を設定
-							//	data[cout_player]->Player.HitPos = HitPos;
-							//	data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
-							//	data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
-							//}
 						}
 					}
+					//何にもあたっていなかったら
+					if (data[cout_player]->Player.type[count_bullet] == CCommunicationData::HIT_TYPE::NONE)
+					{
+						//当たっていない弾の数を＋する
+						nCntBullet++;
+					}
 				}
+
 				// 当たってなかつたら
-				if (data[cout_player]->Player.bHit != true)
+				if (data[cout_player]->Player.bHit != true && nCntBullet == cout_bullet)
 				{
 					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
+				}
+				else
+				{
+					//プレイヤーにデータを送信する状態にする
+					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+					//弾の数を保存
+					data[cout_player]->Player.nNumShot = cout_bullet;
 				}
 			}
 
@@ -308,6 +325,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 					// sendする
 					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+					//弾の数を0にする
+					data[count_player]->Player.nNumShot = 0;
 				}
 				// 敵にsendoする
 				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
@@ -364,7 +384,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				cout << "Player : " << nCntSend << "->プレイヤーの回転" << data[nCntSend]->Player.Rot.x << " : " << data[nCntSend]->Player.Rot.y << " : " << data[nCntSend]->Player.Rot.z << endl;
 				cout << "Player : " << nCntSend << "->プレイヤー当たり判定フラグ" << data[nCntSend]->Player.bHit << endl;
 				cout << "Player : " << nCntSend << "->プレイヤーへのダメージ" << data[nCntSend]->Player.nHitDamage << endl;
-				cout << "Player : " << nCntSend << "->弾の位置" << *data[nCntSend]->Bullet.Pos << endl;
 				cout << "Player : " << nCntSend << "->当たった物への距離" << data[nCntSend]->Bullet.fDiffer << endl;
 				cout << "Player : " << nCntSend << "->どれに当たったか" << (int)data[nCntSend]->Bullet.type << endl;
 				cout << "Player : " << nCntSend << "->弾を使ってるか" << data[nCntSend]->Bullet.bUse << endl;

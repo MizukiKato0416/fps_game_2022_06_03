@@ -260,7 +260,7 @@ HRESULT CBullet::Init(void)
 
 	// î•ñ‚ðÝ’è
 	pData->Bullet.fDiffer = m_fDiffer;
-	pData->Bullet.Pos = m_endPos;
+	pData->Bullet.hitPos = m_endPos;
 	pData->Bullet.nDamage = m_nDamage;
 	pData->Bullet.bUse = true;
 	pData->Ballistic.BigenPos = gunPos;
