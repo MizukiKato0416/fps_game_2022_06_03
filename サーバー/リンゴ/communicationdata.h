@@ -56,23 +56,25 @@ public:
 		D3DXVECTOR3 Rot;	// 角度
 		D3DXVECTOR3 CamV;	// カメラの位置
 		D3DXVECTOR3 CamR;	// カメラの注視点
-		D3DXVECTOR3 HitPos;	// 当てた場所
+		D3DXVECTOR3 HitPos[SEND_COUNTER];	// 当てた場所
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		int nFrameCount;	// フレームカウント
 		int nHitDamage;;	// ダメージ
+		int nNumShot;	//何発撃ったか
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
 		bool bHit;	// 当たったか
+		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 
 	bool bUse;	// 使ってるかどうか
 	typedef struct
 	{
-		D3DXVECTOR3 Pos;
-		HIT_TYPE type;
-		int nDamage;
-		float fDiffer;
+		D3DXVECTOR3 hitPos;	//当てた場所
+		HIT_TYPE type;		//当たったオブジェクトの種類
+		int nDamage;		//弾が持つダメージ量
+		float fDiffer;	//当たった場所までの距離
 		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
 

@@ -64,7 +64,7 @@ private:
 	void Shot(void);								//ËŒ‚ˆ—
 	void ADS(void);									//ADSˆ—
 	void Chest(void);								//˜‚Ìˆ—
-	void HitBullet(void);							//“–‚½‚Á‚½‚©‚Ç‚¤‚©
+	void HitBullet(void);							//”í’eˆ—
 
 	//ƒƒ“ƒo•Ï”
 	D3DXVECTOR3 m_pos;								//ˆÊ’u
