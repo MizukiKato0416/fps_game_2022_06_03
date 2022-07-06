@@ -326,6 +326,29 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						}
 					}
 				}
+				// 敵にsendoする
+				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
+				{
+					// メモリのコピー
+					memcpy(&recv_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+					// sendする
+					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+					// 敵分回す
+					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
+					{
+						// そのプレイヤーじゃなかったら
+						if (countenemy != count_player)
+						{
+							// メモリのコピー
+							memcpy(&recv_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+							// sendする
+							communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+						}
+					}
+				}
 			}
 
 			// スクリーン消去

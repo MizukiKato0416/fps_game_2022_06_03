@@ -34,6 +34,7 @@ public:
 	{
 		SEND_TO_PLAYER = 0,	// プレイヤーにsend
 		SEND_TO_ENEMY,	// 敵にsend
+		SEND_TO_ENEMY_AND_PLAYER,
 		MAX,
 	};
 	enum class HIT_TYPE
