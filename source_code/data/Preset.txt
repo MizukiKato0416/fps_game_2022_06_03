@@ -169,9 +169,6 @@ EFFECTSTATE3D
 	PATTERN = 8				//動きのパターン
 	SIZE = 3.0						//大きさ
 	ADDSIZE = 0.0					//大きさ変動
-	DENSITY = 1						//密度
-	CONTROLBEZIER = 221.0 111.0 0.5						//ベジェ制御点
-	MOVE = 686.0						//移動（制御点の数）
 	SECONDCOLOR = 0 255 255 255			//軌跡の色１
 	SECONDADDCOLOR = 0 0 0 0			//軌跡の色１増減
 	THERDCOLOR = 0 255 255 255				//軌跡の色２
@@ -183,7 +180,7 @@ EFFECTSTATE3D
 	SECONDSYNTHETIC = 1			//軌跡合成
 	COLOR = 0 255 255 255			//カラー
 	CHANGECOLOR = 0 0 0 0			//カラー変動値
-	LIFE = 10						//ライフ
+	LIFE = 20						//ライフ
 	TEXTURE = trans.png						//テクスチャ
 	SYNTHETIC = 1						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動
@@ -192,6 +189,5 @@ EFFECTSTATE3D
 	TEXSPLIT = 1 1					//テクスチャ分割数
 	ANIMPATTERNTYPE = 0					//アニメーションパターンタイプ
 END_EFFECTSTATE3D
-
 
 END_SCRIPT
