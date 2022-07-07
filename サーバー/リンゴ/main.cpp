@@ -67,7 +67,7 @@ void main(void)
 		cout << "現在の部屋数 : " << g_room_count << endl;
 
 		// 全ての人数分通信待ち
-		AllAccept(g_listenner, g_room_count);
+		AllAcceptInit(g_listenner, g_room_count);
 
 		// ルームを増やす
 		g_room_count++;
@@ -421,16 +421,31 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 }
 
 //------------------------
-// 規定人数分の接続待ち
+// 規定人数分の接続待ちとば番号の初期化
 //------------------------
-void AllAccept(CTcpListener* listener, int room_num)
+void AllAcceptInit(CTcpListener* listener, int room_num)
 {
 	vector<CCommunication*> communication;	// 通信クラス
+	CCommunicationData::COMMUNICATION_DATA data;	// 割り振るためのデータ
+	int count_player = 0;	// カウント
+	char recv_data[MAX_COMMU_DATA];	// レシーブ用
 
 	while (true)
 	{
 		// 通信待ち
 		communication.push_back(listener->Accept());
+
+		// 番号割り振り
+		data.Player.nNumber = count_player + 1;
+
+		// メモリのコピー
+		memcpy(&recv_data[0], &data, sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+		// semd
+		communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+		// カウントアップ
+		count_player++;
 
 		// 通信待ちを抜けても接続数が増えてないかソケットが初期値なら
 		if (communication.size() >= MAX_PLAYER + 1)
