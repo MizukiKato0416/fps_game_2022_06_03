@@ -42,6 +42,16 @@ public:
 		int Synthetic;	//合成
 		string nTexture;	//テクスチャ
 		float m_Distance;	//距離
+		D3DXVECTOR2 m_TexMove;	//テクスチャ移動
+		D3DXVECTOR2 m_TexNum;	//テクスチャ枚数
+		int m_AnimPatternType;
+		D3DXVECTOR2 m_TexSplit;	//分割数
+		int AnimCnt;	//アニメーションカウント
+		int m_nType;	//パターン
+		int m_fHigth;	//高さ
+		float m_SecondSize;
+		D3DCOLORVALUE m_SecondCol;			//2番目カラー
+		D3DCOLORVALUE m_SecondChangecolor;	//2番目カラー加算
 
 	} EFFECT_STATE2D;
 
@@ -123,7 +133,17 @@ public:
 		bool bMousePos,
 		int Synthetic,
 		string Texture,
-		float Distance);
+		float Distance,
+		D3DXVECTOR2 m_TexMove,
+		D3DXVECTOR2 m_TexNum,
+		int m_AnimPatternType,
+		D3DXVECTOR2 m_TexSplit,
+		int AnimCnt,
+		int nType,
+		float fHigth,
+		float SecondSize,
+		D3DCOLORVALUE m_SecondCol,
+		D3DCOLORVALUE m_SecondChangecolor);
 
 	//読み込んだエフェクトの情報を格納するやつ3D
 	static void SetEffectState3D(

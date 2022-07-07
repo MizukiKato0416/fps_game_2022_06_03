@@ -28,23 +28,65 @@ CEffect::~CEffect()
 //*****************************************************************************
 //初期化
 //*****************************************************************************
-HRESULT CEffect::Init(D3DXVECTOR3 pos, D3DCOLORVALUE color, D3DCOLORVALUE Mincolor, D3DXVECTOR2 Size, D3DXVECTOR2 MinSize, int nLife, string nType,int Synthetic)
+HRESULT CEffect::Init(D3DXVECTOR3 pos,
+	D3DCOLORVALUE color,
+	D3DCOLORVALUE Mincolor,
+	D3DXVECTOR2 Size,
+	D3DXVECTOR2 MinSize,
+	int nLife,
+	string nType,
+	int Synthetic,
+	D3DXVECTOR2 TexNum,
+	D3DXVECTOR2 TexMove,
+	int nAnimCounter,
+	D3DXVECTOR2 nSplit,
+	ANIMPATTERN AnimPattern)
 {
 	CScene2D::Init();
 
-	m_pos = pos;
 	m_Color = color;
 	m_MinColor = Mincolor;
 
 	m_Size = Size;
 	m_MinSize = MinSize;
-	m_pTexture = nType;
+
+	m_TexSize = TexMove;
+
 	m_nLife = nLife;
 	m_bUninit = false;
-	
-	nSynthetic = Synthetic;
-	CScene2D::SetWhidth(m_Size.x);
-	CScene2D::SetHight(m_Size.y);
+	m_nAnimCount = nAnimCounter;
+	m_nSetAnimCnt = nAnimCounter;
+	m_AnimPattern = AnimPattern;
+	m_MaxSplit = nSplit;
+	m_TexNum = TexMove;
+	m_TexMove = TexNum;
+	m_PatternSize = D3DXVECTOR2(1.0f / m_MaxSplit.x, 1.0f / m_MaxSplit.y);
+
+	if (m_MaxSplit.x <= 0)
+	{
+		m_MaxSplit.x = 1;
+	}
+	if (m_MaxSplit.y <= 0)
+	{
+		m_MaxSplit.y = 1;
+	}
+
+	float SplitU = float(rand() % (int)m_MaxSplit.x) + 1;
+	float SplitV = float(rand() % (int)m_MaxSplit.y) + 1;
+	m_nSplit = nSplit;
+
+	if (m_AnimPattern == ANIMPATTERN_RAND)
+	{
+		m_nSplit.x = SplitU;
+		m_nSplit.y = SplitV;
+	}
+
+	m_nSynthetic = Synthetic;
+	ColorChange(m_Color);
+
+	CScene2D::SetTexture(nType);	//選択した番号のテクスチャを貼る
+	SetTexAnim(m_nSplit, m_PatternSize);
+
 
 	return S_OK;
 }
@@ -64,15 +106,10 @@ void CEffect::Update()
 {
 	D3DXVECTOR3 pos = GetPosition();
 
-	m_Size += m_MinSize;
-
-	//サイズ変更
-	SetWhidth(m_Size.x);
-	SetHight(m_Size.y);
 
 	m_nLife--;		//ライフ減算
 
-	//画面外処理
+					//画面外処理
 	if (pos.y < 0)
 	{
 		m_bUninit = true;
@@ -143,14 +180,76 @@ void CEffect::Update()
 	{
 		m_Color.a = 255;
 	}
-	ColorChange(m_Color);
+
+
+	switch (m_AnimPattern)
+	{
+	case(ANIMPATTERN_NOMAL):
+		//テクスチャアニメーション
+		if (m_nAnimCount >= 0)
+		{
+			m_nAnimCount--;
+			if (m_nAnimCount < 0)
+			{
+				m_nAnimCount = m_nSetAnimCnt;
+				m_nSplit.x++;
+				m_nSplit.y++;
+			}
+			if (m_MaxSplit > m_MaxSplit)
+			{
+				m_nSplit.x = 0;
+				m_nSplit.y = 0;
+			}
+		}
+		break;
+	case(ANIMPATTERN_RAND):
+
+		break;
+	default:
+		//テクスチャアニメーション
+		if (m_nAnimCount >= 0)
+		{
+			m_nAnimCount--;
+			if (m_nAnimCount < 0)
+			{
+				m_nAnimCount = m_nSetAnimCnt;
+				m_nSplit.x++;
+				m_nSplit.y++;
+			}
+			if (m_MaxSplit > m_MaxSplit)
+			{
+				m_nSplit.x = 0;
+				m_nSplit.y = 0;
+			}
+		}
+		break;
+	}
+
+	if (m_TexMove.x >= 1.0f)
+	{
+		m_TexMove.x -= 1.0f;
+	}
+	else if (m_TexMove.x < 0.0f)
+	{
+		m_TexMove.x += 1.0f;
+	}
+
+	if (m_TexMove.y >= 1.0f)
+	{
+		m_TexMove.y -= 1.0f;
+	}
+	else if (m_TexMove.y < 0.0f)
+	{
+		m_TexMove.y += 1.0f;
+	}
+	TexMove(m_TexMove);
+	SetTexAnim(m_nSplit, m_PatternSize);
 
 	//破棄
 	if (m_bUninit == true)
 	{
 		Uninit();
 	}
-
 }
 
 //*****************************************************************************
@@ -166,14 +265,14 @@ void CEffect::Draw()
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	if (nSynthetic == 0)
+	if (m_nSynthetic == 0)
 	{
 		//加算合成関係
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	}
-	else if (nSynthetic == 1)
+	else if (m_nSynthetic == 1)
 	{
 		//減算合成の設定
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);

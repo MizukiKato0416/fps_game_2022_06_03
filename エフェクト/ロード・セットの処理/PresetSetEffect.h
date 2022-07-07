@@ -40,7 +40,18 @@ public:
 		bool m_bColorRandB;		//色ランダムB
 		bool m_bMousePos;
 		int Synthetic;	//合成
-		int nTexture;	//テクスチャ
+		string nTexture;	//テクスチャ
+		float m_Distance;	//距離
+		D3DXVECTOR2 m_TexMove;	//テクスチャ移動
+		D3DXVECTOR2 m_TexNum;	//テクスチャ枚数
+		int m_AnimPatternType;
+		D3DXVECTOR2 m_TexSplit;	//分割数
+		int AnimCnt;	//アニメーションカウント
+		int m_nType;	//パターン
+		int m_fHigth;	//高さ
+		float m_SecondSize;
+		D3DCOLORVALUE m_SecondCol;			//2番目カラー
+		D3DCOLORVALUE m_SecondChangecolor;	//2番目カラー加算
 	} EFFECT_STATE2D;
 
 	//3Dの情報
@@ -73,7 +84,7 @@ public:
 		bool m_bColorRandG;		//色ランダムG
 		bool m_bColorRandB;		//色ランダムB
 		int Synthetic;	//合成
-		int nTexture;	//テクスチャ
+		string nTexture;	//テクスチャ
 		int ParticleTime;
 		D3DXVECTOR3 pos;	//位置
 		float m_fActiveAddSize;	//アクティブ中の大きさ変更
@@ -120,8 +131,18 @@ public:
 		bool bColorRandB,
 		bool bMousePos,
 		int Synthetic,
-		int Texture,
-		float Distance);
+		string Texture,
+		float Distance,
+		D3DXVECTOR2 m_TexMove,
+		D3DXVECTOR2 m_TexNum,
+		int m_AnimPatternType,
+		D3DXVECTOR2 m_TexSplit,
+		int AnimCnt,
+		int nType,
+		float fHigth,
+		float SecondSize,
+		D3DCOLORVALUE m_SecondCol,
+		D3DCOLORVALUE m_SecondChangecolor);
 
 	//読み込んだエフェクトの情報を格納するやつ3D
 	static void SetEffectState3D(
@@ -151,7 +172,7 @@ public:
 		bool bColorRandG,
 		bool bColorRandB,
 		int Synthetic,
-		int Texture,
+		string Texture,
 		int nDistance,
 		int ParticleTime,
 		D3DXVECTOR3 pos,

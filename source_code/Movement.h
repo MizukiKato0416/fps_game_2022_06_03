@@ -17,7 +17,7 @@ public:
 		SHAPE_MAX,
 	} SHAPE_TYPE;
 
-	CMovement(int nPriority);
+	CMovement(PRIORITY priorty = PRIORITY::EFFECT2D);
 	~CMovement();
 
 	HRESULT Init(D3DXVECTOR3 pos,
@@ -81,6 +81,6 @@ private:
 	//å∏ÇÁÇ∑ÉJÉâÅ[íl
 	D3DCOLORVALUE m_SecondMinColor;
 
-s};
+};
 
 #endif // !_MOVEMENT_H_

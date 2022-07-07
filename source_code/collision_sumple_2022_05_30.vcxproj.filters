@@ -222,6 +222,9 @@
     <ClCompile Include="networkmanager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Movement.cpp">
+      <Filter>ソース ファイル\しゅうすけ\エフェクト処理\2</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="billboard.h">
@@ -406,6 +409,9 @@
     </ClInclude>
     <ClInclude Include="networkmanager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Movement.h">
+      <Filter>ヘッダー ファイル\しゅうすけ\エフェクト処理\2d</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
