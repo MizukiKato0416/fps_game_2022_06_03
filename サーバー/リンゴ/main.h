@@ -43,7 +43,7 @@ class CTcpListener;
 //------------------------
 void KeyWait(void);	// キー入力待ち
 void CreateRoom(vector<CCommunication*> communication, int room_num);	// 部屋生成処理
-void AllAccept(CTcpListener* listener, int room_num);	// 部屋生成処理
+void AllAcceptInit(CTcpListener* listener, int room_num);	// 部屋生成処理
 void Init(void);	// 初期化
 bool calcRaySphere(float lx, float ly, float lz, float vx, float vy, float vz, float px, float py, float pz, float r, float &q1x, float &q1y, float &q1z, float &q2x, float &q2y, float &q2z);	// レイとカプセルの貫通点を算出
 bool calcRayInfCilinder(float lx, float ly, float lz, float vx, float vy, float vz, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float r, float &q1x, float &q1y, float &q1z, float &q2x, float &q2y, float &q2z);	// レイと円柱の貫通点を算出
