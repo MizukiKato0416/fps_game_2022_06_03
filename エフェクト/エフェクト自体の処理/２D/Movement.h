@@ -10,13 +10,6 @@
 class CMovement : public CEffect
 {
 public:
-	typedef enum
-	{
-		SHAPE_SQUARE,
-		SHAPE_FREE,
-		SHAPE_MAX,
-	} SHAPE_TYPE;
-
 	CMovement(int nPriority);
 	~CMovement();
 
@@ -27,20 +20,9 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		string nType,
+		int nType,
 		D3DXVECTOR2 AddMovement,
-		int nSynthetic,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern,
-		SHAPE_TYPE Shapetype,
-		float fHight,
-		float HigthPos,
-		float HigthSize,
-		D3DCOLORVALUE Secondcolor,
-		D3DCOLORVALUE SecondMincolor);
+		int nSynthetic);
 
 	void Uninit();
 	void Update();
@@ -53,34 +35,12 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		string nType,
+		int nType,
 		D3DXVECTOR2 AddMovement,
-		int nSynthetic,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern,
-		SHAPE_TYPE Shapetype,
-		float fHight,
-		float HigthPos,
-		float HigthSize,
-		D3DCOLORVALUE Secondcolor,
-		D3DCOLORVALUE SecondMincolor);
+		int nSynthetic);
 private:
 	D3DXVECTOR2 m_move;			//移動
 	D3DXVECTOR2 m_Addpos;		//慣性
-
-	SHAPE_TYPE m_ShapeType;	//形
-	float m_fHigth;
-	float m_HigthPos;
-	float m_HigthSize;
-
-	//カラー値
-	D3DCOLORVALUE m_SecondColor;
-	//減らすカラー値
-	D3DCOLORVALUE m_SecondMinColor;
-
-s};
+};
 
 #endif // !_MOVEMENT_H_

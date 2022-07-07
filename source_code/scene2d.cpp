@@ -25,7 +25,7 @@ CScene2D::CScene2D(PRIORITY priorty) : CObject(priorty)
 	m_pVtxBuff = NULL;
 
 	m_Texpos = 0;
-	m_TexSize = D3DXVECTOR2(1.0f, 1.0f);
+	m_TexSize = 0;
 }
 
 //=============================================================================
@@ -170,19 +170,21 @@ void CScene2D::Draw()
 //=============================================================================
 // テクスチャ情報セット(テクスチャパターンの更新)
 //=============================================================================
-void CScene2D::SetTexAnim(D3DXVECTOR2 TexPattern, D3DXVECTOR2 TexAnimSize)
+void CScene2D::SetTex(int Texpos, float TexSize)
 {
-	VERTEX_2D*pVtx;//頂点情報へのポインタ
-	m_nSplit = TexPattern;
+	m_Texpos = Texpos;
+	m_TexSize = TexSize;
 
-	//頂点バッファをロックし、頂点データへのポインタを取得
+	//一枚絵と分けるためここで更新
+	VERTEX_2D*pVtx;//頂点情報へのポインタ
+				   //頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//テクスチャ座標
-	pVtx[0].tex = D3DXVECTOR2(m_TexNum.x + m_nSplit.x * TexAnimSize.x + m_TexMove.x, m_TexNum.y + m_nSplit.y * TexAnimSize.y + m_TexMove.y);
-	pVtx[1].tex = D3DXVECTOR2(m_TexNum.x + m_nSplit.x * TexAnimSize.x + TexAnimSize.x + m_TexMove.x, m_TexNum.y + m_nSplit.y * TexAnimSize.y + m_TexMove.y);
-	pVtx[2].tex = D3DXVECTOR2(m_TexNum.x + m_nSplit.x * TexAnimSize.x + m_TexMove.x, m_TexNum.y + m_nSplit.y *  +TexAnimSize.y + TexAnimSize.y + m_TexMove.y);
-	pVtx[3].tex = D3DXVECTOR2(m_TexNum.x + m_nSplit.x * TexAnimSize.x + TexAnimSize.x + m_TexMove.x, m_TexNum.y + m_nSplit.y *  +TexAnimSize.y + TexAnimSize.y + m_TexMove.y);
+	//テクスチャのUV座標
+	pVtx[0].tex = D3DXVECTOR2(m_Texpos * m_TexSize, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(m_Texpos * m_TexSize + m_TexSize, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(m_Texpos * m_TexSize, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(m_Texpos * m_TexSize + m_TexSize, 1.0f);
 
 	//頂点バッファをアンロック
 	m_pVtxBuff->Unlock();
@@ -192,37 +194,40 @@ void CScene2D::SetTexAnim(D3DXVECTOR2 TexPattern, D3DXVECTOR2 TexAnimSize)
 //=============================================================================
 // テクスチャ情報セット(背景スクロール)
 //=============================================================================
-void CScene2D::TexMove(D3DXVECTOR2 MoveTex)
+void CScene2D::TexMove(float TexMoveU, float TexMoveV)
 {
-	m_TexMove += MoveTex;
-	if (m_TexMove.x >= 1.0f)
+	m_TexMoveU = TexMoveU;
+	m_TexMoveV = TexMoveV;
+	m_PosTexV += m_TexMoveV;
+
+	if (m_PosTexV >= 1.0f)
 	{
-		m_TexMove.x -= 1.0f;
+		m_PosTexV -= 1.0f;
 	}
-	else if (m_TexMove.x < 0.0f)
+	else if (m_PosTexV < 0.0f)
 	{
-		m_TexMove.x += 1.0f;
+		m_PosTexV += 1.0f;
 	}
 
-	if (m_TexMove.y >= 1.0f)
+	if (m_TexMoveU >= 1.0f)
 	{
-		m_TexMove.y -= 1.0f;
+		m_TexMoveU -= 1.0f;
 	}
-	else if (m_TexMove.y < 0.0f)
+	else if (m_TexMoveU < 0.0f)
 	{
-		m_TexMove.y += 1.0f;
+		m_TexMoveU += 1.0f;
 	}
 
 	//一枚絵と分けるためここで更新
 	VERTEX_2D*pVtx;//頂点情報へのポインタ
-				   //頂点バッファをロックし、頂点データへのポインタを取得
+	//頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	//テクスチャ座標
-	pVtx[0].tex = D3DXVECTOR2(m_TexMove.x, m_TexMove.y);
-	pVtx[1].tex = D3DXVECTOR2(m_TexNum.x + m_TexMove.x, m_TexMove.y);
-	pVtx[2].tex = D3DXVECTOR2(m_TexMove.x, m_TexNum.y + m_TexMove.y);
-	pVtx[3].tex = D3DXVECTOR2(m_TexNum.x + m_TexMove.x, m_TexNum.y + m_TexMove.y);
+	//テクスチャのUV座標
+	pVtx[0].tex = D3DXVECTOR2(m_TexMoveU, m_PosTexV);
+	pVtx[1].tex = D3DXVECTOR2(m_TexMoveU + 1.0f, m_PosTexV);
+	pVtx[2].tex = D3DXVECTOR2(m_TexMoveU, m_PosTexV + 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(m_TexMoveU + 1.0f, m_PosTexV + 1.0f);
 
 	//頂点バッファをアンロック
 	m_pVtxBuff->Unlock();
@@ -324,46 +329,20 @@ void CScene2D::SetPosition(D3DXVECTOR3 pos)
 
 	CScene2D::Update();
 }
-
 //=============================================================================
-// 自由な座標指定
+// ポリゴン情報セット(Hight)
 //=============================================================================
-void CScene2D::SetfleeSizePos(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3, D3DXVECTOR3 pos4)	//自由な座標指定
+void CScene2D::SetHight(float Hight)
 {
-
-	VERTEX_2D*pVtx;//頂点情報へのポインタ
-
-				   //頂点バッファをロックし、頂点データへのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	//頂点の座標
-	pVtx[0].pos = pos1;
-	pVtx[1].pos = pos2;
-	pVtx[2].pos = pos3;
-	pVtx[3].pos = pos4;
-
-	//頂点バッファをアンロック
-	m_pVtxBuff->Unlock();
-
+	m_Size.y = Hight;
+	//CScene2D::Update();
 }
 
 //=============================================================================
-// 2点の色変更
+// ポリゴン情報セット(Whidth)
 //=============================================================================
-void CScene2D::SecondColorChange(D3DCOLORVALUE color, D3DCOLORVALUE Secondcolor)
+void CScene2D::SetWhidth(float Whidth)
 {
-	VERTEX_2D*pVtx;//頂点情報へのポインタ
-
-				   //頂点バッファをロックし、頂点データへのポインタを取得
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	//頂点の色
-	pVtx[0].col = D3DCOLOR_RGBA((int)color.r, (int)color.g, (int)color.b, (int)color.a);
-	pVtx[1].col = D3DCOLOR_RGBA((int)color.r, (int)color.g, (int)color.b, (int)color.a);
-	pVtx[2].col = D3DCOLOR_RGBA((int)Secondcolor.r, (int)Secondcolor.g, (int)Secondcolor.b, (int)Secondcolor.a);
-	pVtx[3].col = D3DCOLOR_RGBA((int)Secondcolor.r, (int)Secondcolor.g, (int)Secondcolor.b, (int)Secondcolor.a);
-
-	//頂点バッファをアンロック
-	m_pVtxBuff->Unlock();
-
+	m_Size.x = Whidth;
+	//CScene2D::Update();
 }

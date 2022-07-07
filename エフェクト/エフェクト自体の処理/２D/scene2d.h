@@ -48,19 +48,18 @@ public:
 
 	float GetHight() { return  m_Size.y; }			//pos更新するためにゲット
 	float GetWhidth() { return  m_Size.x; }			//pos更新するためにゲッ
+	void SetHight(float Hight);		//大きさ更新
+	void SetWhidth(float Whidth);	//大きさ更新
 
 	void ColorChange(D3DCOLORVALUE color);	//カラー変更
 
 	void FadeColorChange(int Alpha);		//フェード用α変更
 
-	void SetTexAnim(D3DXVECTOR2 TexPattern, D3DXVECTOR2 TexAnimSize);						//テクスチャパターン番号、パターン１つのサイズ
-	void TexMove(D3DXVECTOR2 MoveTex);				//テクスチャ座標の更新
+	void SetTex(int Texpos, float TexSize);						//テクスチャパターン番号、パターン１つのサイズ
+	void TexMove(float TexMoveU, float TexMoveV);				//テクスチャ座標の更新
 
 	void SetGaugeScele(float Whidth, float Hight);				//ゲージタイプのスケール変更
 	void SetRotate(D3DXVECTOR3 pos, float Rotate, float Rotate2, float Vectol);			//回転
-
-	void SetfleeSizePos(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3, D3DXVECTOR3 pos4);	//自由な座標指定
-	void SecondColorChange(D3DCOLORVALUE color, D3DCOLORVALUE Secondcolor);	//２点変更
 
 protected:
 	D3DXVECTOR3 m_pos;

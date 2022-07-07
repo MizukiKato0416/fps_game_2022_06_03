@@ -10,15 +10,7 @@
 class CMouseTracking : public CEffect
 {
 public:
-	typedef enum
-	{
-		SHAPE_SQUARE,
-		SHAPE_FREE,
-		SHAPE_MAX,
-	} SHAPE_TYPE;
-
-
-	CMouseTracking(PRIORITY priorty = PRIORITY::EFFECT2D);
+	CMouseTracking(PRIORITY priorty = PRIORITY::EFFECT3D);
 	~CMouseTracking();
 
 	HRESULT Init(D3DXVECTOR3 pos,
@@ -34,12 +26,7 @@ public:
 		int Synthetic,
 		int Distance,
 		D3DXVECTOR3 Playerpos,
-		D3DXVECTOR3 rot,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern);
+		D3DXVECTOR3 rot);
 
 	void Uninit();
 	void Update();
@@ -58,25 +45,19 @@ public:
 		int Synthetic,
 		int Distance,
 		D3DXVECTOR3 Playerpos,
-		D3DXVECTOR3 rot,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern);
+		D3DXVECTOR3 rot);
 
 private:
-	D3DXVECTOR3 m_pos;
+
 	D3DXVECTOR2 m_move;
 	D3DXVECTOR3 m_Vec;
-	D3DXVECTOR3 m_Endpos;	//èoåªà íu
-	D3DXVECTOR3 m_PlayerPos;	//åªç›à íu
+	D3DXVECTOR3 m_Endpos;
+	D3DXVECTOR3 m_PlayerPos;
 	D3DXVECTOR3 m_SerectRot;
 
 	float m_fAngle;
 	float m_Vectl;
 	int m_UninitVectl;
-	float m_Distance;
 };
 
 #endif // !_MOUSETRACKING_H_

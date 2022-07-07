@@ -23,11 +23,13 @@
 //================================================
 //マクロ定義
 //================================================
-#define BULLET_MOVE_SPEED		(450.0f)		//軌道の速さ
-#define BULLET_SIZE_X			(200.0f)		//軌道のサイズ
-#define BULLET_SIZE_Y			(2.5f)			//軌道のサイズ
-#define BULLET_MAX_END_POS		(10000.0f)		//軌道の終点最大値
-#define BULLET_DAMAGE			(20)			//ダメージ
+#define BULLET_MOVE_SPEED			(450.0f)		//軌道の速さ
+#define BULLET_SIZE_X				(200.0f)		//軌道のサイズ
+#define BULLET_SIZE_Y				(2.5f)			//軌道のサイズ
+#define BULLET_MAX_END_POS			(10000.0f)		//軌道の終点最大値
+#define BULLET_DAMAGE				(20)			//ダメージ
+#define BULLET_PLAYER_COL_SIZE_Y	(90.0f)			//当たり判定サイズ調整値
+#define BULLET_PLAYER_COL_RADIUS	(28.0f)			//当たり判定半径
 
 //================================================
 //静的メンバ変数宣言
@@ -126,45 +128,42 @@ HRESULT CBullet::Init(void)
 		//オブジェクトの種類がモデルだったら
 		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL)
 		{
-			if (object[nCnt]->GetObjType() == CObject::OBJTYPE::MODEL)
+			//modelSingleにキャスト
+			CModelSingle *pModel = (CModelSingle*)object[nCnt];
+
+			if (pModel->GetColl() == true)
 			{
-				//modelSingleにキャスト
-				CModelSingle *pModel = (CModelSingle*)object[nCnt];
+				D3DXMATRIX modelInvMtx;
+				D3DXMATRIX modelMtx = pModel->GetModel()->GetMtx();
+				D3DXMatrixIdentity(&modelInvMtx);
+				D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
 
-				if (pModel->GetColl() == true)
+				D3DXVECTOR3 posV = posCameraV;
+
+				D3DXVECTOR3 endPos = posV + m_rayVec;
+				D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
+				D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
+
+				D3DXVECTOR3 vec = endPos - posV;
+
+				//レイとメッシュの当たり判定
+				if (D3DXIntersect(pModel->GetModel()->GetMesh(), &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
 				{
-					D3DXMATRIX modelInvMtx;
-					D3DXMATRIX modelMtx = pModel->GetModel()->GetMtx();
-					D3DXMatrixIdentity(&modelInvMtx);
-					D3DXMatrixInverse(&modelInvMtx, NULL, &modelMtx);
-
-					D3DXVECTOR3 posV = posCameraV;
-
-					D3DXVECTOR3 endPos = posV + m_rayVec;
-					D3DXVec3TransformCoord(&posV, &posV, &modelInvMtx);
-					D3DXVec3TransformCoord(&endPos, &endPos, &modelInvMtx);
-
-					D3DXVECTOR3 vec = endPos - posV;
-
-					//レイとメッシュの当たり判定
-					if (D3DXIntersect(pModel->GetModel()->GetMesh(), &posV, &vec, &bHit, NULL, NULL, NULL, &fDiffer, NULL, NULL) == D3D_OK)
+					//当たったとき
+					if (bHit)
 					{
-						//当たったとき
-						if (bHit)
+						if (m_fDiffer > fDiffer)
 						{
-							if (m_fDiffer > fDiffer)
-							{
-								//距離を保存
-								m_fDiffer = fDiffer;
-								//当たったオブジェクトを保存
-								pHitObject = object[nCnt];
-								//レイの方向を保存
-								rayVecHit = vec;
-								//カメラのローカル座標を保存
-								hitPosV = posV;
-								//モデルに当たっている状態にする
-								bHitModel = true;
-							}
+							//距離を保存
+							m_fDiffer = fDiffer;
+							//当たったオブジェクトを保存
+							pHitObject = object[nCnt];
+							//レイの方向を保存
+							rayVecHit = vec;
+							//カメラのローカル座標を保存
+							hitPosV = posV;
+							//モデルに当たっている状態にする
+							bHitModel = true;
 						}
 					}
 				}
@@ -229,11 +228,92 @@ HRESULT CBullet::Init(void)
 			//終点を設定
 			m_endPos = meshHitPos;
 			bHitModel = false;
+			//距離を保存
+			m_fDiffer = fMeshDiffer;
 		}
 		else
 		{
 			bCollMesh = false;
 		}
+	}
+
+	//初期化
+	object.clear();
+	bool bHitEnemy = false;
+	float fSaveDiffer = m_fDiffer;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::ENEMY));
+	nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+	{
+		//オブジェクトの種類が敵だったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::ENEMY)
+		{
+			//敵にキャスト
+			CEnemy *pEnemy = (CEnemy*)object[nCnt];
+
+			//マトリックス取得
+			D3DXMATRIX enemyMtx = pEnemy->GetMtx();
+
+			//当たった位置保存用変数
+			D3DXVECTOR3 hitPos = { 0.0f, 0.0f, 0.0f };
+			D3DXVECTOR3 endPos = { 0.0f, 0.0f, 0.0f };
+
+			// レイとカプセルの当たり判定
+			if (calcRayCapsule(posCameraV.x, posCameraV.y, posCameraV.z,
+				m_rayVec.x, m_rayVec.y, m_rayVec.z,
+				enemyMtx._41, enemyMtx._42, enemyMtx._43,
+				enemyMtx._41, enemyMtx._42 + BULLET_PLAYER_COL_SIZE_Y, enemyMtx._43,
+				BULLET_PLAYER_COL_RADIUS,
+				hitPos.x, hitPos.y, hitPos.z,
+				endPos.x, endPos.y, endPos.z))
+			{
+				D3DXVECTOR3 hitVec = hitPos - posCameraV;
+				// ベクトルを正規化
+				D3DXVec3Normalize(&hitVec, &hitVec);
+
+
+				if ((m_rayVec.x > 0.0f && hitVec.x < 0.0f || m_rayVec.x < 0.0f && hitVec.x > 0.0f) &&
+					(m_rayVec.y > 0.0f && hitVec.y < 0.0f || m_rayVec.y < 0.0f && hitVec.y > 0.0f) &&
+					(m_rayVec.z > 0.0f && hitVec.z < 0.0f || m_rayVec.z < 0.0f && hitVec.z > 0.0f))
+				{
+					//当たっていない
+				}
+				else
+				{//当たってる
+					// 当たった場所までの距離を算出
+					D3DXVECTOR3 differVec = hitPos - posCameraV;
+					fDiffer = D3DXVec3Length(&differVec);
+
+					if (fSaveDiffer > fDiffer)
+					{
+						// 距離を保存
+						fSaveDiffer = fDiffer;
+						// 当たった
+						bHitEnemy = true;
+					}
+				}
+			}
+		}
+	}
+
+	//当たったオブジェクトによってエフェクトを出す
+	if (!bCollMesh && bHitModel && !bHitEnemy)
+	{//モデルに当たったら
+		//当たった位置にエフェクトを出す
+		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
+		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
+		//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
+		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
+		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	}
+	else if (bCollMesh && !bHitModel && !bHitEnemy)
+	{//メッシュフィールドに当たったら
+		//当たった位置にエフェクトを出す
+		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
+		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
 	}
 
 	//弾の軌道エフェクトを生成
@@ -314,3 +394,4 @@ CBullet *CBullet::Create(void)
 	}
 	return pBullet;
 }
+

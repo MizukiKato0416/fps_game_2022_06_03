@@ -36,14 +36,9 @@ HRESULT CRotate::Init(D3DXVECTOR3 pos,
 	int nLife,
 	int nType,
 	float AddRotate,
-	int Synthetic,
-	D3DXVECTOR2 TexNum,
-	D3DXVECTOR2 TexMove,
-	int nAnimCounter,
-	D3DXVECTOR2 nSplit,
-	ANIMPATTERN AnimPattern)
+	int Synthetic)
 {
-	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, Synthetic, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
+	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType,Synthetic);
 	m_Size = Size;
 	m_MinSize = MinSize;
 	m_Angle = 0;
@@ -69,14 +64,9 @@ void CRotate::Update()
 {
 	D3DXVECTOR3 pos = GetPosition();
 	m_Vectl = sqrtf(m_Size.x * m_Size.x + m_Size.y * m_Size.y);
-	m_Size += m_MinSize;
-
 	pos += D3DXVECTOR3(m_move.x, m_move.y, 0.0f);
 	m_Angle += m_AddAngle;
 	CScene2D::SetRotate(pos, m_Angle, -m_Angle, m_Vectl);
-
-	ColorChange(m_Color);
-
 
 
 	CEffect::Update();
@@ -102,12 +92,7 @@ CRotate *CRotate::Create(D3DXVECTOR3 pos,
 	int nLife,
 	int nType,
 	float AddRotate,
-	int Synthetic,
-	D3DXVECTOR2 TexNum,
-	D3DXVECTOR2 TexMove,
-	int nAnimCounter,
-	D3DXVECTOR2 nSplit,
-	ANIMPATTERN AnimPattern)
+	int Synthetic)
 {
 	CRotate *pRotate = NULL;
 	pRotate = new CRotate(CManager::PRIORITY_EFFECT);		//ÉÅÉÇÉäämï€
