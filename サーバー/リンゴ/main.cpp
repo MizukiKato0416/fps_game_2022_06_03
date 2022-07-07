@@ -272,8 +272,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										// ‹——£‚ğ•Û‘¶
 										save_differ = differ;
 
-										// “G‚Ì”Ô†•Û‘¶
+										//ƒ_ƒ[ƒW‚ğ•Û‘¶
 										data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
+										// “G‚Ì”Ô†•Û‘¶
 										save_hit_enemy = cout_enemy;
 
 										// “–‚½‚Á‚½

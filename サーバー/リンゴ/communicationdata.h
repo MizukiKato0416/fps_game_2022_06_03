@@ -17,7 +17,7 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (3)
+#define MAX_PLAYER (1)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (512)
@@ -61,7 +61,7 @@ public:
 		D3DXMATRIX ModelMatrix;	// モデルのマトリックス
 		int nNumber;	// プレイヤーのインデックス
 		int nFrameCount;	// フレームカウント
-		int nHitDamage;;	// ダメージ
+		int nHitDamage;	// ダメージ
 		int nNumShot;	//何発撃ったか
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
@@ -69,7 +69,6 @@ public:
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 
-	bool bUse;	// 使ってるかどうか
 	typedef struct
 	{
 		D3DXVECTOR3 hitPos;	//当てた場所
