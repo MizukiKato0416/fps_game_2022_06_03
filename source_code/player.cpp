@@ -69,6 +69,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_pCloss = nullptr;
 	m_nLife = 0;
 	m_pCollModel = nullptr;
+	m_bShot = false;
 }
 
 //================================================
@@ -99,6 +100,7 @@ HRESULT CPlayer::Init(void)
 	m_nCounter = 0;
 	m_bAds = false;
 	m_nLife = PLAYER_LIFE;
+	m_bShot = false;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
@@ -117,7 +119,7 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 
 	//当たり判定ボックスの生成
-	m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
+	//m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -167,8 +169,6 @@ void CPlayer::Uninit(void)
 //================================================
 void CPlayer::Update(void)
 {
-	//敵から受け取ったデータについての処理
-	RecvEnemyData();
 	char Send[MAX_COMMU_DATA];
 
 	CSound *sound;
@@ -362,26 +362,15 @@ void CPlayer::Update(void)
 	//ADS処理
 	ADS();
 
-	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
-	{
-		if (pData->Player.bHit == true)
-		{
-			m_pos = { 0.0f, 1000.0f, 0.0f };
-			SetPos(m_pos);
-			pData->Player.bHit = false;
-			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
-		}
-	}
-
-	LPD3DXMESH buf = m_pCollModel->GetModel()->GetMesh();
+	//当たったかどうか
+	HitBullet();
 
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pData->Player.CamV = posCameraV;
 	pData->Player.CamR = posCameraR;
-	pData->Player.Mesh = buf;
-	pData->Player.ModelMatrix = m_pCollModel->GetModel()->GetMtx();
+	pData->Player.ModelMatrix = m_mtxWorld;
 
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
@@ -399,8 +388,8 @@ void CPlayer::Update(void)
 void CPlayer::Draw(void)
 {
 	//親子関係をつける
-	m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
-	m_pCollModel->GetModel()->SetObjParent(true);
+	//m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
+	//m_pCollModel->GetModel()->SetObjParent(true);
 }
 
 //================================================
@@ -666,24 +655,33 @@ void CPlayer::Shot(void)
 		//カウンターを減算
 		m_nCounter--;
 
-		//0より小さくなったら
-		if (m_nCounter < 0)
+		//撃っている状態なら
+		if (m_bShot == true)
 		{
-			//既定の値にする
-			m_nCounter = PLAYER_SHOT_COUNTER;
-
 			m_pGunModel->GetModel()->GetModel()->SetMtx();
 			//オフセット位置設定
-			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43};
+			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
 
 			//マズルフラッシュエフェクトの生成
 			CPresetEffect::SetEffect3D(0, pos, {}, {});
 			CPresetEffect::SetEffect3D(1, pos, {}, {});
 
 			CBullet *pBullet;	// 弾のポインタ
-
 			//弾の生成
 			pBullet = CBullet::Create();
+
+			//撃っていない状態にする
+			m_bShot = false;
+		}
+
+		//0より小さくなったら
+		if (m_nCounter < 0)
+		{
+			//既定の値にする
+			m_nCounter = PLAYER_SHOT_COUNTER;
+
+			//撃ってる状態にする
+			m_bShot = true;
 		}
 	}
 	else
@@ -804,32 +802,73 @@ void CPlayer::Chest(void)
 }
 
 //================================================
-//敵のデータ取得処理
+//被弾処理
 //================================================
-void CPlayer::RecvEnemyData(void)
+void CPlayer::HitBullet(void)
 {
-	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-	int EnemySize = EnemyData.size();
-
-	for (int nCnt = 0; nCnt < EnemySize; nCnt++)
+	//通信したデータ取得
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+	//プレイヤーに送られていたら
+	if (pData->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
 	{
-		//サーバーから敵に送られてきた情報を取得
-		CCommunicationData::COMMUNICATION_DATA *pData = EnemyData[nCnt].GetCmmuData();
-
-		// 弾を使ってたら且つ弾が当たったプレイヤー番号が自身と一致していたら
-		if (pData->Bullet.bUse == true && pData->Bullet.nCollEnemy == CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData()->Player.nNumber)
+		//弾が自分に当たっていたら
+		if (pData->Player.bHit == true)
 		{
 			//ライフを減らす
-			m_nLife -= pData->Bullet.nDamage;
-
+			m_nLife -= pData->Player.nHitDamage;
 			//ライフが0になったら
 			if (m_nLife <= 0)
 			{
-				//消す
-				m_pos = { 0.0f, 0.0f, 0.0f };
+				//リスポーン
+				m_pos = { 0.0f, 1000.0f, 0.0f };
 				SetPos(m_pos);
+				m_nLife = PLAYER_LIFE;
+			}
+			//自分に与えられるダメージを0にリセット
+			pData->Player.nHitDamage = 0;
+			//当たっていない状態にする
+			pData->Player.bHit = false;
+			//敵に送る状態にする
+			pData->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+		}
+
+		//弾の数分まわす
+		for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
+		{
+			//当たった場所を取得
+			D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
+
+			//当たったオブジェクトによって処理分け
+			switch (pData->Player.type[nCntBullet])
+			{
+			case CCommunicationData::HIT_TYPE::NONE:		//当たっていないなら
+				continue;
+				break;
+			case CCommunicationData::HIT_TYPE::MESHFIELD:	//メッシュフィールドにあてたなら
+				//当たった位置にエフェクトを出す
+				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+				break;
+			case CCommunicationData::HIT_TYPE::MODEL:		//モデルにあてたなら
+				//モデルの当たった位置にエフェクトを出す
+				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+				//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
+				CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
+				CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				break;
+			case CCommunicationData::HIT_TYPE::ENEMY:		//敵にあてたなら
+				//当たった位置にエフェクトを出す
+				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
+				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+				break;
+			default:
+				break;
 			}
 		}
+
+		//弾の撃った数を0にする
+		pData->Player.nNumShot = 0;
 	}
 }
 

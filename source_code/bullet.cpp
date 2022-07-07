@@ -85,9 +85,8 @@ HRESULT CBullet::Init(void)
 	//カメラのローカル座標
 	D3DXVECTOR3 hitPosV = { 0.0f, 0.0f, 0.0f };
 	//モデルにあたったかどうか
-	bool bHitAny = false;
-	//敵にあたったかどうか
-	bool bHitEnemy = false;
+	bool bHitModel = false;
+	m_nDamage = BULLET_DAMAGE;
 
 	//cameraのポインタ配列1番目のアドレス取得
 	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
@@ -163,7 +162,8 @@ HRESULT CBullet::Init(void)
 								rayVecHit = vec;
 								//カメラのローカル座標を保存
 								hitPosV = posV;
-								bHitAny = true;
+								//モデルに当たっている状態にする
+								bHitModel = true;
 							}
 						}
 					}
@@ -196,11 +196,8 @@ HRESULT CBullet::Init(void)
 	D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
 
-
-
-
-	//モデルと当たっていて敵に当たっていないとき
-	if (bHitAny)
+	//モデルと当たっているとき
+	if (bHitModel)
 	{
 		//modelSingleにキャスト
 		CModelSingle *pHitModel = (CModelSingle*)pHitObject;
@@ -218,28 +215,6 @@ HRESULT CBullet::Init(void)
 		m_endPos = HitPos;
 	}
 
-	//敵に当たったら
-	if (bHitEnemy)
-	{
-		//modelSingleにキャスト
-		CModelCollision *pHitModel = (CModelCollision*)pHitObject;
-
-		D3DXVec3Normalize(&rayVecHit, &rayVecHit);
-		//レイのベクトルを算出した距離の分伸ばす
-		rayVecHit *= m_fDiffer;
-
-		//カメラの位置から伸ばしたベクトルを足して当たった位置を算出
-		D3DXVECTOR3 HitPos = hitPosV + rayVecHit;
-		D3DXMATRIX hitModelMtx = pHitModel->GetModel()->GetMtx();
-		D3DXVec3TransformCoord(&HitPos, &HitPos, &hitModelMtx);
-
-		//ダメージを設定
-		m_nDamage = BULLET_DAMAGE;
-
-		//終点を設定
-		m_endPos = HitPos;
-	}
-
 	float fMeshDiffer = 0.0f;
 	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
 
@@ -248,39 +223,17 @@ HRESULT CBullet::Init(void)
 	//メッシュフィールドに当たったら
 	if (bCollMesh)
 	{
-		//当たったメッシュフィールドまでの距離がモデルの距離より遠いとき
-		if (fMeshDiffer > m_fDiffer)
-		{
-			//モデルの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
-			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
-			//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
-			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
-			CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		}
-		else
+		//当たったメッシュフィールドまでの距離がモデルの距離より近い時
+		if (fMeshDiffer < m_fDiffer)
 		{
 			//終点を設定
 			m_endPos = meshHitPos;
-			//メッシュフィールドの当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
-			CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
+			bHitModel = false;
 		}
-	}
-	else if(!bCollMesh && bHitAny)
-	{//モデルに当たったら
-		//モデルの当たった位置にエフェクトを出す
-		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
-		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
-		//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
-		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
-		CPresetEffect::SetEffect3D(4, m_endPos, {}, D3DXVECTOR3(0.0f, 0.0f , 0.0f));
-	}
-	else if (!bCollMesh && bHitEnemy)
-	{//敵に当たったら
-		//モデルの当たった位置にエフェクトを出す
-		CPresetEffect::SetEffect3D(2, m_endPos, {}, {});
-		CPresetEffect::SetEffect3D(3, m_endPos, {}, {});
+		else
+		{
+			bCollMesh = false;
+		}
 	}
 
 	//弾の軌道エフェクトを生成
@@ -289,8 +242,25 @@ HRESULT CBullet::Init(void)
 	//通信データに情報を突っ込む
 	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
+	if(!bCollMesh && bHitModel)
+	{//モデルに当たったら
+		//モデルに当たっている状態にする
+		pData->Bullet.type = CCommunicationData::HIT_TYPE::MODEL;
+	}
+	else if (bCollMesh && !bHitModel)
+	{//メッシュフィールドに当たったら
+		//メッシュフィールドに当たっている状態にする
+		pData->Bullet.type = CCommunicationData::HIT_TYPE::MESHFIELD;
+	}
+	else if (!bCollMesh && !bHitModel)
+	{//何にもあたっていなかったら
+		//何も当たっていない状態にする
+		pData->Bullet.type = CCommunicationData::HIT_TYPE::NONE;
+	}
+
 	// 情報を設定
-	pData->Bullet.nCollEnemy = m_nPlayer;
+	pData->Bullet.fDiffer = m_fDiffer;
+	pData->Bullet.hitPos = m_endPos;
 	pData->Bullet.nDamage = m_nDamage;
 	pData->Bullet.bUse = true;
 	pData->Ballistic.BigenPos = gunPos;
@@ -316,7 +286,7 @@ void CBullet::Uninit(void)
 //================================================
 void CBullet::Update(void)
 {
-
+	Uninit();
 }
 
 //================================================

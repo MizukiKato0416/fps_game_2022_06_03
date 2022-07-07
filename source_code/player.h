@@ -64,7 +64,7 @@ private:
 	void Shot(void);								//射撃処理
 	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
-	void RecvEnemyData(void);						//敵のデータ取得処理
+	void HitBullet(void);							//被弾処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -89,6 +89,7 @@ private:
 	CObject2D *m_pCloss;							//クロスヘア
 	int m_nLife;									//体力
 	CModelCollision *m_pCollModel;					//当たり判定のボックス
+	bool m_bShot;									//撃ったかどうか
 };
 
 #endif // !_PLAYER_H_

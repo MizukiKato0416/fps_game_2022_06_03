@@ -31,7 +31,7 @@ END_EFFECTSTATE2D
 #========================================================================
 EFFECTSTATE3D
 	PATTERN = 1				//動きのパターン
-	SIZE = 5.0						//大きさ
+	SIZE = 10.0						//大きさ
 	ADDSIZE = 0.0					//大きさ変動
 	DENSITY = 2						//密度
 	MOVE3D = 0.0 0.0 0.0					//移動
@@ -72,7 +72,7 @@ EFFECTSTATE3D
 	POS = 0.0 0.0 0.0			//出現位置
 	COLOR = 255 255 0 170			//カラー
 	CHANGECOLOR = 0 -25 0 -10			//カラー変動値
-	LIFE = 3						//ライフ
+	LIFE = 1						//ライフ
 	TEXTURE = trans.png						//テクスチャ
 	SYNTHETIC = 0						//合成
 	TEXMOVE = 0.000 0.000					//テクスチャ移動
