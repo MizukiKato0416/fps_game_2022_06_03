@@ -839,34 +839,13 @@ void CPlayer::HitBullet(void)
 			D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
 
 			//当たったオブジェクトによって処理分け
-			switch (pData->Player.type[nCntBullet])
+			if (pData->Player.type[nCntBullet] == CCommunicationData::HIT_TYPE::ENEMY)
 			{
-			case CCommunicationData::HIT_TYPE::NONE:		//当たっていないなら
-				continue;
-				break;
-			case CCommunicationData::HIT_TYPE::MESHFIELD:	//メッシュフィールドにあてたなら
 				//当たった位置にエフェクトを出す
 				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
 				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
-				break;
-			case CCommunicationData::HIT_TYPE::MODEL:		//モデルにあてたなら
-				//モデルの当たった位置にエフェクトを出す
-				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
-				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
-				//弾痕　　最後の引数に回転入れてください(Y軸部分のみ適応)
-				CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, D3DX_PI / 2.0f, D3DX_PI));
-				CPresetEffect::SetEffect3D(4, hitPos, {}, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				break;
-			case CCommunicationData::HIT_TYPE::ENEMY:		//敵にあてたなら
-				//当たった位置にエフェクトを出す
-				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
-				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
-				break;
-			default:
-				break;
 			}
 		}
-
 		//弾の撃った数を0にする
 		pData->Player.nNumShot = 0;
 	}

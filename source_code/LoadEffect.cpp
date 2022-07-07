@@ -215,61 +215,6 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 					fscanf(pFile, "%s", &aFile[0]);
 					fscanf(pFile, "%d", &Distance);
 				}
-				if (strcmp(&aFile[0], "TYPE") == 0)	//タイプ
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &nType);
-				}
-				if (strcmp(&aFile[0], "HIGTH") == 0)	//高さ
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f", &fHigth);
-				}
-				if (strcmp(&aFile[0], "PARTICLESIZE") == 0)	//最大の大きさ
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f", &ParticleSize);
-				}
-				if (strcmp(&aFile[0], "SECONDCOLOR") == 0)	//２番カラー
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f %f %f %f", &Secondcol.r, &Secondcol.g, &Secondcol.b, &Secondcol.a);
-				}
-				if (strcmp(&aFile[0], "SECONDADDCOLOR") == 0)	//２番カラー変動
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f %f %f %f", &SecondChangeColor.r, &SecondChangeColor.g, &SecondChangeColor.b, &SecondChangeColor.a);
-				}
-				if (strcmp(&aFile[0], "TEXMOVE") == 0)	//テクスチャ移動量
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f %f", &TexMove.x, &TexMove.y);
-				}
-				if (strcmp(&aFile[0], "TEXNUM") == 0)	//テクスチャ移動量
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f", &TexNum);
-				}
-				if (strcmp(&aFile[0], "TEXSPLIT") == 0)	//テクスチャ移動量
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f %f", &TexSplit.x, &TexSplit.y);
-				}
-				if (strcmp(&aFile[0], "TEXANIMCOUNT") == 0)	//頂点数
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &nAnimCont);
-				}
-				if (strcmp(&aFile[0], "HIGTH") == 0)	//高さ
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%f", &fHigth);
-				}
-				if (strcmp(&aFile[0], "ANIMPATTERNTYPE") == 0)	//アニメーションパターンタイプ
-				{
-					fscanf(pFile, "%s", &aFile[0]);
-					fscanf(pFile, "%d", &AnimPatternType);
-				}
 
 			}
 
@@ -533,9 +478,7 @@ void CLoadEffect::EffectStateLoad(const char *aFileName)
 			{
 				bEffectState2D = false;
 				CPresetEffect::SetEffectState2D(nPattern, pos, fRotate, move, Addmove, Diffusion, Destroyvec, fSize, fAddSize, col, ChangeColor, nLife, Density,
-					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture, (float)Distance,
-					TexMove, TexNum, AnimPatternType, TexSplit,
-					nAnimCont, nType, fHigth, ParticleSize, Secondcol, SecondChangeColor);
+					(bool)bRandColR, (bool)bRandColG, (bool)bRandColB, bMousePos, nSynthetic, nTexture, (float)Distance);
 			}
 
 			//3Dエフェクト情報セット

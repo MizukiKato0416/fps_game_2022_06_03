@@ -37,23 +37,19 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	int Synthetic,
 	int Distance,
 	D3DXVECTOR3 Playerpos,
-	D3DXVECTOR3 rot,
-	D3DXVECTOR2 TexNum,
-	D3DXVECTOR2 TexMove,
-	int nAnimCounter,
-	D3DXVECTOR2 nSplit,
-	ANIMPATTERN AnimPattern)
+	D3DXVECTOR3 rot)
 {
 
-	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, Synthetic, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
+	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, Synthetic);
 	m_Endpos = pos;
-	m_PlayerPos = Playerpos;
-	m_Vec = pos - Endpos;
+	m_Vec = Playerpos - Endpos;
 	m_move = move;
+	m_PlayerPos = Playerpos;
 
 	m_UninitVectl = UninitVectl;
 	m_SerectRot = rot;
-	//randÇ≈éÄÇ Ç©ÇÁç≈í·ï€è·
+
+	//ç≈í·ï€è·
 	int Lowest = Diffusion;
 	if (Lowest <= 0)
 	{
@@ -62,13 +58,13 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 
 	float randAngle = float(rand() % Lowest) - float(rand() % Lowest);
 	randAngle /= 100.0f;
-	m_Distance = Distance;
+
 	m_fAngle = (float)atan2(m_Vec.x, m_Vec.y);		//äpìx
 
 	m_fAngle += randAngle;
-	m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * m_Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * m_Distance, 0.0f);
-	SetPosition(m_pos);
+	m_pos = D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
+
 	return S_OK;
 }
 
@@ -86,13 +82,7 @@ void CMouseTracking::Uninit()
 void CMouseTracking::Update()
 {
 
-	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Distance += m_move.x;
-
-	pos += D3DXVECTOR3(m_pos.x + sinf(-m_fAngle + m_SerectRot.y) * m_Distance, m_pos.y + cosf(-m_fAngle + m_SerectRot.y) * m_Distance, 0.0f);
-	m_Size += m_MinSize;
-
-	m_Vec = pos - m_Endpos;
+	m_Vec = m_PlayerPos - m_Endpos;
 
 	m_Vectl = sqrtf(m_Vec.x * m_Vec.x + m_Vec.y *  m_Vec.y);
 
@@ -101,9 +91,11 @@ void CMouseTracking::Update()
 		m_bUninit = true;
 	}
 
+	//m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 
-	CScene2D::SetRotate(pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
-	ColorChange(m_Color);
+
+	SetPosition(m_pos);
+	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
 
 	CEffect::Update();
 

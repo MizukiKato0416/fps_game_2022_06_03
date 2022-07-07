@@ -19,6 +19,8 @@
 // マクロ定義
 //------------------------
 #define TIME_OUT (50)	// タイムアウト
+#define PLAYER_COL_SIZE_Y (90.0f)		//当たり判定サイズ調整値
+#define PLAYER_COL_RADIUS (28.0f)		//当たり判定半径
 
 //------------------------
 // グローバル変数
@@ -243,8 +245,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							if (calcRayCapsule(	posV.x, posV.y, posV.z,
 												ray_vec.x, ray_vec.y, ray_vec.z,
 												modelMtx._41, modelMtx._42, modelMtx._43,
-												modelMtx._41, modelMtx._42 + 90.0f, modelMtx._43,
-												28.0f,
+												modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
+												PLAYER_COL_RADIUS,
 												HitPos.x, HitPos.y, HitPos.z,
 												EndPos.x, EndPos.y, EndPos.z))
 							{
@@ -284,7 +286,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										//プレイヤーに当たった状態にする
 										data[cout_enemy]->Player.bHit = true;
 										//当たったオブジェクトを敵に設定する
-										data[cout_enemy]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
+										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
 										//当たった敵をプレイヤーにデータを送信する状態にする
 										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 									}

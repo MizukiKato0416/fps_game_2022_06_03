@@ -17,11 +17,11 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (1)
+#define MAX_PLAYER (3)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (512)
-#define SEND_COUNTER (10)
+#define SEND_COUNTER (6)
 
 //-------------------------------
 // Classの定義

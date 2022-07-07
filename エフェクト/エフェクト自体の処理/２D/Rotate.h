@@ -20,14 +20,9 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		string nType,
+		int nType,
 		float AddRotate,
-		int Synthetic,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern);
+		int Synthetic);
 
 	void Uninit();
 	void Update();
@@ -40,19 +35,9 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		string nType,
+		int nType,
 		float AddRotate,
-		int Synthetic,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern,
-		D3DXVECTOR2 TexNum,
-		D3DXVECTOR2 TexMove,
-		int nAnimCounter,
-		D3DXVECTOR2 nSplit,
-		ANIMPATTERN AnimPattern);
+		int Synthetic);
 private:
 	D3DXVECTOR2 m_move;
 	float m_Angle;			//Šp“x

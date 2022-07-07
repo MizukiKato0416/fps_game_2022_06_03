@@ -180,38 +180,24 @@ void CGame01::FirstContact(void)
 
 	if (pClient->GetConnect() == true)
 	{
-		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
-		vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-		CCommunicationData::COMMUNICATION_DATA *EnemyDataBuf0 = EnemyData[0].GetCmmuData();
-		CCommunicationData::COMMUNICATION_DATA *EnemyDataBuf1 = EnemyData[1].GetCmmuData();
-		CCommunicationData::COMMUNICATION_DATA *EnemyDataBuf2 = EnemyData[2].GetCmmuData();
-
-		while (true)
+		CCommunicationData::COMMUNICATION_DATA *DataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+		switch (DataBuf->Player.nNumber)
 		{
-			if (PlayerDataBuf->bConnect == true &&
-				EnemyDataBuf0->bConnect == true &&
-				EnemyDataBuf1->bConnect == true &&
-				EnemyDataBuf2->bConnect == true)
-			{
-				switch (PlayerDataBuf->Player.nNumber)
-				{
-				case 1:
-					m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-					break;
-				case 2:
-					m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-					break;
-				case 3:
-					m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-					break;
-				case 4:
-					m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-					break;
-				default:
-					break;
-				}
-				break;
-			}
+		case 1:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
+		case 2:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
+		case 3:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
+		case 4:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
+		default:
+			m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			break;
 		}
 	}
 	else
