@@ -280,13 +280,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										//当たった場所を保存
 										data[cout_player]->Player.HitPos[count_bullet] = HitPos;
 										//プレイヤーにデータを送信する状態にする
-										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 										//プレイヤーに当たった状態にする
 										data[cout_enemy]->Player.bHit = true;
 										//当たったオブジェクトを敵に設定する
 										data[cout_enemy]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
 										//当たった敵をプレイヤーにデータを送信する状態にする
-										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 									}
 								}
 							}
@@ -303,12 +303,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				// 当たってなかつたら
 				if (data[cout_player]->Player.bHit != true && nCntBullet == cout_bullet)
 				{
-					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY;
+					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 				}
 				else
 				{
 					//プレイヤーにデータを送信する状態にする
-					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 					//弾の数を保存
 					data[cout_player]->Player.nNumShot = cout_bullet;
 				}
@@ -325,9 +325,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 
 					// sendする
 					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					//弾の数を0にする
-					data[count_player]->Player.nNumShot = 0;
 				}
 				// 敵にsendoする
 				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
