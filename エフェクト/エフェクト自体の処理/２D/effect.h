@@ -45,6 +45,8 @@ protected:
 	bool m_bUninit;
 	int m_nLife;
 	D3DXVECTOR2 m_MinSize;		//大きさ変動
+	D3DXVECTOR2 m_Size;			//大きさ
+
 	ANIMPATTERN m_AnimPattern;	//アニメーションパターンの動き
 
 	//カラー値
