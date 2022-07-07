@@ -122,8 +122,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		data[count_playr]->Player.nNumber = count_playr + 1;
 		data[count_playr]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 		data[count_playr]->bConnect = true;
-		memcpy(&send_data[0], data[count_playr], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		communication[count_playr]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+	}
+
+	// 初期化データの送信
+	for (int nCnt = 0; nCnt < MAX_PLAYER + 1; nCnt++)
+	{
+		memcpy(&send_data[0], data[nCnt], sizeof(CCommunicationData::COMMUNICATION_DATA));
+		communication[nCnt]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	}
 
 	// ソケットの入手
