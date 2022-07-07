@@ -48,38 +48,40 @@ public:
 
 	float GetHight() { return  m_Size.y; }			//pos更新するためにゲット
 	float GetWhidth() { return  m_Size.x; }			//pos更新するためにゲッ
-	void SetHight(float Hight);		//大きさ更新
-	void SetWhidth(float Whidth);	//大きさ更新
 
 	void ColorChange(D3DCOLORVALUE color);	//カラー変更
 
 	void FadeColorChange(int Alpha);		//フェード用α変更
 
-	void SetTex(int Texpos, float TexSize);						//テクスチャパターン番号、パターン１つのサイズ
-	void TexMove(float TexMoveU, float TexMoveV);				//テクスチャ座標の更新
+	void SetTexAnim(D3DXVECTOR2 TexPattern, D3DXVECTOR2 TexAnimSize);						//テクスチャパターン番号、パターン１つのサイズ
+	void TexMove(D3DXVECTOR2 MoveTex);				//テクスチャ座標の更新
 
 	void SetGaugeScele(float Whidth, float Hight);				//ゲージタイプのスケール変更
 	void SetRotate(D3DXVECTOR3 pos, float Rotate, float Rotate2, float Vectol);			//回転
+	void SetfleeSizePos(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2, D3DXVECTOR3 pos3, D3DXVECTOR3 pos4);	//自由な座標指定
+	void SecondColorChange(D3DCOLORVALUE color, D3DCOLORVALUE Secondcolor);	//２点変更
 
 protected:
-	D3DXVECTOR3 m_pos;
-	string m_pTexture;					//種類
+	int m_nAnimCount;
+	int m_nSetAnimCnt;
+	D3DXVECTOR2 m_nSplit;
+	D3DXVECTOR2 m_MaxSplit;
+	D3DXVECTOR2 m_PatternSize;
+	D3DXVECTOR2 m_TexSize;				//テクスチャサイズ
+	D3DXVECTOR2 m_TexNum;
+	D3DXVECTOR2 m_Size;				//サイズ
+	D3DXVECTOR3 m_pos;				//位置
+	string m_pTexture;	//テクスチャのパス
 
 private:
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL;	//頂点バッファへのポインタ
 
-	D3DXVECTOR2 m_Size;				//サイズ
+	D3DXVECTOR2 m_TexMove;
 
+	int m_nType;					//種類
 
 	int m_Texpos;					//テクスチャ座標
-	float m_TexSize;				//テクスチャサイズ
-
-	float m_TexMoveU;				//テクスチャ移動値
-	float m_TexMoveV;				//テクスチャ移動値
-
-	float m_PosTexU;				//テクスチャU座標
-	float m_PosTexV;				//テクスチャV座標
 
 									//カラー値
 };

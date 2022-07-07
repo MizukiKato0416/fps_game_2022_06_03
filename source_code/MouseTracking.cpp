@@ -37,10 +37,17 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 	int Synthetic,
 	int Distance,
 	D3DXVECTOR3 Playerpos,
-	D3DXVECTOR3 rot)
+	D3DXVECTOR3 rot,
+	D3DXVECTOR2 TexNum,
+	D3DXVECTOR2 TexMove,
+	int nAnimCounter,
+	D3DXVECTOR2 nSplit,
+	ANIMPATTERN AnimPattern)
 {
 
-	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, Synthetic);
+	CEffect::Init(pos,
+		color,
+		Mincolor, Size, MinSize, nLife, nType, Synthetic, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
 	m_Endpos = pos;
 	m_Vec = Playerpos - Endpos;
 	m_move = move;
@@ -58,6 +65,7 @@ HRESULT CMouseTracking::Init(D3DXVECTOR3 pos,
 
 	float randAngle = float(rand() % Lowest) - float(rand() % Lowest);
 	randAngle /= 100.0f;
+	m_Distance = Distance;
 
 	m_fAngle = (float)atan2(m_Vec.x, m_Vec.y);		//角度
 
@@ -81,8 +89,15 @@ void CMouseTracking::Uninit()
 //*****************************************************************************
 void CMouseTracking::Update()
 {
+	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	m_Vec = m_PlayerPos - m_Endpos;
+	m_Distance += m_move.x;
+
+	pos += D3DXVECTOR3(m_pos.x + sinf(-m_fAngle + m_SerectRot.y) * m_Distance, m_pos.y + cosf(-m_fAngle + m_SerectRot.y) * -m_Distance, 0.0f);
+	m_Size += m_MinSize;
+
+	m_Vec = pos - m_Endpos;
 
 	m_Vectl = sqrtf(m_Vec.x * m_Vec.x + m_Vec.y *  m_Vec.y);
 
@@ -91,11 +106,9 @@ void CMouseTracking::Update()
 		m_bUninit = true;
 	}
 
-	//m_pos += D3DXVECTOR3(pos.x + sinf(-m_fAngle + m_SerectRot.y) * Distance, pos.y + cosf(-m_fAngle + m_SerectRot.y) * Distance, 0.0f);
 
-
-	SetPosition(m_pos);
-	CScene2D::SetRotate(m_pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
+	CScene2D::SetRotate(pos, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, -m_fAngle + D3DX_PI / 4 + m_SerectRot.y, m_Size.x);
+	ColorChange(m_Color);
 
 	CEffect::Update();
 
@@ -125,14 +138,29 @@ CMouseTracking *CMouseTracking::Create(D3DXVECTOR3 pos,
 	int Synthetic,
 	int Distance,
 	D3DXVECTOR3 Playerpos,
-	D3DXVECTOR3 rot)
+	D3DXVECTOR3 rot,
+	D3DXVECTOR2 TexNum,
+	D3DXVECTOR2 TexMove,
+	int nAnimCounter,
+	D3DXVECTOR2 nSplit,
+	ANIMPATTERN AnimPattern)
 {
 	CMouseTracking *pMouseTracking = NULL;
 	pMouseTracking = new CMouseTracking(CObject::PRIORITY::EFFECT3D);		//メモリ確保
 										//NULLチェック
 	if (pMouseTracking != NULL)
 	{
-		pMouseTracking->Init(pos, move, color, Mincolor, Size, MinSize, nLife, nType, Endpos, Diffusion, UninitVectl, Synthetic, Distance, Playerpos, rot);
+		pMouseTracking->Init(pos,
+			move,
+			color,
+			Mincolor,
+			Size,
+			MinSize,
+			nLife, nType,
+			Endpos, Diffusion,
+			UninitVectl, Synthetic,
+			Distance, Playerpos, rot,
+			TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
 	}
 
 	return pMouseTracking;
