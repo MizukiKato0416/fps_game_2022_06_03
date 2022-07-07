@@ -265,14 +265,14 @@ void CEffect::Draw()
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
-	if (nSynthetic == 0)
+	if (m_nSynthetic == 0)
 	{
 		//‰ÁŽZ‡¬ŠÖŒW
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	}
-	else if (nSynthetic == 1)
+	else if (m_nSynthetic == 1)
 	{
 		//Œ¸ŽZ‡¬‚ÌÝ’è
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);

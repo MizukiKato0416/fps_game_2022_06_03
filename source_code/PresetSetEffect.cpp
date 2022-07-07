@@ -9,7 +9,7 @@
 #include "object.h"
 
 #include "MouseTracking.h"
-//#include "Movement.h"
+#include "Movement.h"
 //#include "Rotate.h"
 
 #include "Trajectory.h"
@@ -83,7 +83,17 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	bool bMousePos,
 	int Synthetic,
 	string Texture,
-	float Distance)
+	float Distance,
+	D3DXVECTOR2 m_TexMove,
+	D3DXVECTOR2 m_TexNum,
+	int AnimPatternType,
+	D3DXVECTOR2 TexSplit,
+	int AnimCnt,
+	int nType,
+	float fHigth,
+	float SecondSize,
+	D3DCOLORVALUE SecondCol,
+	D3DCOLORVALUE SecondChangecolor)
 {
 	m_EffectState2D[m_nEffectPattern2d].m_nPattern = nPattern;
 	m_EffectState2D[m_nEffectPattern2d].m_pos = pos;
@@ -105,6 +115,16 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	m_EffectState2D[m_nEffectPattern2d].Synthetic = Synthetic;
 	m_EffectState2D[m_nEffectPattern2d].nTexture = Texture;
 	m_EffectState2D[m_nEffectPattern2d].m_Distance = Distance;
+	m_EffectState2D[m_nEffectPattern2d].m_TexMove = m_TexMove;
+	m_EffectState2D[m_nEffectPattern2d].m_TexNum = m_TexNum;
+	m_EffectState2D[m_nEffectPattern2d].m_AnimPatternType = AnimPatternType;
+	m_EffectState2D[m_nEffectPattern2d].m_TexSplit = TexSplit;
+	m_EffectState2D[m_nEffectPattern2d].AnimCnt = AnimCnt;
+	m_EffectState2D[m_nEffectPattern2d].m_nType = nType;
+	m_EffectState2D[m_nEffectPattern2d].m_fHigth = fHigth;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondSize = SecondSize;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondCol = SecondCol;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondChangecolor = SecondChangecolor;
 
 	m_nEffectPattern2d++;
 }
@@ -226,39 +246,50 @@ void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 	switch (m_EffectState2D[nPattern].m_nPattern)
 	{
 	case(0):
-		//for (int nCnt = 0; nCnt < m_EffectState2D[nPattern].m_nDensity; nCnt++)
-		//{
-		//	//各色のランダム化
-		//	if (m_EffectState2D[nPattern].m_bColorRandR == true)
-		//	{
-		//		m_EffectState2D[nPattern].m_Col.r = RAND_COLOR;
-		//	}
-		//	if (m_EffectState2D[nPattern].m_bColorRandG == true)
-		//	{
-		//		m_EffectState2D[nPattern].m_Col.g = RAND_COLOR;
-		//	}
-		//	if (m_EffectState2D[nPattern].m_bColorRandB == true)
-		//	{
-		//		m_EffectState2D[nPattern].m_Col.b = RAND_COLOR;
-		//	}
+		for (int nCnt = 0; nCnt < m_EffectState2D[nPattern].m_nDensity; nCnt++)
+		{
+			//各色のランダム化
+			if (m_EffectState2D[nPattern].m_bColorRandR == true)
+			{
+				m_EffectState2D[nPattern].m_Col.r = RAND_COLOR;
+			}
+			if (m_EffectState2D[nPattern].m_bColorRandG == true)
+			{
+				m_EffectState2D[nPattern].m_Col.g = RAND_COLOR;
+			}
+			if (m_EffectState2D[nPattern].m_bColorRandB == true)
+			{
+				m_EffectState2D[nPattern].m_Col.b = RAND_COLOR;
+			}
 
 
-		//	//出現位置が自分の位置か
-		//	if (m_EffectState2D[nPattern].m_bMousePos == true)
-		//	{
-		//		m_EffectState2D[nPattern].m_pos = pos;
-		//	}
+			//出現位置が自分の位置か
+			if (m_EffectState2D[nPattern].m_bMousePos == true)
+			{
+				m_EffectState2D[nPattern].m_pos = pos;
+			}
 
-		//	CMovement::Create(m_EffectState2D[nPattern].m_pos,
-		//		m_EffectState2D[nPattern].m_move,
-		//		m_EffectState2D[nPattern].m_Col,
-		//		m_EffectState2D[nPattern].m_Changecolor,
-		//		D3DXVECTOR2(m_EffectState2D[nPattern].m_fSize, m_EffectState2D[nPattern].m_fSize),
-		//		D3DXVECTOR2(m_EffectState2D[nPattern].m_fAddSize, m_EffectState2D[nPattern].m_fAddSize),
-		//		m_EffectState2D[nPattern].m_nLife, m_EffectState2D[nPattern].nTexture,
-		//		m_EffectState2D[nPattern].m_Addmove,
-		//		m_EffectState2D[nPattern].Synthetic);
-		//}
+			CMovement::Create(m_EffectState2D[nPattern].m_pos,
+				m_EffectState2D[nPattern].m_move,
+				m_EffectState2D[nPattern].m_Col,
+				m_EffectState2D[nPattern].m_Changecolor,
+				D3DXVECTOR2(m_EffectState2D[nPattern].m_fSize, m_EffectState2D[nPattern].m_fSize),
+				D3DXVECTOR2(m_EffectState2D[nPattern].m_fAddSize, m_EffectState2D[nPattern].m_fAddSize),
+				m_EffectState2D[nPattern].m_nLife, m_EffectState2D[nPattern].nTexture,
+				m_EffectState2D[nPattern].m_Addmove,
+				m_EffectState2D[nPattern].Synthetic,
+				m_EffectState2D[nPattern].m_TexMove,
+				m_EffectState2D[nPattern].m_TexNum,
+				m_EffectState2D[nPattern].AnimCnt,
+				m_EffectState2D[nPattern].m_TexSplit,
+				(CEffect::ANIMPATTERN)m_EffectState2D[nPattern].m_AnimPatternType,
+				(CMovement::SHAPE_TYPE)m_EffectState2D[nPattern].m_nType,
+				m_EffectState2D[nPattern].m_fHigth,
+				m_EffectState2D[nPattern].m_Distance,
+				m_EffectState2D[nPattern].m_SecondSize,
+				m_EffectState2D[nPattern].m_SecondCol,
+				m_EffectState2D[nPattern].m_SecondChangecolor);
+		}
 		break;
 	case(1):
 		for (int nCnt = 0; nCnt < m_EffectState2D[nPattern].m_nDensity; nCnt++)
@@ -294,7 +325,12 @@ void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 			m_EffectState2D[nPattern].Synthetic,
 			m_EffectState2D[nPattern].m_Distance,
 			PlayerPos,
-			rot);
+			rot,
+			m_EffectState2D[nPattern].m_TexMove,
+			m_EffectState2D[nPattern].m_TexNum,
+			m_EffectState2D[nPattern].AnimCnt,
+			m_EffectState2D[nPattern].m_TexSplit,
+			(CEffect::ANIMPATTERN)m_EffectState2D[nPattern].m_AnimPatternType);
 			}
 		break;
 	case(2):
