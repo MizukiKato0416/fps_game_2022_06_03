@@ -174,7 +174,7 @@ EFFECTSTATE3D
 	THERDCOLOR = 0 255 255 255				//軌跡の色２
 	THERDADDCOLOR = 0 0 0 0				//軌跡の色２増減
 	MAXSIZE = 2.0						//軌跡サイズ
-	SECONDTEX = 3						//軌跡テクスチャ
+	SECONDTEX = trans.png						//軌跡テクスチャ
 	PARTICLETIME = 2						//軌跡寿命
 	DISTANCE = 1.0						//ターゲットからのランダム距離
 	SECONDSYNTHETIC = 1			//軌跡合成
