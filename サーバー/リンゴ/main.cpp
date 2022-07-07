@@ -435,8 +435,10 @@ void AllAcceptInit(CTcpListener* listener, int room_num)
 		// 通信待ち
 		communication.push_back(listener->Accept());
 
-		// 番号割り振り
+		// 初期化
 		data.Player.nNumber = count_player + 1;
+		data.SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
+		data.bConnect = true;
 
 		// メモリのコピー
 		memcpy(&recv_data[0], &data, sizeof(CCommunicationData::COMMUNICATION_DATA));
