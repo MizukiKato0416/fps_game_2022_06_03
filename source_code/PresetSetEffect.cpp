@@ -83,7 +83,17 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	bool bMousePos,
 	int Synthetic,
 	string Texture,
-	float Distance)
+	float Distance,
+	D3DXVECTOR2 m_TexMove,
+	D3DXVECTOR2 m_TexNum,
+	int AnimPatternType,
+	D3DXVECTOR2 TexSplit,
+	int AnimCnt,
+	int nType,
+	float fHigth,
+	float SecondSize,
+	D3DCOLORVALUE SecondCol,
+	D3DCOLORVALUE SecondChangecolor)
 {
 	m_EffectState2D[m_nEffectPattern2d].m_nPattern = nPattern;
 	m_EffectState2D[m_nEffectPattern2d].m_pos = pos;
@@ -105,6 +115,16 @@ void CPresetEffect::SetEffectState2D(int nPattern,
 	m_EffectState2D[m_nEffectPattern2d].Synthetic = Synthetic;
 	m_EffectState2D[m_nEffectPattern2d].nTexture = Texture;
 	m_EffectState2D[m_nEffectPattern2d].m_Distance = Distance;
+	m_EffectState2D[m_nEffectPattern2d].m_TexMove = m_TexMove;
+	m_EffectState2D[m_nEffectPattern2d].m_TexNum = m_TexNum;
+	m_EffectState2D[m_nEffectPattern2d].m_AnimPatternType = AnimPatternType;
+	m_EffectState2D[m_nEffectPattern2d].m_TexSplit = TexSplit;
+	m_EffectState2D[m_nEffectPattern2d].AnimCnt = AnimCnt;
+	m_EffectState2D[m_nEffectPattern2d].m_nType = nType;
+	m_EffectState2D[m_nEffectPattern2d].m_fHigth = fHigth;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondSize = SecondSize;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondCol = SecondCol;
+	m_EffectState2D[m_nEffectPattern2d].m_SecondChangecolor = SecondChangecolor;
 
 	m_nEffectPattern2d++;
 }
@@ -294,7 +314,12 @@ void CPresetEffect::SetEffect2D(int nPattern, D3DXVECTOR3 pos, D3DXVECTOR3 Endpo
 			m_EffectState2D[nPattern].Synthetic,
 			m_EffectState2D[nPattern].m_Distance,
 			PlayerPos,
-			rot);
+			rot,
+				m_EffectState2D[nPattern].m_TexMove,
+				m_EffectState2D[nPattern].m_TexNum,
+				m_EffectState2D[nPattern].AnimCnt,
+				m_EffectState2D[nPattern].m_TexSplit,
+				(CEffect::ANIMPATTERN)m_EffectState2D[nPattern].m_AnimPatternType);
 			}
 		break;
 	case(2):
