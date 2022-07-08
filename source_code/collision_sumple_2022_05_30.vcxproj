@@ -188,6 +188,7 @@
     <ClCompile Include="model_collision.cpp" />
     <ClCompile Include="model_single.cpp" />
     <ClCompile Include="MouseTracking.cpp" />
+    <ClCompile Include="Movement.cpp" />
     <ClCompile Include="networkmanager.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="model_collision.h" />
     <ClInclude Include="model_single.h" />
     <ClInclude Include="MouseTracking.h" />
+    <ClInclude Include="Movement.h" />
     <ClInclude Include="networkmanager.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />

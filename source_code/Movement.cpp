@@ -130,7 +130,7 @@ void CMovement::Update()
 	{
 	case(SHAPE_SQUARE):
 		SetPosition(pos);
-
+		ColorChange(m_Color);
 		break;
 	case(SHAPE_FREE):
 		SetfleeSizePos(
