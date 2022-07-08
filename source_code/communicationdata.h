@@ -64,16 +64,16 @@ public:
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
 		bool bHit;	// 当たったか
-		HIT_TYPE type[SEND_COUNTER];
+		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 
 	typedef struct
 	{
 		D3DXVECTOR3 hitPos;	//当てた場所
 		HIT_TYPE type;		//当たったオブジェクトの種類
-		int nDamage;		//弾が持っているダメージ量
-		float fDiffer;		//当たった場所までの距離
-		bool bUse;			//使ってるかどうか
+		int nDamage;		//弾が持つダメージ量
+		float fDiffer;	//当たった場所までの距離
+		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
 
 	typedef struct

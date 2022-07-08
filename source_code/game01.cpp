@@ -170,7 +170,6 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-	char Send[MAX_COMMU_DATA];
 
 	thread ConnectLoading(ConnectLading, &m_bAllConnect);
 

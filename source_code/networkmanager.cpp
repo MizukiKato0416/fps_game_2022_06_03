@@ -171,27 +171,30 @@ void CNetWorkManager::Recv(void)
 							*player_data = *pDataBuf;
 						}
 
-						recv_size = m_communication->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-						// メモリのコピー
-						memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
 						for (int count_enemy = 0; count_enemy < enemy_size; count_enemy++)
 						{
-							CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+							recv_size = m_communication->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
-							// 割り振られていなかったら
-							if (data->Player.nNumber == 0)
-							{
-								// 情報を入れる
-								*data = *pDataBuf;
-							}
-							// 割り振られていたら
-							else if (data->Player.nNumber == pDataBuf->Player.nNumber)
-							{
-								// 情報を入れる
-								*data = *pDataBuf;
-							}
+							// メモリのコピー
+							memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+							//CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+
+							//// 割り振られていなかったら
+							//if (data->Player.nNumber == 0)
+							//{
+							//	// 情報を入れる
+							//	*data = *pDataBuf;
+							//}
+							//// 割り振られていたら
+							//else if (data->Player.nNumber == pDataBuf->Player.nNumber)
+							//{
+							//	// 情報を入れる
+							//	*data = *pDataBuf;
+							//}
+
+							// 情報を入れる
+							m_enemy_data[count_enemy].SetCmmuData(*pDataBuf);
 						}
 					}
 				}
