@@ -178,7 +178,13 @@ void CNetWorkManager::Recv(void)
 							// ƒƒ‚ƒŠ‚ÌƒRƒs[
 							memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
-							//CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+							player_data = m_player_data.GetCmmuData();
+
+							if (player_data->Player.nNumber != pDataBuf->Player.nNumber)
+							{
+								// î•ñ‚ğ“ü‚ê‚é
+								m_enemy_data[count_enemy].SetCmmuData(*pDataBuf);
+							}
 
 							//// Š„‚èU‚ç‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç
 							//if (data->Player.nNumber == 0)
@@ -192,9 +198,6 @@ void CNetWorkManager::Recv(void)
 							//	// î•ñ‚ğ“ü‚ê‚é
 							//	*data = *pDataBuf;
 							//}
-
-							// î•ñ‚ğ“ü‚ê‚é
-							m_enemy_data[count_enemy].SetCmmuData(*pDataBuf);
 						}
 					}
 				}
