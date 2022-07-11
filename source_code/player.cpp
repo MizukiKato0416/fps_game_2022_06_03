@@ -697,6 +697,15 @@ void CPlayer::Shot(void)
 	{
 		//弾を使ってない
 		pData->Bullet.bUse = false;
+		pData->Bullet.fDiffer = 0.0f;
+		pData->Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
+		pData->Bullet.nDamage = 0;
+		pData->Bullet.type = CCommunicationData::HIT_TYPE::NONE;
+		pData->Ballistic.BigenPos = { 0.0f, 0.0f, 0.0f };
+		pData->Ballistic.EndPos = { 0.0f, 0.0f, 0.0f };
+		pData->Ballistic.fSpeed = 0.0f;
+		pData->Ballistic.Rot = { 0.0f, 0.0f, 0.0f };
+		pData->Ballistic.Size = { 0.0f, 0.0f, 0.0f };
 
 		//撃つアニメーションだったら
 		if (m_pAnimModel->GetAnimation() == "fireneutral")
@@ -859,6 +868,9 @@ void CPlayer::HitBullet(void)
 		//弾の撃った数を0にする
 		pData->Player.nNumShot = 0;
 	}
+	
+	pData->Player.bHit = false;
+	pData->Player.nHitDamage = 0;
 }
 
 //================================================
