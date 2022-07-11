@@ -869,8 +869,8 @@ void CPlayer::HitBullet(void)
 		pData->Player.nNumShot = 0;
 	}
 	
-	pData->Player.bHit = false;
-	pData->Player.nHitDamage = 0;
+	//pData->Player.bHit = false;
+	//pData->Player.nHitDamage = 0;
 }
 
 //================================================
