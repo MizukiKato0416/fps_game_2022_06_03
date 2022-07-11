@@ -422,6 +422,9 @@ void CPlayer::Move(void)
 	CInputPadD *pInputPadD = CManager::GetInstance()->GetInputPadD();
 	DIJOYSTATE2 JoyStick = pInputPadD->GetGamepad();
 
+	// 通信データ取得処理
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -460,6 +463,7 @@ void CPlayer::Move(void)
 			//歩きモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
 			m_pAnimModel->ChangeAnimation("walk", m_fAnimSpeed);
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 		}
 
 		//目的の向きを設定
@@ -554,6 +558,7 @@ void CPlayer::Move(void)
 			//ニュートラルモーションにする
 			m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
 			m_fAnimSpeed = 60.0f / 4800.0f;
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 		}
 	}
 }
@@ -650,6 +655,7 @@ void CPlayer::Shot(void)
 			//撃つモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
 			m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 		}
 
 		//カウンターを減算
@@ -695,6 +701,7 @@ void CPlayer::Shot(void)
 			//ニュートラルモーションにする
 			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
 			m_pAnimModel->ChangeAnimation("neutral", m_fAnimSpeed);
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 		}
 
 		//既定の値より小さかったら
