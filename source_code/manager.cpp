@@ -22,6 +22,7 @@
 #include "sound.h"
 #include "tcp_client.h"
 #include "LoadEffect.h"
+#include  "networkmanager.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -43,7 +44,7 @@ CManager::MODE CManager::m_mode = MODE::TITLE;
 CFade *CManager::m_pFade = nullptr;
 CPlayData *CManager::m_pPlayData = nullptr;
 CSound *CManager::m_pSound = nullptr;
-CTcpClient *CManager::m_pCommu = nullptr;
+CNetWorkManager *CManager::m_pNetWorkManager = nullptr;
 HWND CManager::m_hWnd = NULL;
 
 //================================================
@@ -72,7 +73,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 
 	m_hWnd = hWnd;
 
-	CTcpClient::WSASInit();
 	CLoadEffect::EffectStateLoad("data/Preset.txt");
 
 	//レンダリングクラスの生成
@@ -155,13 +155,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 		}
 	}
 
-	//通信クラスの生成
-	if (m_pCommu == nullptr)
+	//ネットワークマネージャーの生成
+	if (m_pNetWorkManager == nullptr)
 	{
-		m_pCommu = new CTcpClient;
-		if (m_pCommu != nullptr)
+		m_pNetWorkManager = new CNetWorkManager;
+		if (m_pNetWorkManager != nullptr)
 		{
-			m_pCommu->Init();
+			m_pNetWorkManager->Init();
 		}
 	}
 
@@ -195,7 +195,6 @@ void CManager::Uninit(void)
 {
 	//全てのオブジェクトの破棄
 	CObject::ReleaseAll();
-	CTcpClient::WSASUninit();
 
 	//プレイデータクラスの破棄
 	if (m_pPlayData != nullptr)
@@ -208,12 +207,15 @@ void CManager::Uninit(void)
 		m_pPlayData = nullptr;
 	}
 
-	if (m_pCommu != nullptr)
+	//ネットワークマネージャーの生成
+	if (m_pNetWorkManager != nullptr)
 	{
-		m_pCommu->Uninit();
+		//終了処理
+		m_pNetWorkManager->Uninit();
 
-		delete m_pCommu;
-		m_pCommu = nullptr;
+		//メモリの開放
+		delete m_pNetWorkManager;
+		m_pNetWorkManager = nullptr;
 	}
 
 	if (m_pSound != nullptr)

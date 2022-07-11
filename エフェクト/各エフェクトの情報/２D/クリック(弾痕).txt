@@ -1,0 +1,143 @@
+
+#========================================================================
+#エフェクトパターン 0
+#メモ：弾痕
+#========================================================================
+EFFECTSTATE2D
+	PATTERN = 0				//動きのパターン
+	POS = 640.0 360.0				//座標
+	MOVE = 0.0 0.0					//動き
+	ADDMOVE = 0.0 0.0				//動き加算値
+	TYPE = 0					//パーティクル(0)or軌跡(1)
+	HIGTH = 30.0						//上距離
+	DISTANCE = 1.0					//左右距離
+	PARTICLESIZE = 0.0						//上サイズ
+	SECONDCOLOR = 255 255 255 255			//下部分の色１
+	SECONDADDCOLOR = 0 0 0 0			//下部分の色１増減
+	SIZE = 111.0						//大きさ
+	ADDSIZE = 0.0					//大きさ変動
+	COLOR = 255 255 255 255			//カラー
+	CHANGECOLOR = 0 0 0 0			//カラー変動値
+	LIFE = 100						//ライフ
+	DENSITY = 1						//密度
+	COLORRANDR = 0						//カラーランダム赤 1だと有効
+	COLORRANDG = 0						//カラーランダム緑 1だと有効
+	COLORRANDB = 0						//カラーランダム青 1だと有効
+	MOVERANDX = 0						//移動ランダムX 1だと有効
+	MOVERANDY = 0						//移動ランダムY 1だと有効
+	MOUSEPOS = 0						//マウス追従ON 1だと有効
+	TEXTURE = 6						//テクスチャ
+	SYNTHETIC = 1						//合成
+	TEXMOVE = 0.000 0.000					//テクスチャ移動
+	TEXNUM = 1.0 1.0					//テクスチャ枚数
+	TEXANIMCOUNT = -1					//テクスチャアニメーションカウント
+	TEXSPLIT = 4 1					//テクスチャ分割数
+	ANIMPATTERNTYPE = 1					//アニメーションパターンタイプ
+END_EFFECTSTATE2D
+
+
+#========================================================================
+#エフェクトパターン 1
+#メモ：煙
+#========================================================================
+EFFECTSTATE2D
+	PATTERN = 0				//動きのパターン
+	POS = 640.0 360.0				//座標
+	MOVE = 0.0 0.0					//動き
+	ADDMOVE = 0.0 0.0				//動き加算値
+	TYPE = 1					//パーティクル(0)or軌跡(1)
+	HIGTH = 65.0						//上距離
+	DISTANCE = 7.0					//左右距離
+	PARTICLESIZE = 15.0						//上サイズ
+	SECONDCOLOR = 255 255 255 70			//下部分の色１
+	SECONDADDCOLOR = 0 0 0 0			//下部分の色１増減
+	SIZE = 12.0						//大きさ
+	ADDSIZE = 0.0					//大きさ変動
+	COLOR = 255 255 255 0			//カラー
+	CHANGECOLOR = 0 0 0 0			//カラー変動値
+	LIFE = 100						//ライフ
+	DENSITY = 1						//密度
+	COLORRANDR = 0						//カラーランダム赤 1だと有効
+	COLORRANDG = 0						//カラーランダム緑 1だと有効
+	COLORRANDB = 0						//カラーランダム青 1だと有効
+	MOVERANDX = 0						//移動ランダムX 1だと有効
+	MOVERANDY = 0						//移動ランダムY 1だと有効
+	MOUSEPOS = 0						//マウス追従ON 1だと有効
+	TEXTURE = 7						//テクスチャ
+	SYNTHETIC = 0						//合成
+	TEXMOVE = 0.000 0.008					//テクスチャ移動
+	TEXNUM = -0.0 -0.0					//テクスチャ枚数
+	TEXANIMCOUNT = -1					//テクスチャアニメーションカウント
+	TEXSPLIT = 1 1					//テクスチャ分割数
+	ANIMPATTERNTYPE = 0					//アニメーションパターンタイプ
+END_EFFECTSTATE2D
+
+
+#========================================================================
+#エフェクトパターン 2
+#メモ：火花
+#========================================================================
+EFFECTSTATE2D
+	PATTERN = 1				//動きのパターン
+	POS = 640.0 360.0				//座標
+	MOVE = 4.0					//スピード
+	DIFFUSION = 356					//拡散率
+	DESTROYVEC = 40					//消えるベクトル
+	DISTANCE = 11.0					//距離
+	SIZE = 5.0						//大きさ
+	ADDSIZE = 0.0					//大きさ変動
+	COLOR = 255 120 0 150			//カラー
+	CHANGECOLOR = 0 -30 0 -20			//カラー変動値
+	LIFE = 100						//ライフ
+	DENSITY = 7						//密度
+	COLORRANDR = 0						//カラーランダム赤 1だと有効
+	COLORRANDG = 0						//カラーランダム緑 1だと有効
+	COLORRANDB = 0						//カラーランダム青 1だと有効
+	MOVERANDX = 0						//移動ランダムX 1だと有効
+	MOVERANDY = 0						//移動ランダムY 1だと有効
+	MOUSEPOS = 0						//マウス追従ON 1だと有効
+	TEXTURE = 1						//テクスチャ
+	SYNTHETIC = 0						//合成
+	TEXMOVE = 0.000 0.000					//テクスチャ移動
+	TEXNUM = 1.0 1.0					//テクスチャ枚数
+	TEXANIMCOUNT = -1					//テクスチャアニメーションカウント
+	TEXSPLIT = 1 1					//テクスチャ分割数
+	ANIMPATTERNTYPE = 0					//アニメーションパターンタイプ
+END_EFFECTSTATE2D
+
+#========================================================================
+#エフェクトパターン 3
+#メモ：マズルフラッシュ
+#========================================================================
+EFFECTSTATE2D
+	PATTERN = 0				//動きのパターン
+	POS = 640.0 360.0				//座標
+	MOVE = 0.0 0.0					//動き
+	ADDMOVE = 0.0 0.0				//動き加算値
+	TYPE = 0					//パーティクル(0)or軌跡(1)
+	HIGTH = 30.0						//上距離
+	DISTANCE = 1.0					//左右距離
+	PARTICLESIZE = 0.0						//上サイズ
+	SECONDCOLOR = 255 255 255 255			//下部分の色１
+	SECONDADDCOLOR = 0 0 0 0			//下部分の色１増減
+	SIZE = 35.0						//大きさ
+	ADDSIZE = 0.0					//大きさ変動
+	COLOR = 255 155 0 255			//カラー
+	CHANGECOLOR = 0 -20 0 -20			//カラー変動値
+	LIFE = 8						//ライフ
+	DENSITY = 3						//密度
+	COLORRANDR = 0						//カラーランダム赤 1だと有効
+	COLORRANDG = 0						//カラーランダム緑 1だと有効
+	COLORRANDB = 0						//カラーランダム青 1だと有効
+	MOVERANDX = 0						//移動ランダムX 1だと有効
+	MOVERANDY = 0						//移動ランダムY 1だと有効
+	MOUSEPOS = 0						//マウス追従ON 1だと有効
+	TEXTURE = 8						//テクスチャ
+	SYNTHETIC = 0						//合成
+	TEXMOVE = 0.000 0.000					//テクスチャ移動
+	TEXNUM = 1.0 1.0					//テクスチャ枚数
+	TEXANIMCOUNT = -1					//テクスチャアニメーションカウント
+	TEXSPLIT = 5 1					//テクスチャ分割数
+	ANIMPATTERNTYPE = 1					//アニメーションパターンタイプ
+END_EFFECTSTATE2D
+

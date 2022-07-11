@@ -13,6 +13,7 @@ class CSparkle;
 class CWind;
 class CXanimModel;
 class CObject2D;
+class CModelCollision;
 
 //================================================
 //マクロ定義
@@ -52,9 +53,8 @@ public:
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
 	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
-	void SetCommuData(CCommunicationData::COMMUNICATION_DATA data) { m_commu_data.SetCmmuData(data); }	// 通信データ設定処理
-	CCommunicationData::COMMUNICATION_DATA *GetCommuData(void) { return m_commu_data.GetCmmuData(); }	// 通信データ取得処理
 	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
+	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
 
 private:
 	//メンバ関数
@@ -64,10 +64,9 @@ private:
 	void Shot(void);								//射撃処理
 	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
-	void RecvEnemyData(void);						//敵のデータ取得処理
+	void HitBullet(void);							//被弾処理
 
 	//メンバ変数
-	CCommunicationData m_commu_data;	// 通信データ
 	D3DXVECTOR3 m_pos;								//位置
 	D3DXVECTOR3 m_offsetPos;						//プレイヤーが子になったときのオフセット位置
 	D3DXVECTOR3 m_posOld;							//1フレーム前の位置
@@ -89,6 +88,8 @@ private:
 	bool m_bAds;									//ADSしているかどうか
 	CObject2D *m_pCloss;							//クロスヘア
 	int m_nLife;									//体力
+	CModelCollision *m_pCollModel;					//当たり判定のボックス
+	bool m_bShot;									//撃ったかどうか
 };
 
 #endif // !_PLAYER_H_

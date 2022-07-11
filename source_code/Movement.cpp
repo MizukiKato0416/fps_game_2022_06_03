@@ -8,7 +8,7 @@
 //*****************************************************************************
 //コンストラクタ
 //*****************************************************************************
-CMovement::CMovement(int nPriority) : CEffect(nPriority)
+CMovement::CMovement(PRIORITY nPriority) : CEffect(nPriority)
 {
 	m_move = {};
 	m_Addpos = {};
@@ -32,7 +32,7 @@ HRESULT CMovement::Init(D3DXVECTOR3 pos,
 	D3DXVECTOR2 Size,
 	D3DXVECTOR2 MinSize,
 	int nLife,
-	int nType,
+	string nType,
 	D3DXVECTOR2 AddMovement,
 	int nSynthetic,
 	D3DXVECTOR2 TexNum,
@@ -47,7 +47,8 @@ HRESULT CMovement::Init(D3DXVECTOR3 pos,
 	D3DCOLORVALUE Secondcolor,
 	D3DCOLORVALUE SecondMincolor)
 {
-	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType,nSynthetic, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
+	CEffect::Init(pos, color, Mincolor, Size, MinSize, nLife, nType, nSynthetic, TexNum, TexMove, nAnimCounter, nSplit, AnimPattern);
+
 
 	m_Addpos = AddMovement;
 	m_move = move;
@@ -59,7 +60,6 @@ HRESULT CMovement::Init(D3DXVECTOR3 pos,
 
 	m_SecondColor = Secondcolor;
 	m_SecondMinColor = SecondMincolor;
-
 	return S_OK;
 }
 
@@ -76,6 +76,7 @@ void CMovement::Uninit()
 //*****************************************************************************
 void CMovement::Update()
 {
+
 	D3DXVECTOR3 pos = GetPosition();
 	m_Size += m_MinSize;
 
@@ -139,7 +140,7 @@ void CMovement::Update()
 			D3DXVECTOR3(pos.x + m_Size.x, pos.y, 0.0f));
 
 		SecondColorChange(m_Color, m_SecondColor);
-			break;
+		break;
 	default:
 		break;
 	}
@@ -165,7 +166,7 @@ CMovement *CMovement::Create(D3DXVECTOR3 pos,
 	D3DXVECTOR2 Size,
 	D3DXVECTOR2 MinSize,
 	int nLife,
-	int nType,
+	string nType,
 	D3DXVECTOR2 AddMovement,
 	int nSynthetic,
 	D3DXVECTOR2 TexNum,
@@ -181,7 +182,7 @@ CMovement *CMovement::Create(D3DXVECTOR3 pos,
 	D3DCOLORVALUE SecondMincolor)
 {
 	CMovement *pMovement = NULL;
-	pMovement = new CMovement(CManager::PRIORITY_EFFECT);		//メモリ確保
+	pMovement = new CMovement(CObject::PRIORITY::EFFECT3D);		//メモリ確保
 	//NULLチェック
 	if (pMovement != NULL)
 	{

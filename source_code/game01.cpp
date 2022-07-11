@@ -17,6 +17,7 @@
 #include "tcp_client.h"
 #include "enemy.h"
 #include "object3D.h"
+#include "networkmanager.h"
 
 //================================================
 //マクロ定義
@@ -72,10 +73,7 @@ HRESULT CGame01::Init(void)
 
 	LoadModelTxt("data/model_set.txt");
 
-	pObject3D = CObject3D::Create({ 0.0f, 200.0f, -1000.0f }, { 200.0f, 200.0f, 0.0f }, {0.0f, D3DX_PI, 0.0f});
-	pObject3D->SetCol(D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f));
 
-	//CModelSingle::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 2.0f, 0.0f }, "container_000.x", NULL, false);
 
 	return S_OK;
 }
@@ -85,7 +83,7 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
 	pClient->Uninit();
 	//オブジェクトの破棄
 	Release();
@@ -171,10 +169,7 @@ bool CGame01::MapLimit(CObject* pObj)
 //================================================
 void CGame01::FirstContact(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetCommunication();
-	CCommunicationData *DataClass = new CCommunicationData;
-	CCommunicationData::COMMUNICATION_DATA *DataBuf = DataClass->GetCmmuData();
-	char recv[MAX_COMMU_DATA];
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
 
 	thread ConnectLoading(ConnectLading, &m_bAllConnect);
 
@@ -184,24 +179,34 @@ void CGame01::FirstContact(void)
 
 	if (pClient->GetConnect() == true)
 	{
-		pClient->Recv(&recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		memcpy(DataBuf, &recv[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-		switch (DataBuf->Player.nNumber)
+		CManager::GetInstance()->GetNetWorkmanager()->CreateThread();
+		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+		bool bLoop = true;
+		while (bLoop)
 		{
-		case 1:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			break;
-		case 2:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			break;
-		case 3:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			break;
-		case 4:
-			m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			break;
+			switch (PlayerDataBuf->Player.nNumber)
+			{
+			case 1:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
+			case 2:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
+			case 3:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
+			case 4:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
+			default:
+				break;
+			}
 		}
-		m_pPlayer->SetCommuData(*DataBuf);
 	}
 	else
 	{

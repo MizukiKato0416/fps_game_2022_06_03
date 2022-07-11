@@ -22,7 +22,7 @@ class CResult;
 class CFade;
 class CPlayData;
 class CSound;
-class CTcpClient;
+class CNetWorkManager;
 
 //================================================
 //マクロ定義
@@ -68,8 +68,8 @@ public:
 	static CFade *GetFade(void);												//フェード取得処理
 	static CPlayData *GetPlayData(void);										//プレイデータ取得処理
 	static CSound *GetSound(void) { return m_pSound; }							//サウンド取得処理
-	static CTcpClient *GetCommunication(void) { return m_pCommu; }				//通信クラス取得処理
 	static HWND GetWindowHandle(void) { return m_hWnd; }						//hwnd取得処理
+	static CNetWorkManager *GetNetWorkmanager(void) { return m_pNetWorkManager; }//ネットワークマネージャー取得処理
 
 private:
 	//メンバ関数
@@ -93,7 +93,7 @@ private:
 	static CFade *m_pFade;								//フェードのポインタ
 	static CPlayData *m_pPlayData;						//プレイデータのポインタ
 	static CSound *m_pSound;							//サウンド
-	static CTcpClient *m_pCommu;					//通信クラス
+	static CNetWorkManager *m_pNetWorkManager;			//ネットワークマネージャー
 	static HWND m_hWnd;									//ウィンドウハンドル
 };
 

@@ -23,11 +23,16 @@ public:
 protected:
 	bool m_bUninit;
 	int m_nLife;
+<<<<<<< HEAD
 	D3DXVECTOR2 m_Size;			//大きさ
 	D3DXVECTOR2 m_MinSize;		//大きさ変動
 
 private:
 
+=======
+	D3DXVECTOR2 m_MinSize;		//大きさ変動
+	ANIMPATTERN m_AnimPattern;	//アニメーションパターンの動き
+>>>>>>> parent of e6eedc6 (Merge branch 'main' of https://github.com/MizukiKato0416/fps_game_2022_06_03)
 
 	//カラー値
 	D3DCOLORVALUE m_Color;

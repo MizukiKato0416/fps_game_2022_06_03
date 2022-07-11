@@ -17,7 +17,7 @@ public:
 		SHAPE_MAX,
 	} SHAPE_TYPE;
 
-	CMovement(int nPriority);
+	CMovement(PRIORITY priorty = PRIORITY::EFFECT2D);
 	~CMovement();
 
 	HRESULT Init(D3DXVECTOR3 pos,
@@ -27,7 +27,7 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		int nType,
+		string nType,
 		D3DXVECTOR2 AddMovement,
 		int nSynthetic,
 		D3DXVECTOR2 TexNum,
@@ -53,7 +53,7 @@ public:
 		D3DXVECTOR2 Size,
 		D3DXVECTOR2 MinSize,
 		int nLife,
-		int nType,
+		string nType,
 		D3DXVECTOR2 AddMovement,
 		int nSynthetic,
 		D3DXVECTOR2 TexNum,
@@ -66,8 +66,7 @@ public:
 		float HigthPos,
 		float HigthSize,
 		D3DCOLORVALUE Secondcolor,
-		D3DCOLORVALUE SecondMincolor
-		);
+		D3DCOLORVALUE SecondMincolor);
 private:
 	D3DXVECTOR2 m_move;			//à⁄ìÆ
 	D3DXVECTOR2 m_Addpos;		//äµê´
