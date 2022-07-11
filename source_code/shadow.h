@@ -27,11 +27,10 @@ public:
 	void Draw(void);
 	static CShadow *Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &size, CObject *pObject);
 
-	bool GetDraw(void) { return m_bDraw; }						//描画取得処理
-	void SetDraw(const bool &bDraw) { m_bDraw = bDraw; }		//描画設定処理
-
+	bool GetDraw(void) { return m_bDraw; }							//描画取得処理
+	void SetDraw(const bool &bDraw) { m_bDraw = bDraw; }			//描画設定処理
+	void Collision(const D3DXVECTOR3 &pos, const float &fRadius);	//当たり判定
 private:
-	void Collision(void);			//当たり判定
 
 	CObject *m_pObject;		//対象のオブジェクトのポインタ
 	bool m_bDraw;			//描画するかどうか

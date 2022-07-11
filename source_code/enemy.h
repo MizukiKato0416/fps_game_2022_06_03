@@ -20,6 +20,7 @@
 class CXanimModel;
 class CModelSingle;
 class CGunModel;
+class CShadow;
 
 //*****************************************************************************
 // クラス定義
@@ -53,8 +54,9 @@ private:
 	D3DXVECTOR3 m_rotOld;	// 前の向き
 	D3DXVECTOR3 m_size;		// サイズ
 	D3DXMATRIX m_mtx_wld;	// ワールドマトリックス
-	int m_my_number;	// 自分の配列
+	int m_my_number;		// 自分の配列
 	int m_nLife;			//ライフ
+	CShadow *m_pShadow;		//影のポインタ
 };
 
 #endif

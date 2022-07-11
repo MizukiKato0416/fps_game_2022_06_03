@@ -14,6 +14,7 @@ class CWind;
 class CXanimModel;
 class CObject2D;
 class CModelCollision;
+class CShadow;
 
 //================================================
 //マクロ定義
@@ -73,7 +74,7 @@ private:
 	D3DXVECTOR3 m_move;								//ポリゴンの移動量
 	D3DXVECTOR3	m_size;								//サイズ
 	D3DXVECTOR3 m_rot;								//向き
-	CGunModel *m_pGunModel;						//銃モデルのポインタ
+	CGunModel *m_pGunModel;							//銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	float m_fObjectiveRot;							//目的の向き
 	float m_fNumRot;								//向きを変える量
@@ -90,6 +91,7 @@ private:
 	int m_nLife;									//体力
 	CModelCollision *m_pCollModel;					//当たり判定のボックス
 	bool m_bShot;									//撃ったかどうか
+	CShadow *m_pShadow;								//影のポインタ
 };
 
 #endif // !_PLAYER_H_

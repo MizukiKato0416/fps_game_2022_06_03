@@ -21,6 +21,7 @@
 #include "player.h"
 #include "networkmanager.h"
 #include "manager.h"
+#include "shadow.h"
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -42,6 +43,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_nLife = 0;
 	m_my_number = m_all_count;
 	m_all_count++;
+	m_pShadow = nullptr;
 }
 
 //=============================================================================
@@ -89,6 +91,9 @@ HRESULT CEnemy::Init(void)
 	//サイズの設定
 	SetSize(m_size);
 
+	//影の設定
+	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
+
 	return S_OK;
 }
 
@@ -112,6 +117,9 @@ void CEnemy::Update(void)
 	Attack();
 
 	SetPos(m_pos);
+
+	//影の当たり判定
+	m_pShadow->Collision(m_pos, m_size.x * 20.0f);
 
 	CPlayer::Collision(this, m_size.x / 2.0f);
 }

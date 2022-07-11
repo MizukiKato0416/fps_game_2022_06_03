@@ -35,6 +35,8 @@ public:
 	static bool Collision(CObject *pSubjectObject, const float &fRadius);
 	//ただの当たり判定
 	static bool Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, const D3DXVECTOR3 &beginPos, const D3DXVECTOR3 &endPos);
+	//範囲指定当たり判定
+	static bool Collision(const D3DXVECTOR3 &HitPos, const float &fDiffer, const D3DXVECTOR3 &beginPos, const D3DXVECTOR3 &endPos, const float &fRadius);
 	//頂点座標設定処理
 	D3DXVECTOR3 GetBufferPos(const int &nNumVtx) { return m_bufferPos[nNumVtx]; }
 	//頂点座標取得処理

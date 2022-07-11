@@ -178,20 +178,20 @@ void CNetWorkManager::Recv(void)
 							// ƒƒ‚ƒŠ‚ÌƒRƒs[
 							memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
-							//CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+							CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
 
-							//// Š„‚èU‚ç‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç
-							//if (data->Player.nNumber == 0)
-							//{
-							//	// î•ñ‚ğ“ü‚ê‚é
-							//	*data = *pDataBuf;
-							//}
-							//// Š„‚èU‚ç‚ê‚Ä‚¢‚½‚ç
-							//else if (data->Player.nNumber == pDataBuf->Player.nNumber)
-							//{
-							//	// î•ñ‚ğ“ü‚ê‚é
-							//	*data = *pDataBuf;
-							//}
+							// Š„‚èU‚ç‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç
+							if (data->Player.nNumber == 0)
+							{
+								// î•ñ‚ğ“ü‚ê‚é
+								*data = *pDataBuf;
+							}
+							// Š„‚èU‚ç‚ê‚Ä‚¢‚½‚ç
+							else if (data->Player.nNumber == pDataBuf->Player.nNumber)
+							{
+								// î•ñ‚ğ“ü‚ê‚é
+								*data = *pDataBuf;
+							}
 
 							// î•ñ‚ğ“ü‚ê‚é
 							m_enemy_data[count_enemy].SetCmmuData(*pDataBuf);

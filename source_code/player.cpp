@@ -70,6 +70,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nLife = 0;
 	m_pCollModel = nullptr;
 	m_bShot = false;
+	m_pShadow = nullptr;
 }
 
 //================================================
@@ -139,7 +140,7 @@ HRESULT CPlayer::Init(void)
 	SetSize(m_size);
 
 	//影の設定
-	CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
+	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
 	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
@@ -259,6 +260,9 @@ void CPlayer::Update(void)
 	pos = GetPos();
 	m_pos = pos;
 
+	//影の当たり判定
+	//m_pShadow->Collision(m_pos, m_size.x * 20.0f);
+
 	//デバイスのポインタ
 	LPDIRECT3DDEVICE9 pDevice;
 	//デバイスの取得
@@ -267,7 +271,6 @@ void CPlayer::Update(void)
 	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
 
 	D3DXMatrixIdentity(&m_mtxWorld);		//プレイヤーのワールドマトリックスの初期化
-
 	
 	D3DXVECTOR3 rot;
 

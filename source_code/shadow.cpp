@@ -6,13 +6,14 @@
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
-#include "floor.h"
+#include "mesh_field.h"
 
 //================================================
 //マクロ定義
 //================================================
 #define SHADOW_ADD_SIZE					(4.0f)		//地面との距離の何分の一増やすか
 #define SHADOW_ADD_ALPHA				(200.0f)	//地面との距離の何分の一薄くするか
+#define SHADOW_POS_ADJUST				(10.0f)		//影の高さ調整量
 
 //================================================
 //静的メンバ変数宣言
@@ -114,11 +115,8 @@ void CShadow::Update(void)
 	size.z = m_size.z + fDiffer / SHADOW_ADD_SIZE;
 
 	//位置、サイズ、カラーを設定
-	SetPos(D3DXVECTOR3(posObj.x, 0.01f, posObj.z), size);
+	SetPos(m_pos, size);
 	SetCol(col);
-
-	//当たり判定
-	Collision();
 }
 
 //================================================
@@ -173,12 +171,19 @@ CShadow* CShadow::Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &size, CObjec
 //================================================
 //当たり判定
 //================================================
-void CShadow::Collision(void)
+void CShadow::Collision(const D3DXVECTOR3 &pos, const float &fRadius)
 {
-	//床との当たり判定
-	if (CFloor::CollisionShadow(this) == false)
+	//当たった場所
+	D3DXVECTOR3 meshHitPos = { 0.0f, 0.0f, 0.0f };
+	float fMeshDiffer = 0.0f;
+	//メッシュフィールドの当たり判定
+	bool bCollMesh = CMeshField::Collision(meshHitPos, fMeshDiffer, pos, D3DXVECTOR3(pos.x, pos.y - 100000.0f, pos.z), fRadius);
+	//当たったら
+	if (bCollMesh)
 	{
-		//描画されないようにする
-		m_bDraw = false;
+		//影の位置を設定
+		m_pos = meshHitPos;
+		m_pos.y += SHADOW_POS_ADJUST;
+		SetPos(m_pos, GetSize());
 	}
 }
