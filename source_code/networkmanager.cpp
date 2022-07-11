@@ -179,15 +179,22 @@ void CNetWorkManager::Recv(void)
 							memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 							player_data = m_player_data.GetCmmuData();
 
-							if (player_data->Player.nNumber > pDataBuf->Player.nNumber)
+							if (pDataBuf->Player.nNumber == 0)
 							{
-								// î•ñ‚ğ“ü‚ê‚é
-								m_enemy_data[pDataBuf->Player.nNumber - 1].SetCmmuData(*pDataBuf);
+								continue;
 							}
-							else if (player_data->Player.nNumber < pDataBuf->Player.nNumber)
+							else
 							{
-								// î•ñ‚ğ“ü‚ê‚é
-								m_enemy_data[pDataBuf->Player.nNumber - 2].SetCmmuData(*pDataBuf);
+								if (player_data->Player.nNumber > pDataBuf->Player.nNumber)
+								{
+									// î•ñ‚ğ“ü‚ê‚é
+									m_enemy_data[pDataBuf->Player.nNumber - 1].SetCmmuData(*pDataBuf);
+								}
+								else if (player_data->Player.nNumber < pDataBuf->Player.nNumber)
+								{
+									// î•ñ‚ğ“ü‚ê‚é
+									m_enemy_data[pDataBuf->Player.nNumber - 2].SetCmmuData(*pDataBuf);
+								}
 							}
 
 							//// Š„‚èU‚ç‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç
