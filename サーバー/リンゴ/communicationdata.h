@@ -64,7 +64,7 @@ public:
 		int nHitDamage;	// ダメージ
 		int nNumShot;	//何発撃ったか
 		float fMotionSpeed;	// モーションのスピード
-		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA];	// モーションの種類
+		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA] = {};	// モーションの種類
 		bool bHit;	// 当たったか
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
