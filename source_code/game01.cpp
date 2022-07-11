@@ -203,6 +203,10 @@ void CGame01::FirstContact(void)
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				bLoop = false;
 				break;
+			case 5:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
 			default:
 				break;
 			}
