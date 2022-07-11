@@ -235,6 +235,7 @@ void CEnemy::Move(void)
 		m_recvRot = data[m_my_number].GetCmmuData()->Player.Rot;
 
 		now_motion = m_model->GetAnimation();
+		m_model->ChangeSpeed(data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
 		if (now_motion != commu_motion && data[m_my_number].GetCmmuData()->bConnect == true)
 		{
 			m_model->ChangeAnimation(commu_motion, data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
