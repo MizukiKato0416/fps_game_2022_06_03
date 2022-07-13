@@ -833,6 +833,23 @@ void CPlayer::HitBullet(void)
 		//弾が自分に当たっていたら
 		if (pData->Player.bHit == true)
 		{
+			//カメラの位置を取得
+			D3DXVECTOR3 cameraRot = { 0.0f, 0.0f, 0.0f };
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					cameraRot = pCamera->GetRotV();
+				}
+			}
+			//当たった位置を示すエフェクトを出す
+			CPresetEffect::SetEffect2D(0, { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, m_pos, { 0.0f, cameraRot.y, 0.0f });
+
 			//ライフを減らす
 			m_nLife -= pData->Player.nHitDamage;
 			//ライフが0になったら
