@@ -33,6 +33,7 @@ CModelSingle::CModelSingle(CObject::PRIORITY Priority) :CObject(Priority)
 	m_pModel = nullptr;
 	m_bCollision = false;
 	m_bCullingInv = false;
+	m_bDraw = true;
 }
 
 //================================================
@@ -53,6 +54,9 @@ CModelSingle::~CModelSingle()
 //================================================
 HRESULT CModelSingle::Init(void)
 {
+	//変数初期化
+	m_bDraw = true;
+
 	//親の設定
 	m_pModel->SetParent(m_pParent);
 
@@ -115,8 +119,11 @@ void CModelSingle::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//モデルの描画
-	m_pModel->Draw();
+	if (m_bDraw)
+	{
+		//モデルの描画
+		m_pModel->Draw();
+	}
 
 	if (m_bCullingInv == true)
 	{

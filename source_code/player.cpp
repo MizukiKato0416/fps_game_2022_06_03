@@ -42,10 +42,9 @@
 #define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
-#define CAMERA_V_SPEED_Y			(0.03f)											//カメラの横移動スピード
-#define CAMERA_V__MOUSE_SPEED_Y		(0.002f)										//カメラの横移動スピード（マウスの時）
-#define CAMERA_V_SPEED_XZ			(0.01f)											//カメラの縦移動スピード
-#define CAMERA_V__MOUSE_SPEED_XZ	(-0.0005f)										//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_RESPAWN_COUNT				(180)									//リスポーンするまでの時間
 
 //================================================
 //デフォルトコンストラクタ
@@ -71,6 +70,9 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_pCollModel = nullptr;
 	m_bShot = false;
 	m_pShadow = nullptr;
+	m_nRespawnCounter = 0;
+	m_bDeath = false;
+	m_pDeathModel = nullptr;
 }
 
 //================================================
@@ -102,6 +104,9 @@ HRESULT CPlayer::Init(void)
 	m_bAds = false;
 	m_nLife = PLAYER_LIFE;
 	m_bShot = false;
+	m_nRespawnCounter = 0;
+	m_bDeath = false;
+	m_pDeathModel = nullptr;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
@@ -176,198 +181,206 @@ void CPlayer::Update(void)
 	sound = CManager::GetInstance()->GetSound();
 	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
-	//位置取得
-	D3DXVECTOR3 pos = GetPos();
-
-	m_pos = pos;
-	m_posOld = pos;
-
-	//1フレーム前の位置設定
-	SetPosOld(m_posOld);
-
-	//腰の処理
-	Chest();
-
-	//回転の慣性
-	Rotate();
-
-	//移動処理
-	Move();
-
-	//重力
-	m_move.y -= PLAYER_GRAVITY;
-
-	m_pos += m_move;		//移動量反映
-
-	//位置反映
-	SetPos(m_pos);
-
-	//床との当たり判定
-	if (CFloor::Collision(this, m_size.x) == true)
-	{
-		//重力を0にする
-		m_move.y = 0.0f;
-
-		//ジャンプをしていない状態にする
-		m_bJump = false;
-
-		//ジャンプ処理
-		Jump();
-
-		//位置取得
-		pos = GetPos();
-		m_pos = pos;
-	}
-
-	//メッシュフィールドとの当たり判定
-	if (CMeshField::Collision(this, m_size.x * 20.0f) == true)
-	{
-		//重力を0にする
-		m_move.y = 0.0f;
-
-		//ジャンプをしていない状態にする
-		m_bJump = false;
-
-		//ジャンプ処理
-		Jump();
-
-		//位置取得
-		pos = GetPos();
-		m_pos = pos;
-	}
-
-	//モデルとの当たり判定
-	int nHit = CModelSingle::Collision(this, m_size.x / 2.0f, 150.0f);
-	//上からあたったとき
-	if (nHit == 1)
-	{
-		//重力を0にする
-		m_move.y = 0.0f;
-
-		//ジャンプをしていない状態にする
-		m_bJump = false;
-
-		//ジャンプ処理
-		Jump();
-	}
-	else if (nHit == 2)
-	{//下からあたったとき
-		//重力を0にする
-		m_move.y = 0.0f;
-	}
-
-	//位置取得
-	pos = GetPos();
-	m_pos = pos;
-
-	//影の当たり判定
-	//m_pShadow->Collision(m_pos, m_size.x * 20.0f);
-
-	//デバイスのポインタ
-	LPDIRECT3DDEVICE9 pDevice;
-	//デバイスの取得
-	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-
-	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
-
-	D3DXMatrixIdentity(&m_mtxWorld);		//プレイヤーのワールドマトリックスの初期化
-	
-	D3DXVECTOR3 rot;
-
-	//親子関係がつけられていたら
-	if (m_bObjParent == true)
-	{
-		pos = m_offsetPos;
-		rot = m_rot;
-	}
-	else
-	{//つけられていなかったら
-		pos = m_pos;
-		rot = m_rot;
-	}
-
-	//プレイヤーの向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	//プレイヤーの位置を反映
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	if (m_bObjParent == true)
-	{
-		D3DXMATRIX mtxParent = *m_mtxWorldParent;
-
-		//算出したパーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
-		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
-	}
-
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
-
-
-	D3DXMATRIX *cameraMtx = nullptr;
-	//cameraのポインタ配列1番目のアドレス取得
-	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
 	//カメラの位置保存用
 	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
-	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	if (!m_bDeath)
 	{
-		//cameraの取得
-		CCamera *pCamera = &**pCameraAddress;
-		if (pCamera != nullptr)
+		//位置取得
+		D3DXVECTOR3 pos = GetPos();
+
+		m_pos = pos;
+		m_posOld = pos;
+
+		//1フレーム前の位置設定
+		SetPosOld(m_posOld);
+
+		//腰の処理
+		Chest();
+
+		//回転の慣性
+		Rotate();
+
+		//移動処理
+		Move();
+
+		//重力
+		m_move.y -= PLAYER_GRAVITY;
+
+		m_pos += m_move;		//移動量反映
+
+		//位置反映
+		SetPos(m_pos);
+
+		//床との当たり判定
+		if (CFloor::Collision(this, m_size.x) == true)
 		{
-			//カメラのマトリックス取得
-			cameraMtx = pCamera->GetMtxPoint();
-			//カメラのマトリックスと親子関係をつける
-			m_pAnimModel->SetMatrix(cameraMtx);
-			//カメラの位置取得
-			posCameraV = pCamera->GetPosV();
-			posCameraR = pCamera->GetPosR();
+			//重力を0にする
+			m_move.y = 0.0f;
+
+			//ジャンプをしていない状態にする
+			m_bJump = false;
+
+			//ジャンプ処理
+			Jump();
+
+			//位置取得
+			pos = GetPos();
+			m_pos = pos;
 		}
+
+		//メッシュフィールドとの当たり判定
+		if (CMeshField::Collision(this, m_size.x * 20.0f) == true)
+		{
+			//重力を0にする
+			m_move.y = 0.0f;
+
+			//ジャンプをしていない状態にする
+			m_bJump = false;
+
+			//ジャンプ処理
+			Jump();
+
+			//位置取得
+			pos = GetPos();
+			m_pos = pos;
+		}
+
+		//モデルとの当たり判定
+		int nHit = CModelSingle::Collision(this, m_size.x / 2.0f, 150.0f);
+		//上からあたったとき
+		if (nHit == 1)
+		{
+			//重力を0にする
+			m_move.y = 0.0f;
+
+			//ジャンプをしていない状態にする
+			m_bJump = false;
+
+			//ジャンプ処理
+			Jump();
+		}
+		else if (nHit == 2)
+		{//下からあたったとき
+			//重力を0にする
+			m_move.y = 0.0f;
+		}
+
+		//位置取得
+		pos = GetPos();
+		m_pos = pos;
+
+		//影の当たり判定
+		//m_pShadow->Collision(m_pos, m_size.x * 20.0f);
+
+		//デバイスのポインタ
+		LPDIRECT3DDEVICE9 pDevice;
+		//デバイスの取得
+		pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+		D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
+
+		D3DXMatrixIdentity(&m_mtxWorld);		//プレイヤーのワールドマトリックスの初期化
+
+		D3DXVECTOR3 rot;
+
+		//親子関係がつけられていたら
+		if (m_bObjParent == true)
+		{
+			pos = m_offsetPos;
+			rot = m_rot;
+		}
+		else
+		{//つけられていなかったら
+			pos = m_pos;
+			rot = m_rot;
+		}
+
+		//プレイヤーの向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+		//プレイヤーの位置を反映
+		D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+		if (m_bObjParent == true)
+		{
+			D3DXMATRIX mtxParent = *m_mtxWorldParent;
+
+			//算出したパーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
+			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
+		}
+
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+
+		D3DXMATRIX *cameraMtx = nullptr;
+		//cameraのポインタ配列1番目のアドレス取得
+		CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+		for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+		{
+			//cameraの取得
+			CCamera *pCamera = &**pCameraAddress;
+			if (pCamera != nullptr)
+			{
+				//カメラのマトリックス取得
+				cameraMtx = pCamera->GetMtxPoint();
+				//カメラのマトリックスと親子関係をつける
+				m_pAnimModel->SetMatrix(cameraMtx);
+				//カメラの位置取得
+				posCameraV = pCamera->GetPosV();
+				posCameraR = pCamera->GetPosR();
+			}
+		}
+
+		//腕の描画
+		m_pAnimModel->Draw();
+
+		if (!m_bAds)
+		{
+			//マトリックスを取得
+			D3DXMATRIX *handR = nullptr;
+			handR = m_pAnimModel->GetMatrix("handR");
+			m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+			//銃と親子関係をつける
+			m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
+			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+			m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+			m_pGunModel->GetModel()->SetCulliMode(false);
+			m_pGunModel->Draw();
+		}
+		else
+		{
+			//銃と親子関係をつける
+			m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
+			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
+			m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+			m_pGunModel->GetModel()->SetCulliMode(true);
+			m_pGunModel->Draw();
+		}
+
+		//射撃処理
+		Shot();
+
+		m_pAnimModel->Update();
+
+		//ADS処理
+		ADS();
+
+		//当たったかどうか
+		HitBullet();
 	}
 
-	//腕の描画
-	m_pAnimModel->Draw();
+	//リスポーン処理
+	Respawn();
 
-	if (!m_bAds)
-	{
-		//マトリックスを取得
-		D3DXMATRIX *handR = nullptr;
-		handR = m_pAnimModel->GetMatrix("handR");
-		m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
-		//銃と親子関係をつける
-		m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
-		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
-		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
-		m_pGunModel->GetModel()->SetCulliMode(false);
-		m_pGunModel->Draw();
-	}
-	else
-	{
-		//銃と親子関係をつける
-		m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
-		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
-		m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
-		m_pGunModel->GetModel()->SetCulliMode(true);
-		m_pGunModel->Draw();
-	}
-
-	//射撃処理
-	Shot();
-
-	m_pAnimModel->Update();
-
-	//ADS処理
-	ADS();
-
-	//当たったかどうか
-	HitBullet();
-
+	//情報設定
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
@@ -375,6 +388,7 @@ void CPlayer::Update(void)
 	pData->Player.CamR = posCameraR;
 	pData->Player.ModelMatrix = m_mtxWorld;
 
+	//サーバーに送る
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	pData->Player.nFrameCount++;
@@ -390,9 +404,7 @@ void CPlayer::Update(void)
 //================================================
 void CPlayer::Draw(void)
 {
-	//親子関係をつける
-	//m_pCollModel->GetModel()->SetMtxParent(&m_mtxWorld);
-	//m_pCollModel->GetModel()->SetObjParent(true);
+	
 }
 
 //================================================
@@ -595,11 +607,11 @@ void CPlayer::Rotate(void)
 			//================================================
 			if (mouseVelocity.x != 0.0f)
 			{
-				cameraRot.y += mouseVelocity.x * CAMERA_V__MOUSE_SPEED_Y;
+				cameraRot.y += mouseVelocity.x * PLAYER_CAMERA_V__MOUSE_SPEED_Y;
 			}
 			if (mouseVelocity.y != 0.0f)
 			{
-				cameraRot.x -= mouseVelocity.y * CAMERA_V__MOUSE_SPEED_XZ;
+				cameraRot.x -= mouseVelocity.y * PLAYER_CAMERA_V__MOUSE_SPEED_XZ;
 			}
 
 			pCamera->SetRotV(cameraRot);
@@ -855,11 +867,12 @@ void CPlayer::HitBullet(void)
 			//ライフが0になったら
 			if (m_nLife <= 0)
 			{
-				//リスポーン
-				pData->Player.nDeath++;
-				m_pos = { 0.0f, 1000.0f, 0.0f };
-				SetPos(m_pos);
-				m_nLife = PLAYER_LIFE;
+				//0にする
+				m_nLife = 0;
+				//死んでいる状態にする
+				m_bDeath = true;
+				//銃の描画を消す
+				m_pGunModel->GetModel()->SetDraw(false);
 			}
 			//自分に与えられるダメージを0にリセット
 			pData->Player.nHitDamage = 0;
@@ -888,6 +901,52 @@ void CPlayer::HitBullet(void)
 	
 	pData->Player.bHit = false;
 	pData->Player.nHitDamage = 0;
+}
+
+//================================================
+//リスポーン処理
+//================================================
+void CPlayer::Respawn(void)
+{
+	//死んだら
+	if (m_bDeath)
+	{
+		//最初だけ
+		if (m_nRespawnCounter == 0)
+		{
+			if (m_pDeathModel == nullptr)
+			{
+				//死んだモーションにする
+				m_pDeathModel = CXanimModel::Create("data/motion.x");
+				m_pDeathModel->ChangeAnimation("death", (20.0f * 3.0f) / 4800.0f);
+			}
+		}
+		//カウンターを加算
+		m_nRespawnCounter++;
+		m_nLife = 0;
+		//既定の値より大きくなったら
+		if (m_nRespawnCounter > PLAYER_RESPAWN_COUNT)
+		{
+			//通信したデータ取得
+			CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+			//カウンターを0にする
+			m_nRespawnCounter = 0;
+			//デス数を増やす
+			pData->Player.nDeath++;
+			//リスポーン
+			m_pos = { 0.0f, 1000.0f, 0.0f };
+			SetPos(m_pos);
+			//ライフを回復
+			m_nLife = PLAYER_LIFE;
+			//死んでいない状態にする
+			m_bDeath = false;
+			//銃の描画をする
+			m_pGunModel->GetModel()->SetDraw(true);
+			//死んだとき用のモデルを消す
+			m_pDeathModel->Uninit();
+			m_pDeathModel = nullptr;
+		}
+	}
 }
 
 //================================================
