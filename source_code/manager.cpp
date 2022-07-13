@@ -183,7 +183,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	//フェードクラスの生成
 	m_pFade = CFade::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
 							D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
-							MODE::RESULT);	
+							MODE::GAME01);	
 
 	return S_OK;
 }
