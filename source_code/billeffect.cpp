@@ -267,6 +267,10 @@ void CBillEffect::Draw()
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 	}
+	else if (m_nSynthenic == 2)
+	{
+		//‡¬–³‚µ
+	}
 	//‚»‚êˆÈŠO‚Ì”’l‚Í‰ÁZ‡¬‚É
 	else
 	{
