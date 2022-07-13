@@ -22,6 +22,7 @@
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (512)
 #define SEND_COUNTER (6)
+#define WIN_COUNTER (10)
 
 //-------------------------------
 // Classの定義
@@ -63,9 +64,12 @@ public:
 		int nFrameCount;	// フレームカウント
 		int nHitDamage;	// ダメージ
 		int nNumShot;	//何発撃ったか
+		int nKill;
+		int nDeath;
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA] = {};	// モーションの種類
 		bool bHit;	// 当たったか
+		bool bWin;
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 

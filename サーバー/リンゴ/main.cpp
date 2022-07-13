@@ -273,6 +273,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										data[cout_enemy]->Player.bHit = true;
 										//当たったオブジェクトを敵に設定する
 										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
+										// キルカウントアップ
+										data[cout_player]->Player.nKill++;
 										//当たった敵をプレイヤーにデータを送信する状態にする
 										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
 									}

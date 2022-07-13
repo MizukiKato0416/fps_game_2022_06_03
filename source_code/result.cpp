@@ -5,28 +5,15 @@
 #include "result.h"
 #include "manager.h"
 #include "fade.h"
-#include "input_keyboard.h"
-
-//================================================
-//マクロ定義
-//================================================
-
-//================================================
-//静的メンバ変数宣言
-//================================================
+#include "object2D.h"
 
 //================================================
 //デフォルトコンストラクタ
 //================================================
 CResult::CResult(CObject::PRIORITY Priority) :CObject(Priority)
 {
-	
+
 }
-
-//================================================
-//オーバーロードされたコンストラクタ
-//================================================
-
 
 //================================================
 //デストラクタ
@@ -41,6 +28,18 @@ CResult::~CResult()
 //================================================
 HRESULT CResult::Init(void)
 {
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, 0.0f + (100.0f * 2.0f), 0.0f), D3DXVECTOR3(600.0f, 100.0f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * 5.0f), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * 6.0f), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[2]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * 7.0f), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[3]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * 8.0f), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[4]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+	
 	return S_OK;
 }
 
@@ -58,24 +57,7 @@ void CResult::Uninit(void)
 //================================================
 void CResult::Update(void)
 {
-#ifdef _DEBUG
-	//キーボード取得処理
-	CInputKeyboard *pInputKeyboard;
-	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
-	//Enterキーを押したら
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
-	{
-		//フェード取得処理
-		CFade *pFade;
-		pFade = CManager::GetInstance()->GetFade();
-
-		if (pFade->GetFade() == CFade::FADE_NONE)
-		{
-			pFade->SetFade(CManager::MODE::TITLE);
-		}
-	}
-#endif // !_DEBUG
 }
 
 //================================================
