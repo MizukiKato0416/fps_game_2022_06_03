@@ -856,6 +856,7 @@ void CPlayer::HitBullet(void)
 			if (m_nLife <= 0)
 			{
 				//ƒŠƒXƒ|[ƒ“
+				pData->Player.nDeath++;
 				m_pos = { 0.0f, 1000.0f, 0.0f };
 				SetPos(m_pos);
 				m_nLife = PLAYER_LIFE;
