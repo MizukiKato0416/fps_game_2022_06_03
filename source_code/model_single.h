@@ -43,8 +43,11 @@ public:
 	CModel *GetModel(void) { return m_pModel; }											//モデル取得処理
 	void SetCulliMode(bool culli) { m_bCullingInv = culli; }							//カリングモード取得処理
 	bool GetCulliMode(void) { return m_bCullingInv; }									//カリングモード取得処理
+	static bool CollisionPushPos(const CModelSingle *&pHitModel, CObject *pObject, CModelSingle *pObjectModelSingle, CModelSingle *pOnModel);	//押し出した先の当たり判定用当たり判定
 
 private:
+	
+
 	//メンバ変数
 	D3DXVECTOR3 m_pos;					//位置
 	D3DXVECTOR3	m_size;					//サイズ
