@@ -861,8 +861,7 @@ void CPlayer::HitBullet(void)
 			if (pData->Player.type[nCntBullet] == CCommunicationData::HIT_TYPE::ENEMY)
 			{
 				//当たった位置にエフェクトを出す
-				CPresetEffect::SetEffect3D(2, hitPos, {}, {});
-				CPresetEffect::SetEffect3D(3, hitPos, {}, {});
+				CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
 			}
 		}
 		//弾の撃った数を0にする
