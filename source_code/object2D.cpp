@@ -292,6 +292,23 @@ void CObject2D::SetTex(const float &fMoveTexU, const float &fMoveTexV)
 	m_pVtxBuff->Unlock();
 }
 
+void CObject2D::SetTex(int nScore)
+{
+	VERTEX_2D *pVtx;	// 頂点情報
+
+	// 頂点バッファをロックし、頂点データへのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	// テクスチャ座標
+	pVtx[0].tex = D3DXVECTOR2((nScore * 0.1f) + 0.0f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2((nScore * 0.1f) + 0.1f, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2((nScore * 0.1f) + 0.0f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2((nScore * 0.1f) + 0.1f, 1.0f);
+
+	// 頂点バッファをアンロック
+	m_pVtxBuff->Unlock();
+}
+
 //================================================
 //カラー設定処理
 //================================================
