@@ -384,6 +384,19 @@ void CPlayer::Update(void)
 	//リスポーン処理
 	Respawn();
 
+	//勝ったら
+	if (pData->Player.bWin)
+	{
+		//フェード取得処理
+		CFade *pFade;
+		pFade = CManager::GetInstance()->GetFade();
+
+		if (pFade->GetFade() == CFade::FADE_NONE)
+		{
+			//pFade->SetFade(CManager::MODE::RESULT);
+		}
+	}
+
 	//情報設定
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
@@ -757,27 +770,6 @@ void CPlayer::Shot(void)
 			{
 				//0にする
 				m_nCounter = 0;
-			}
-		}
-	}
-
-	//勝ったら
-	if (pData->Player.bWin)
-	{
-		//キーボード取得処理
-		CInputKeyboard *pInputKeyboard;
-		pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-
-		//Enterキーを押したら
-		if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
-		{
-			//フェード取得処理
-			CFade *pFade;
-			pFade = CManager::GetInstance()->GetFade();
-
-			if (pFade->GetFade() == CFade::FADE_NONE)
-			{
-				pFade->SetFade(CManager::MODE::RESULT);
 			}
 		}
 	}

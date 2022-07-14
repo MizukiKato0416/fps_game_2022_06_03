@@ -728,6 +728,8 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					//押し出した先の当たり判定
 					if (CollisionSide(pObject, pModelSingle, fRadius, fHeight))
 					{//当たっていたら
+						//yは変えない
+						posOld.y = objectPos.y;
 						pObject->SetPos(posOld);
 					}
 				}
@@ -753,6 +755,8 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					//押し出した先の当たり判定
 					if (CollisionSide(pObject, pModelSingle, fRadius, fHeight))
 					{//当たっていたら
+						//yは変えない
+						posOld.y = objectPos.y;
 						pObject->SetPos(posOld);
 					}
 				}
@@ -778,6 +782,8 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					//押し出した先の当たり判定
 					if (CollisionSide(pObject, pModelSingle, fRadius, fHeight))
 					{//当たっていたら
+						//yは変えない
+						posOld.y = objectPos.y;
 						pObject->SetPos(posOld);
 					}
 				}
@@ -802,6 +808,8 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					//押し出した先の当たり判定
 					if (CollisionSide(pObject, pModelSingle, fRadius, fHeight))
 					{//当たっていたら
+						//yは変えない
+						posOld.y = objectPos.y;
 						pObject->SetPos(posOld);
 					}
 				}
