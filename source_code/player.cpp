@@ -893,6 +893,7 @@ void CPlayer::HitBullet(void)
 			{
 				//当たった位置にエフェクトを出す
 				CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
+				CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
 			}
 		}
 		//弾の撃った数を0にする
@@ -917,8 +918,8 @@ void CPlayer::Respawn(void)
 			if (m_pDeathModel == nullptr)
 			{
 				//死んだモーションにする
-				m_pDeathModel = CXanimModel::Create("data/motion.x");
-				m_pDeathModel->ChangeAnimation("death", (20.0f * 3.0f) / 4800.0f);
+				//m_pDeathModel = CXanimModel::Create("data/motion.x");
+				//m_pDeathModel->ChangeAnimation("death", (20.0f * 3.0f) / 4800.0f);
 			}
 		}
 		//カウンターを加算
@@ -943,8 +944,8 @@ void CPlayer::Respawn(void)
 			//銃の描画をする
 			m_pGunModel->GetModel()->SetDraw(true);
 			//死んだとき用のモデルを消す
-			m_pDeathModel->Uninit();
-			m_pDeathModel = nullptr;
+			//m_pDeathModel->Uninit();
+			//m_pDeathModel = nullptr;
 		}
 	}
 }
