@@ -53,6 +53,7 @@ public:
 	void SetPos(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &size, const float &fRot);		//位置設定処理
 	void SetTex(const int &nPattern, const int &nMaxPattern);								//テクスチャアニメーション設定処理
 	void SetTex(const float &fMoveTexU, const float &fMoveTexV);							//テクスチャ移動処理
+	void SetTex(int nScore);	// セッター
 	void SetCol(const D3DCOLORVALUE &col);													//カラー設定処理
 	void SetCol(const D3DXCOLOR &col);														//カラー設定処理
 	D3DXCOLOR GetCol(void);																	//カラー取得処理
