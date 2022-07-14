@@ -33,6 +33,7 @@ CModelSingle::CModelSingle(CObject::PRIORITY Priority) :CObject(Priority)
 	m_pModel = nullptr;
 	m_bCollision = false;
 	m_bCullingInv = false;
+	m_bDraw = true;
 }
 
 //================================================
@@ -53,6 +54,9 @@ CModelSingle::~CModelSingle()
 //================================================
 HRESULT CModelSingle::Init(void)
 {
+	//変数初期化
+	m_bDraw = true;
+
 	//親の設定
 	m_pModel->SetParent(m_pParent);
 
@@ -115,8 +119,11 @@ void CModelSingle::Draw(void)
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 
-	//モデルの描画
-	m_pModel->Draw();
+	if (m_bDraw)
+	{
+		//モデルの描画
+		m_pModel->Draw();
+	}
 
 	if (m_bCullingInv == true)
 	{
@@ -502,7 +509,11 @@ int CModelSingle::Collision(CObject *pObject)
 					D3DXVECTOR3 objectPos;
 					objectPos = pos + norInVec;
 
+
+
 					pObject->SetPos(objectPos);
+
+
 				}
 			}
 		}
@@ -517,6 +528,10 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 {
 	//どこからあたったか
 	int nHit = 0;
+	//上からあたっているモデル
+	CModelSingle *pOnModel = nullptr;
+	//押し出し先で当たったモデル
+	 const CModelSingle *pHitModel = nullptr;
 
 	//オブジェクト情報を入れるポインタ
 	vector<CObject*> object;
@@ -531,6 +546,11 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 		{
 			//pObjectをCModelSingleにキャスト
 			CModelSingle *pModelSingle = (CModelSingle*)object[count_object];
+
+			if (pHitModel == pModelSingle)
+			{
+				continue;
+			}
 
 			//当たり判定をする設定なら
 			if (pModelSingle->m_bCollision == true)
@@ -666,8 +686,12 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 
 					objectPos.y += vtxPos[4].y;
 
-					pObject->SetPos(objectPos);
 					nHit = 1;
+
+					pOnModel = pModelSingle;
+
+					//押し出し先に押し出す
+					pObject->SetPos(objectPos);
 				}
 				else if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[5] <= 0.0f &&
 					fVecDotOld[5] > -MODEL_SINGLE_SUBTRACTION)
@@ -678,6 +702,8 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					objectPos.y += vtxPos[5].y - fHeight;
 
 					nHit = 2;
+					
+					//押し出し先に押し出す
 					pObject->SetPos(objectPos);
 				}
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
@@ -696,7 +722,16 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					D3DXVECTOR3 objectPos;
 					objectPos = pos + norInVec;
 
-					pObject->SetPos(objectPos);
+					//押し出した先の当たり判定
+					if (!CollisionPushPos(pHitModel, pObject, pModelSingle, pOnModel))
+					{//当たっていなかったら
+					 //押し出し先に押し出す
+						pObject->SetPos(objectPos);
+					}
+					else
+					{
+						pObject->SetPos(posOld);
+					}
 				}
 				else if (fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
 					fVecDotOld[2] > -MODEL_SINGLE_SUBTRACTION)
@@ -714,7 +749,16 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					D3DXVECTOR3 objectPos;
 					objectPos = pos + norInVec;
 
-					pObject->SetPos(objectPos);
+					//押し出した先の当たり判定
+					if (!CollisionPushPos(pHitModel, pObject, pModelSingle, pOnModel))
+					{//当たっていなかったら
+					 //押し出し先に押し出す
+						pObject->SetPos(objectPos);
+					}
+					else
+					{
+						pObject->SetPos(posOld);
+					}
 				}
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
 					fVecDotOld[1] > -MODEL_SINGLE_SUBTRACTION)
@@ -732,7 +776,16 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					D3DXVECTOR3 objectPos;
 					objectPos = pos + norInVec;
 
-					pObject->SetPos(objectPos);
+					//押し出した先の当たり判定
+					if (!CollisionPushPos(pHitModel, pObject, pModelSingle, pOnModel))
+					{//当たっていなかったら
+					 //押し出し先に押し出す
+						pObject->SetPos(objectPos);
+					}
+					else
+					{
+						pObject->SetPos(posOld);
+					}
 				}
 				else if (fVecDot[0] <= 0.0f && fVecDot[2] <= 0.0f && fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f &&
 					fVecDotOld[3] > -MODEL_SINGLE_SUBTRACTION)
@@ -750,7 +803,16 @@ int CModelSingle::Collision(CObject * pObject, const float &fRadius, const float
 					D3DXVECTOR3 objectPos;
 					objectPos = pos + norInVec;
 
-					pObject->SetPos(objectPos);
+					//押し出した先の当たり判定
+					if (!CollisionPushPos(pHitModel, pObject, pModelSingle, pOnModel))
+					{//当たっていなかったら
+					 //押し出し先に押し出す
+						pObject->SetPos(objectPos);
+					}
+					else
+					{
+						pObject->SetPos(posOld);
+					}
 				}
 			}
 		}
@@ -862,7 +924,7 @@ int CModelSingle::CollisionAny(CObject *pObject)
 				if (fVecDot[0] <= 0.0f && fVecDot[1] <= 0.0f && fVecDot[2] <= 0.0f &&
 					fVecDot[3] <= 0.0f && fVecDot[4] <= 0.0f && fVecDot[5] <= 0.0f)
 				{
-					
+					return 1;
 				}
 			}
 		}
@@ -897,4 +959,125 @@ void CModelSingle::SetMtxWorld(void)
 
 	//モデルのワールドマトリックス設定
 	m_pModel->SetMtxWorldPos();
+}
+
+//================================================
+//押し出した先の当たり判定用当たり判定
+//================================================
+bool CModelSingle::CollisionPushPos(const CModelSingle *&pHitModel, CObject * pObject, CModelSingle * pObjectModelSingle, CModelSingle *pOnModel)
+{
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::MODEL));
+	int object_size = object.size();
+
+	for (int count_object = 0; count_object < object_size; count_object++)
+	{
+		if (object[count_object]->GetObjType() == CObject::OBJTYPE::MODEL)
+		{
+			//pObjectをCModelSingleにキャスト
+			CModelSingle *pModelSingle = (CModelSingle*)object[count_object];
+
+			if (pModelSingle == pObjectModelSingle || pModelSingle == pOnModel)
+			{
+				continue;
+			}
+
+			//当たり判定をする設定なら
+			if (pModelSingle->m_bCollision == true)
+			{
+				//8頂点の取得
+				D3DXVECTOR3 vtxPos[MODEL_VTX];
+				for (int nCntVtx = 0; nCntVtx < MODEL_VTX; nCntVtx++)
+				{
+					vtxPos[nCntVtx] = pModelSingle->m_pModel->GetVtxPos(nCntVtx);
+				}
+
+				//8頂点のワールドマトリックスを取得
+				D3DXMATRIX *pVtxMtxWorld = pModelSingle->m_pModel->GetVtxMtxWorld();
+				//8頂点の設定
+				for (int nCntVtx = 0; nCntVtx < MODEL_VTX; nCntVtx++, pVtxMtxWorld++)
+				{
+					//ワールドマトリックス設定
+					pModelSingle->SetMtxWorld();
+					//モデルの設定
+					//pModelSingle->m_pModel->SetVtxMtxWorld(vtxPos[nCntVtx], nCntVtx);
+					vtxPos[nCntVtx] = D3DXVECTOR3(pVtxMtxWorld->_41, pVtxMtxWorld->_42, pVtxMtxWorld->_43);
+				}
+
+
+				//頂点から頂点までのベクトル算出用
+				D3DXVECTOR3 vtxVec[6][2];
+				//頂点から頂点までのベクトル算出
+				//奥の面
+				vtxVec[0][0] = vtxPos[0] - vtxPos[1];
+				vtxVec[0][1] = vtxPos[3] - vtxPos[1];
+				//右の面
+				vtxVec[1][0] = vtxPos[1] - vtxPos[5];
+				vtxVec[1][1] = vtxPos[7] - vtxPos[5];
+				//前の面
+				vtxVec[2][0] = vtxPos[5] - vtxPos[4];
+				vtxVec[2][1] = vtxPos[6] - vtxPos[4];
+				//左の面
+				vtxVec[3][0] = vtxPos[4] - vtxPos[0];
+				vtxVec[3][1] = vtxPos[2] - vtxPos[0];
+				//上の面
+				vtxVec[4][0] = vtxPos[1] - vtxPos[0];
+				vtxVec[4][1] = vtxPos[4] - vtxPos[0];
+				//下の面
+				vtxVec[5][0] = vtxPos[7] - vtxPos[6];
+				vtxVec[5][1] = vtxPos[2] - vtxPos[6];
+
+				//法線保存用変数
+				D3DXVECTOR3 vecNor[6];
+				for (int nCntSurfase = 0; nCntSurfase < 6; nCntSurfase++)
+				{
+					//各面の法線を求める
+					D3DXVec3Cross(&vecNor[nCntSurfase], &vtxVec[nCntSurfase][0], &vtxVec[nCntSurfase][1]);
+
+					//ベクトルを正規化する(ベクトルの大きさを1にする)
+					D3DXVec3Normalize(&vecNor[nCntSurfase], &vecNor[nCntSurfase]);
+				}
+
+				//対象の現在位置取得
+				D3DXVECTOR3 pos = pObject->GetPos();
+
+				//頂点の位置から対象の現在の位置のベクトルを算出
+				D3DXVECTOR3 vecPos[6];
+				//奥の面
+				vecPos[0] = pos - vtxPos[0];
+				//右の面
+				vecPos[1] = pos - vtxPos[1];
+				//前の面
+				vecPos[2] = pos - vtxPos[5];
+				//左の面
+				vecPos[3] = pos - vtxPos[4];
+				//上の面
+				vecPos[4] = pos - vtxPos[1];
+				//下の面
+				vecPos[5] = pos - vtxPos[7];
+
+				//算出したベクトルと法線のベクトルの内積を求める
+				float fVecDot[6];
+				for (int nCntSurfase = 0; nCntSurfase < 6; nCntSurfase++)
+				{
+					fVecDot[nCntSurfase] = D3DXVec3Dot(&vecNor[nCntSurfase], &vecPos[nCntSurfase]);
+				}
+
+				//全ての内積の計算結果がマイナスの時
+				if (fVecDot[0] < 0.0f && fVecDot[1] < 0.0f && fVecDot[2] < 0.0f &&
+					fVecDot[3] < 0.0f && fVecDot[4] < 0.0f && fVecDot[5] < 0.0f)
+				{
+					//参照わたし
+					CModelSingle *&pReturnHitModel = const_cast<CModelSingle*&>(pHitModel);
+					pReturnHitModel = pModelSingle;
+
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }

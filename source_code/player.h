@@ -66,6 +66,7 @@ private:
 	void ADS(void);									//ADS処理
 	void Chest(void);								//腰の処理
 	void HitBullet(void);							//被弾処理
+	void Respawn(void);								//リスポーン処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -83,6 +84,7 @@ private:
 	bool m_bObjParent;								//モデル以外との親子関係をつけるかどうか
 	bool m_bJump;									//ジャンプしているかどうか
 	CXanimModel *m_pAnimModel;						//モデル
+	CXanimModel *m_pDeathModel;						//死んだときのモデル
 	float m_fAnimSpeed;								//アニメーションのスピード
 	float m_fMoveSpeed;								//移動する速さ
 	int m_nCounter;									//次の弾が出るまでのカウンター
@@ -92,6 +94,8 @@ private:
 	CModelCollision *m_pCollModel;					//当たり判定のボックス
 	bool m_bShot;									//撃ったかどうか
 	CShadow *m_pShadow;								//影のポインタ
+	int m_nRespawnCounter;							//リスポーンするまでのカウンター
+	bool m_bDeath;									//死んでいるかどうか
 };
 
 #endif // !_PLAYER_H_

@@ -73,8 +73,6 @@ HRESULT CGame01::Init(void)
 
 	LoadModelTxt("data/model_set.txt");
 
-
-
 	return S_OK;
 }
 
@@ -83,8 +81,6 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-	pClient->Uninit();
 	//オブジェクトの破棄
 	Release();
 }
@@ -201,6 +197,10 @@ void CGame01::FirstContact(void)
 				break;
 			case 4:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
+				break;
+			case 5:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				bLoop = false;
 				break;
 			default:

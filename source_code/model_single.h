@@ -43,8 +43,13 @@ public:
 	CModel *GetModel(void) { return m_pModel; }											//モデル取得処理
 	void SetCulliMode(bool culli) { m_bCullingInv = culli; }							//カリングモード取得処理
 	bool GetCulliMode(void) { return m_bCullingInv; }									//カリングモード取得処理
+	bool GetDraw(void) { return m_bDraw; }												//描画取得処理
+	void SetDraw(const bool bDraw) { m_bDraw = bDraw; }									//描画設定処理
+	static bool CollisionPushPos(const CModelSingle *&pHitModel, CObject *pObject, CModelSingle *pObjectModelSingle, CModelSingle *pOnModel);	//押し出した先の当たり判定用当たり判定
 
 private:
+	
+
 	//メンバ変数
 	D3DXVECTOR3 m_pos;					//位置
 	D3DXVECTOR3	m_size;					//サイズ
@@ -53,9 +58,10 @@ private:
 	CModel *m_pModel;					//モデルのポインタ
 	D3DXMATRIX m_mtxWorld;				//ワールドマトリックス
 	CModel *m_pParent;					//親モデルへのポインタ
-	//CXload::X_TYPE m_type;				//出すモデルの種類
+	//CXload::X_TYPE m_type;			//出すモデルの種類
 	bool m_bCollision;					//当たり判定をするかどうか
-	bool m_bCullingInv;					// カリングを逆にするか
+	bool m_bCullingInv;					//カリングを逆にするか
+	bool m_bDraw;						//描画するかどうか
 };
 
 #endif // !_MODEL_SINGLE_H_
