@@ -162,6 +162,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			// ソケットにsendされていたら
 			if (FD_ISSET(sock[count_player], &fds))
 			{
+				//変数初期化
+				//commu_data[count_player].Init();
+
 				// レシーブ
 				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
@@ -197,6 +200,20 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			// プレイヤー分回す
 			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
 			{
+				//死んだ情報が送られていたら
+				if (data[cout_player]->Player.bDeath &&
+					data[cout_player]->Bullet.nGiveDamagePlayerNum > 0 && data[cout_player]->Bullet.nGiveDamagePlayerNum <= MAX_PLAYER + 1)
+				{
+					//殺した敵のキル数を1増やす
+					data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill++;
+					//キル数が既定の数だったら
+					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill == KILL_COUNTER)
+					{
+						//そのプレイヤーを勝ちにする
+						data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin = true;
+					}
+				}
+
 				// プレイヤーの撃った弾の数
 				int cout_bullet = g_save_display_count[cout_player].size();
 
@@ -273,10 +290,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 										data[cout_enemy]->Player.bHit = true;
 										//当たったオブジェクトを敵に設定する
 										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
-										// キルカウントアップ
-										data[cout_player]->Player.nKill++;
 										//当たった敵をプレイヤーにデータを送信する状態にする
 										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+										//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
+										data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
+										//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
+										data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
 									}
 								}
 							}

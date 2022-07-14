@@ -90,6 +90,9 @@ void CNetWorkManager::Recv(void)
 		{
 			while (recv_size > 0)
 			{
+				//•Ï”‰Šú‰»
+				//m_player_data.Init();
+
 				char recv_data[MAX_COMMU_DATA];
 
 				CCommunicationData::COMMUNICATION_DATA *pDataBuf = new CCommunicationData::COMMUNICATION_DATA;

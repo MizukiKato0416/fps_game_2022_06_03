@@ -69,7 +69,7 @@ HRESULT CEnemy::Init(void)
 	m_nLife = PLAYER_LIFE;
 
 	m_model = CXanimModel::Create("data/motion.x");
-	m_model->ChangeAnimation("nutral", 60.0f / 4800.0f);
+	m_model->ChangeAnimation("neutral", 60.0f / 4800.0f);
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
@@ -245,6 +245,13 @@ void CEnemy::Move(void)
 	{
 		m_pos = { 0.0f, 100.0f, 0.0f };
 	}
+
+
+	if (now_motion == "walk")
+	{
+		int n = 0;
+	}
+
 
 	//受け取った位置から元の位置までのヴェクトルを算出
 	D3DXVECTOR3 posVec = m_recvPos - m_posOld;
