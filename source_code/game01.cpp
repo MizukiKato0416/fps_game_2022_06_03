@@ -178,36 +178,32 @@ void CGame01::FirstContact(void)
 		CManager::GetInstance()->GetNetWorkmanager()->CreateThread();
 		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
-		while (true)
+		bool bLoop = true;
+		while (bLoop)
 		{
-			CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
-			vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-
 			switch (PlayerDataBuf->Player.nNumber)
 			{
 			case 1:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			case 2:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			case 3:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			case 4:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			case 5:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			default:
-				break;
-			}
-			if (pData->bConnect == true &&
-				data[0].GetCmmuData()->bConnect == true &&
-				data[2].GetCmmuData()->bConnect == true &&
-				data[3].GetCmmuData()->bConnect == true)
-			{
 				break;
 			}
 		}
