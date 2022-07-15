@@ -46,6 +46,7 @@
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_RESPAWN_COUNT				(180)									//リスポーンするまでの時間
+#define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
 
 //================================================
 //デフォルトコンストラクタ
@@ -74,6 +75,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nRespawnCounter = 0;
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
+	m_nInvincibleCounter = 0;
 }
 
 //================================================
@@ -108,6 +110,7 @@ HRESULT CPlayer::Init(void)
 	m_nRespawnCounter = 0;
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
+	m_nInvincibleCounter = 0;
 
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
@@ -151,9 +154,6 @@ HRESULT CPlayer::Init(void)
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
 	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
 
-	//サーバーデータ初期化
-	//CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->Init();
-
 	return S_OK;
 }
 
@@ -162,15 +162,6 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
-	//マトリックスを取得
-	D3DXMATRIX *handR = nullptr;
-	handR = m_pAnimModel->GetMatrix("handR");
-
-	//newしたので消す
-	delete handR;
-	handR = nullptr;
-
-	m_pAnimModel->Uninit();
 	Release();
 }
 
@@ -189,7 +180,8 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
-	if (!m_bDeath)
+	//死んでいる且つモデルが生成されていたら
+	if (!m_bDeath && m_pAnimModel != nullptr)
 	{
 		//位置取得
 		D3DXVECTOR3 pos = GetPos();
@@ -384,8 +376,22 @@ void CPlayer::Update(void)
 	//リスポーン処理
 	Respawn();
 
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	int enemy = data.size();
+	bool win = false;
+
+	for (int count = 0; count < enemy; count++)
+	{
+		if (data[count].GetCmmuData()->Player.bWin == true ||
+			pData->Player.bWin == true)
+		{
+			win = true;
+			break;
+		}
+	}
+
 	//勝ったら
-	if (pData->Player.bWin)
+	if (win == true)
 	{
 		//フェード取得処理
 		CFade *pFade;
@@ -393,7 +399,23 @@ void CPlayer::Update(void)
 
 		if (pFade->GetFade() == CFade::FADE_NONE)
 		{
-			//pFade->SetFade(CManager::MODE::RESULT);
+			//マトリックスを取得
+			//D3DXMATRIX *handR = nullptr;
+			//handR = m_pAnimModel->GetMatrix("handR");
+
+			//newしたので消す
+			//delete handR;
+			//handR = nullptr;
+
+			if (m_pAnimModel != nullptr)
+			{
+				//モデルを消す
+				m_pAnimModel->Uninit();
+				m_pAnimModel = nullptr;
+			}
+			
+			//リザルトに行く
+			pFade->SetFade(CManager::MODE::RESULT);
 		}
 	}
 
@@ -943,6 +965,9 @@ void CPlayer::HitBullet(void)
 //================================================
 void CPlayer::Respawn(void)
 {
+	// 通信データ取得処理
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
 	//死んだら
 	if (m_bDeath)
 	{
@@ -952,9 +977,17 @@ void CPlayer::Respawn(void)
 			if (m_pDeathModel == nullptr)
 			{
 				//死んだモーションにする
-				//m_pDeathModel = CXanimModel::Create("data/motion.x");
-				//m_pDeathModel->ChangeAnimation("death", (20.0f * 3.0f) / 4800.0f);
+				if (m_pDeathModel == nullptr)
+				{
+					m_pDeathModel = CXanimModel::Create("data/motion.x");
+					m_fAnimSpeed = (60.0f * 1.0f) / 4800.0f;
+					m_pDeathModel->ChangeAnimation("death", m_fAnimSpeed);
+					memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+					memcpy(pData->Player.aMotion[0], m_pDeathModel->GetAnimation().c_str(), m_pDeathModel->GetAnimation().size());
+				}
 			}
+			//無敵にする
+			pData->Player.bInvincible = true;
 		}
 		//カウンターを加算
 		m_nRespawnCounter++;
@@ -974,8 +1007,30 @@ void CPlayer::Respawn(void)
 			//銃の描画をする
 			m_pGunModel->GetModel()->SetDraw(true);
 			//死んだとき用のモデルを消す
-			//m_pDeathModel->Uninit();
-			//m_pDeathModel = nullptr;
+			if (m_pDeathModel != nullptr)
+			{
+				m_pDeathModel->Uninit();
+				m_pDeathModel = nullptr;
+			}
+			//ニュートラルモーションにする
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+			m_pAnimModel->ChangeAnimation("neutral", m_fAnimSpeed);
+			memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+		}
+	}
+	else if(!m_bDeath && pData->Player.bInvincible == true)
+	{//死んでいない且つ無敵なら
+		//無敵用カウンターを加算
+		m_nInvincibleCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nInvincibleCounter > PLAYER_INVINCIBLE_COUNT)
+		{
+			//無敵じゃない状態にする
+			pData->Player.bInvincible = false;
+			//カウンターを0にする
+			m_nInvincibleCounter = 0;
 		}
 	}
 }

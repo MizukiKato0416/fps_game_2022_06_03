@@ -147,6 +147,13 @@ void CResult::Uninit(void)
 {	
 	//オブジェクトの破棄
 	Release();
+
+	//通信切る
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
+	pClient->Uninit();
+
+	//コミュデータ初期化
+	CManager::GetInstance()->GetNetWorkmanager()->Reset();
 }
 
 //================================================

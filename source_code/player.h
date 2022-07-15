@@ -96,6 +96,7 @@ private:
 	CShadow *m_pShadow;								//影のポインタ
 	int m_nRespawnCounter;							//リスポーンするまでのカウンター
 	bool m_bDeath;									//死んでいるかどうか
+	int m_nInvincibleCounter;						//無敵時間カウント用
 };
 
 #endif // !_PLAYER_H_

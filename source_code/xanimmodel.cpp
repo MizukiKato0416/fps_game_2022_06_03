@@ -66,7 +66,7 @@ HRESULT CXanimModel::Init(void)
 void CXanimModel::Uninit(void)
 {
 	delete m_root_frame;
-	delete m_anim_controller;
+	//delete m_anim_controller;
 }
 
 //=============================================================================

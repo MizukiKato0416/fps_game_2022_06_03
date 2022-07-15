@@ -171,6 +171,7 @@ void CGame01::FirstContact(void)
 
 	ConnectLoading.detach();
 
+	pClient->Init();
 	pClient->Connect();
 
 	if (pClient->GetConnect() == true)
@@ -197,10 +198,6 @@ void CGame01::FirstContact(void)
 				break;
 			case 4:
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				bLoop = false;
-				break;
-			case 5:
-				m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				bLoop = false;
 				break;
 			default:

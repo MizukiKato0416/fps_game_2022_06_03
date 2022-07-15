@@ -33,7 +33,8 @@ CNetWorkManager::CNetWorkManager()
 //=============================================================================
 CNetWorkManager::~CNetWorkManager()
 {
-
+	m_communication = nullptr;
+	m_enemy_data.clear();
 }
 
 //=============================================================================
@@ -54,10 +55,6 @@ void CNetWorkManager::Init(void)
 	if (m_communication == nullptr)
 	{
 		m_communication = new CTcpClient;
-		if (m_communication != nullptr)
-		{
-			m_communication->Init();
-		}
 	}
 }
 
@@ -69,7 +66,6 @@ void CNetWorkManager::Uninit(void)
 	// I—¹ˆ—
 	if (m_communication != nullptr)
 	{
-		m_communication->Uninit();
 		delete m_communication;
 		m_communication = nullptr;
 	}
@@ -219,5 +215,16 @@ void CNetWorkManager::Recv(void)
 			CCommunicationData::COMMUNICATION_DATA *data = m_player_data.GetCmmuData();
 			data->bConnect = false;
 		}
+	}
+}
+
+void CNetWorkManager::Reset(void)
+{
+	m_player_data.Init();
+	int enemy_max = m_enemy_data.size();
+
+	for (int count_enemy = 0; count_enemy < enemy_max; count_enemy++)
+	{
+		m_enemy_data[count_enemy].Init();
 	}
 }

@@ -22,7 +22,7 @@
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (512)
 #define SEND_COUNTER (6)
-#define KILL_COUNTER (10)
+#define KILL_COUNTER (3)
 
 //-------------------------------
 // Classの定義
@@ -71,6 +71,7 @@ public:
 		bool bHit;	// 当たったか
 		bool bWin;
 		bool bDeath;		//死んだかどうか
+		bool bInvincible;	//無敵かどうか
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 
