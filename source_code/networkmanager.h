@@ -37,10 +37,12 @@ public:
 	static vector<CCommunicationData> GetEnemyData(void) { return m_enemy_data; }	// 敵情報の取得
 	static CTcpClient *GetCommunication(void) { return m_communication; }				//通信クラス取得処理
 	static void Reset(void);
+	static bool GetAllConnect(void);
 private:
 	static CCommunicationData m_player_data;	// プレイヤーデータ
 	static vector<CCommunicationData> m_enemy_data;	// 敵データ
 	static CTcpClient *m_communication;	// 通信クラス
+	static bool m_all_connect;
 };
 
 #endif // _TCP_CLIENT_H_

@@ -443,7 +443,13 @@ void CPlayer::Update(void)
 //================================================
 void CPlayer::Draw(void)
 {
-	
+	if (m_pDeathModel != nullptr)
+	{
+		//位置の設定
+		m_pDeathModel->SetPos(m_pos);
+		//死のモデルの描画
+		m_pDeathModel->Draw();
+	}
 }
 
 //================================================
@@ -974,16 +980,40 @@ void CPlayer::Respawn(void)
 		//最初だけ
 		if (m_nRespawnCounter == 0)
 		{
+			//死んだモーションにする
 			if (m_pDeathModel == nullptr)
 			{
-				//死んだモーションにする
-				if (m_pDeathModel == nullptr)
+				//死んだとき用のモデルを出す
+				m_pDeathModel = CXanimModel::Create("data/motion.x");
+				m_fAnimSpeed = (60.0f * 1.0f) / 4800.0f;
+				m_pDeathModel->ChangeAnimation("death", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pDeathModel->GetAnimation().c_str(), m_pDeathModel->GetAnimation().size());
+				//親の設定
+				m_pDeathModel->SetParent(false);
+
+				//cameraのポインタ配列1番目のアドレス取得
+				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
 				{
-					m_pDeathModel = CXanimModel::Create("data/motion.x");
-					m_fAnimSpeed = (60.0f * 1.0f) / 4800.0f;
-					m_pDeathModel->ChangeAnimation("death", m_fAnimSpeed);
-					memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
-					memcpy(pData->Player.aMotion[0], m_pDeathModel->GetAnimation().c_str(), m_pDeathModel->GetAnimation().size());
+					//cameraの取得
+					CCamera *pCamera = &**pCameraAddress;
+					if (pCamera != nullptr)
+					{
+						//カメラの注視点をプレイヤーの位置に固定
+						pCamera->SetPosR(m_pos);
+						//カメラの視点を頭上に固定
+						D3DXVECTOR3 posV = { 0.0f, 0.0f, 0.0f };
+						posV.y = m_pos.y + 100.0f;
+						pCamera->SetPosV(posV);
+						//視点から注視点までの距離を既定の値にする
+						pCamera->SetDiffer(50.0f);
+						//視点の固定を解除する
+						pCamera->SetLockPosV(false);
+						//カメラの向きを固定
+						D3DXVECTOR3 cameraRot = { 0.0f, m_rot.y, 0.0f };
+						pCamera->SetRotV(cameraRot);
+					}
 				}
 			}
 			//無敵にする
@@ -1017,6 +1047,58 @@ void CPlayer::Respawn(void)
 			m_pAnimModel->ChangeAnimation("neutral", m_fAnimSpeed);
 			memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
 			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//視点の固定をオンにする
+					pCamera->SetLockPosV(true);
+				}
+			}
+		}
+
+		//死のモデルが生成されていたら
+		if (m_pDeathModel != nullptr)
+		{
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//視点の位置を取得
+					float fDiffer = pCamera->GetDiffer();
+
+					//既定の値より小さいとき
+					if (fDiffer < 300.0f)
+					{
+						//既定の値分距離を離す
+						fDiffer += 4.0f;
+
+						//既定の値より大きくなったら
+						if (fDiffer > 300.0f)
+						{
+							//既定の値にする
+							fDiffer = 300.0f;
+						}
+
+						//距離を設定
+						pCamera->SetDiffer(fDiffer);
+					}
+				}
+			}
+
+			//死のモデルの更新処理
+			m_pDeathModel->Update();
 		}
 	}
 	else if(!m_bDeath && pData->Player.bInvincible == true)

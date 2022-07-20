@@ -54,6 +54,7 @@ CCamera::CCamera()
 	m_nNum = 0;										//cameraの個体識別番号
 	m_fDifferVR = 0.0f;								//視点と注視点の距離
 	m_fRadius = 0.0f;								//画角
+	m_bLockPosV = false;
 }
 
 //================================================
@@ -92,6 +93,7 @@ HRESULT CCamera::Init(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot, const floa
 	m_bRotateX = false;								//カメラX軸が回転しているかどうか
 	m_bRotateY = false;								//カメラY軸が回転しているかどうか
 	m_fRadius = CAMERA_RADIUS;						//画角
+	m_bLockPosV = true;
 
 	//視点の場所を注視点を元に移動
 	m_fDifferVR = CAMERA_DISTANCE;
@@ -409,30 +411,37 @@ void CCamera::MainCameraUpdate(void)
 	CInputPadX *pInputPadX;
 	pInputPadX = CManager::GetInstance()->GetInputPadX();
 
-	//オブジェクト情報を入れるポインタ
-	vector<CObject*> object;
-
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
-	int object_size = object.size();
-
-	for (int count_object = 0; count_object < object_size; count_object++)
+	if (m_bLockPosV)
 	{
-		if (object[count_object]->GetObjType() == CObject::OBJTYPE::PLAYER)
+		//オブジェクト情報を入れるポインタ
+		vector<CObject*> object;
+
+		//先頭のポインタを代入
+		object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
+		int object_size = object.size();
+
+		for (int count_object = 0; count_object < object_size; count_object++)
 		{
-			//視点をプレイヤーに固定する
-			m_posV = object[count_object]->GetPos();
-			m_posV.y += CAMERA_POS_Y;
+			if (object[count_object]->GetObjType() == CObject::OBJTYPE::PLAYER)
+			{
+				//視点をプレイヤーに固定する
+				m_posV = object[count_object]->GetPos();
+				m_posV.y += CAMERA_POS_Y;
+			}
 		}
+
+		//注視点の場所を視点を元に移動
+		m_posR.x = m_posV.x + m_fDifferVR * sinf(m_rot.x) * sinf(m_rot.y);
+		m_posR.z = m_posV.z + m_fDifferVR * sinf(m_rot.x) * cosf(m_rot.y);
+		m_posR.y = m_posV.y + m_fDifferVR * cosf(m_rot.x);
 	}
-
-	//視点の場所を注視点を元に移動
-	m_posR.x = m_posV.x + m_fDifferVR * sinf(m_rot.x) * sinf(m_rot.y);
-	m_posR.z = m_posV.z + m_fDifferVR * sinf(m_rot.x) * cosf(m_rot.y);
-	m_posR.y = m_posV.y + m_fDifferVR * cosf(m_rot.x);
-
-	
-	
+	else
+	{
+		//視点の場所を注視点を元に移動
+		m_posV.x = m_posR.x + m_fDifferVR * sinf(m_rot.x) * sinf(m_rot.y);
+		m_posV.z = m_posR.z + m_fDifferVR * sinf(m_rot.x) * cosf(m_rot.y);
+		m_posV.y = m_posR.y + m_fDifferVR * cosf(m_rot.x);
+	}
 
 	//回転処理
 	Rotate();
