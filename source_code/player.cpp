@@ -181,7 +181,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
 	//Ž€‚ñ‚Å‚¢‚éŠŽ‚Âƒ‚ƒfƒ‹‚ª¶¬‚³‚ê‚Ä‚¢‚½‚ç
-	if (!m_bDeath && m_pAnimModel != nullptr)
+	if (!m_bDeath && m_pAnimModel != nullptr && CManager::GetInstance()->GetGame01()->GetAllConnect())
 	{
 		//ˆÊ’uŽæ“¾
 		D3DXVECTOR3 pos = GetPos();

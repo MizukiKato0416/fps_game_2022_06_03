@@ -147,6 +147,7 @@ void CTitle::Update(void)
 {
 	POINT mouse_pos;
 	GetCursorPos(&mouse_pos);
+	ScreenToClient(CManager::GetWindowHandle(), &mouse_pos);
 	CInputMouse *mouse = CManager::GetInstance()->GetInputMouse();
 	D3DXVECTOR3 pointor_size = m_pointor->GetSize();
 	D3DXVECTOR3 pointor_pos = { (float)mouse_pos.x, (float)mouse_pos.y, 0.0f };
