@@ -37,7 +37,8 @@ CTitle::~CTitle()
 //=============================================================================
 HRESULT CTitle::Init(void)
 {
-	
+	m_te = CObject2D::Create({ SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, (int)CObject::PRIORITY::UI);
+
 	return S_OK;
 }
 

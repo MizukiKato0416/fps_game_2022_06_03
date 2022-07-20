@@ -73,8 +73,6 @@ HRESULT CGame01::Init(void)
 
 	LoadModelTxt("data/model_set.txt");
 
-
-
 	return S_OK;
 }
 
@@ -83,8 +81,6 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
-	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-	pClient->Uninit();
 	//オブジェクトの破棄
 	Release();
 }
@@ -175,6 +171,7 @@ void CGame01::FirstContact(void)
 
 	ConnectLoading.detach();
 
+	pClient->Init();
 	pClient->Connect();
 
 	if (pClient->GetConnect() == true)

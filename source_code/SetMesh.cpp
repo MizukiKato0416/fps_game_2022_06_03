@@ -43,6 +43,8 @@ HRESULT CSetMesh::Init(D3DXVECTOR3 Vtxpos1, D3DXVECTOR3 Vtxpos2,
 
 	m_Size = Size;
 	m_MinSize = MinSize;
+	ColorChange(m_Color, m_TrajectColor);
+
 	return S_OK;
 }
 

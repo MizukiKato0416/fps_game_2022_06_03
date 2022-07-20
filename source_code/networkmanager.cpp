@@ -33,7 +33,8 @@ CNetWorkManager::CNetWorkManager()
 //=============================================================================
 CNetWorkManager::~CNetWorkManager()
 {
-
+	m_communication = nullptr;
+	m_enemy_data.clear();
 }
 
 //=============================================================================
@@ -54,10 +55,6 @@ void CNetWorkManager::Init(void)
 	if (m_communication == nullptr)
 	{
 		m_communication = new CTcpClient;
-		if (m_communication != nullptr)
-		{
-			m_communication->Init();
-		}
 	}
 }
 
@@ -69,7 +66,6 @@ void CNetWorkManager::Uninit(void)
 	// 終了処理
 	if (m_communication != nullptr)
 	{
-		m_communication->Uninit();
 		delete m_communication;
 		m_communication = nullptr;
 	}
@@ -90,6 +86,9 @@ void CNetWorkManager::Recv(void)
 		{
 			while (recv_size > 0)
 			{
+				//変数初期化
+				//m_player_data.Init();
+
 				char recv_data[MAX_COMMU_DATA];
 
 				CCommunicationData::COMMUNICATION_DATA *pDataBuf = new CCommunicationData::COMMUNICATION_DATA;
@@ -177,13 +176,24 @@ void CNetWorkManager::Recv(void)
 
 							// メモリのコピー
 							memcpy(pDataBuf, &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
 							player_data = m_player_data.GetCmmuData();
 
-							if (player_data->Player.nNumber != pDataBuf->Player.nNumber)
+							if (pDataBuf->Player.nNumber == 0)
 							{
-								// 情報を入れる
-								m_enemy_data[count_enemy].SetCmmuData(*pDataBuf);
+								continue;
+							}
+							else
+							{
+								if (player_data->Player.nNumber > pDataBuf->Player.nNumber)
+								{
+									// 情報を入れる
+									m_enemy_data[pDataBuf->Player.nNumber - 1].SetCmmuData(*pDataBuf);
+								}
+								else if (player_data->Player.nNumber < pDataBuf->Player.nNumber)
+								{
+									// 情報を入れる
+									m_enemy_data[pDataBuf->Player.nNumber - 2].SetCmmuData(*pDataBuf);
+								}
 							}
 
 							//// 割り振られていなかったら
@@ -205,5 +215,16 @@ void CNetWorkManager::Recv(void)
 			CCommunicationData::COMMUNICATION_DATA *data = m_player_data.GetCmmuData();
 			data->bConnect = false;
 		}
+	}
+}
+
+void CNetWorkManager::Reset(void)
+{
+	m_player_data.Init();
+	int enemy_max = m_enemy_data.size();
+
+	for (int count_enemy = 0; count_enemy < enemy_max; count_enemy++)
+	{
+		m_enemy_data[count_enemy].Init();
 	}
 }

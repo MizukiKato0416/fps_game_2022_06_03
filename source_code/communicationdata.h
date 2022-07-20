@@ -15,11 +15,12 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (3)
+#define MAX_PLAYER (1)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (512)
-#define SEND_COUNTER	(6)		//何フレームに一回サーバーから情報が送られてくるか
+#define SEND_COUNTER (6)		//何フレームに一回サーバーから情報が送られてくるか
+#define WIN_COUNTER (10)
 
 //-------------------------------
 // Classの定義
@@ -61,17 +62,24 @@ public:
 		int nFrameCount;	// フレームカウント
 		int nHitDamage;	// ダメージ
 		int nNumShot;	//何発撃ったか
+		int nKill;
+		int nDeath;
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA] = {};	// モーションの種類
 		bool bHit;	// 当たったか
+		bool bWin;
+		bool bDeath;		//死んだかどうか
+		bool bInvincible;	//無敵かどうか
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 	} PLAYUER_DATA;
 
 	typedef struct
 	{
 		D3DXVECTOR3 hitPos;	//当てた場所
+		D3DXVECTOR3 hitPlayerPos;	//プレイヤーにダメージを与えた敵の場所
 		HIT_TYPE type;		//当たったオブジェクトの種類
 		int nDamage;		//弾が持つダメージ量
+		int nGiveDamagePlayerNum;	//ダメージを与えた敵の番号
 		float fDiffer;	//当たった場所までの距離
 		bool bUse;	// 使ってるかどうか
 	} BULLET_DATA;
@@ -98,6 +106,8 @@ public:
 	~CCommunicationData();	// デフォルトデストラクタ
 	COMMUNICATION_DATA *GetCmmuData(void) { return &m_CommuData; }	// データのセッター
 	void SetCmmuData(COMMUNICATION_DATA Data) { m_CommuData = Data; }	// データのゲッダー
+	//初期化
+	void Init(void);
 private:
 	COMMUNICATION_DATA m_CommuData;	// データ
 };

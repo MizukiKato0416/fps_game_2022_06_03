@@ -161,6 +161,7 @@
     <ClCompile Include="BulletHoll.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
+    <ClCompile Include="counter.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="effect2D.cpp" />
     <ClCompile Include="effect3D.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="MouseTracking.cpp" />
     <ClCompile Include="Movement.cpp" />
     <ClCompile Include="networkmanager.cpp" />
+    <ClCompile Include="number.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="object2D.cpp" />
     <ClCompile Include="object3D.cpp" />
@@ -225,6 +227,7 @@
     <ClInclude Include="BulletHoll.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />
+    <ClInclude Include="counter.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="effect2D.h" />
     <ClInclude Include="effect3D.h" />
@@ -254,6 +257,7 @@
     <ClInclude Include="MouseTracking.h" />
     <ClInclude Include="Movement.h" />
     <ClInclude Include="networkmanager.h" />
+    <ClInclude Include="number.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="object2D.h" />
     <ClInclude Include="object3D.h" />
