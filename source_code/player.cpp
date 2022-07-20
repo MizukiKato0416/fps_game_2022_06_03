@@ -47,6 +47,9 @@
 #define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_RESPAWN_COUNT				(180)									//リスポーンするまでの時間
 #define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
+#define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
+#define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
+#define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
 
 //================================================
 //デフォルトコンストラクタ
@@ -1004,10 +1007,10 @@ void CPlayer::Respawn(void)
 						pCamera->SetPosR(m_pos);
 						//カメラの視点を頭上に固定
 						D3DXVECTOR3 posV = { 0.0f, 0.0f, 0.0f };
-						posV.y = m_pos.y + 100.0f;
+						posV.y = m_pos.y + PLAYER_DEATH_CAMERA_INIT_DIFFER;
 						pCamera->SetPosV(posV);
 						//視点から注視点までの距離を既定の値にする
-						pCamera->SetDiffer(50.0f);
+						pCamera->SetDiffer(PLAYER_DEATH_CAMERA_INIT_DIFFER);
 						//視点の固定を解除する
 						pCamera->SetLockPosV(false);
 						//カメラの向きを固定
@@ -1059,6 +1062,8 @@ void CPlayer::Respawn(void)
 				{
 					//視点の固定をオンにする
 					pCamera->SetLockPosV(true);
+					//カメラの向きを設定
+					pCamera->SetRotV(D3DXVECTOR3(CAMERA_INIT_ROT_X, D3DX_PI, 0.0f));
 				}
 			}
 		}
@@ -1079,16 +1084,16 @@ void CPlayer::Respawn(void)
 					float fDiffer = pCamera->GetDiffer();
 
 					//既定の値より小さいとき
-					if (fDiffer < 300.0f)
+					if (fDiffer < PLAYER_DEATH_CAMERA_MAX_DIFFER)
 					{
 						//既定の値分距離を離す
-						fDiffer += 4.0f;
+						fDiffer += PLAYER_DEATH_CAMERA_ADD_DIFFER;
 
 						//既定の値より大きくなったら
-						if (fDiffer > 300.0f)
+						if (fDiffer > PLAYER_DEATH_CAMERA_MAX_DIFFER)
 						{
 							//既定の値にする
-							fDiffer = 300.0f;
+							fDiffer = PLAYER_DEATH_CAMERA_MAX_DIFFER;
 						}
 
 						//距離を設定

@@ -183,7 +183,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, bool bWindow)
 	//フェードクラスの生成
 	m_pFade = CFade::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
 							D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
-							MODE::TITLE);	
+							MODE::GAME01);	
 
 	return S_OK;
 }
@@ -511,20 +511,6 @@ void CManager::SetMode(MODE mode)
 	case MODE::TITLE:
 		if (m_pTitle != nullptr)
 		{
-			//カメラの破棄
-			for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++)
-			{
-				if (m_apCamera[nCntCamera] != nullptr)
-				{
-					//終了処理
-					m_apCamera[nCntCamera]->Uninit();
-
-					//メモリの開放
-					delete m_apCamera[nCntCamera];
-					m_apCamera[nCntCamera] = nullptr;
-				}
-			}
-
 			m_pTitle->Uninit();
 			m_pTitle = nullptr;
 		}
@@ -553,20 +539,6 @@ void CManager::SetMode(MODE mode)
 	case MODE::RESULT:
 		if (m_pResult != nullptr)
 		{
-			//カメラの破棄
-			for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++)
-			{
-				if (m_apCamera[nCntCamera] != nullptr)
-				{
-					//終了処理
-					m_apCamera[nCntCamera]->Uninit();
-
-					//メモリの開放
-					delete m_apCamera[nCntCamera];
-					m_apCamera[nCntCamera] = nullptr;
-				}
-			}
-
 			m_pResult->Uninit();
 			m_pResult = nullptr;
 		}
@@ -589,15 +561,6 @@ void CManager::SetMode(MODE mode)
 			m_pTitle = new CTitle;
 			if (m_pTitle != nullptr)
 			{
-				//メインカメラの生成
-				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++)
-				{
-					m_apCamera[nCntCamera] = CCamera::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(CAMERA_INIT_ROT_X, D3DX_PI, 0.0f),
-																(float)(SCREEN_WIDTH / MAX_MAIN_CAMERA * nCntCamera), 0.0f,
-																(float)(SCREEN_WIDTH / MAX_MAIN_CAMERA), (float)SCREEN_HEIGHT);
-					m_apCamera[nCntCamera]->SetNum(nCntCamera);
-				}
-
 				m_pTitle->Init();
 			}
 		}
@@ -629,15 +592,6 @@ void CManager::SetMode(MODE mode)
 			m_pResult = new CResult;
 			if (m_pResult != nullptr)
 			{
-				//メインカメラの生成
-				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++)
-				{
-					m_apCamera[nCntCamera] = CCamera::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(CAMERA_INIT_ROT_X, D3DX_PI, 0.0f),
-																(float)(SCREEN_WIDTH / MAX_MAIN_CAMERA * nCntCamera), 0.0f,
-																(float)(SCREEN_WIDTH / MAX_MAIN_CAMERA), (float)SCREEN_HEIGHT);
-					m_apCamera[nCntCamera]->SetNum(nCntCamera);
-				}
-
 				m_pResult->Init();
 			}
 		}
