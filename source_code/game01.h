@@ -11,6 +11,7 @@
 class CPlayer;
 class CMeshField;
 class CEnemy;
+class CObject2D;
 
 //================================================
 //マクロ定義
@@ -35,8 +36,8 @@ public:
 	void Update(void);
 	void Draw(void);
 	bool MapLimit(CObject* pObj);		//マップの移動制限
+	bool GetAllConnect(void) { return m_bAllConnect; }
 	void FirstContact(void);
-	static void ConnectLading(bool *bConnect);
 	//敵のモデル取得処理
 	vector<CEnemy*> GetEnemy(void);
 
@@ -45,8 +46,11 @@ private:
 		
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
+	CObject2D *m_now_loding;
 	CMeshField *m_pMeshField;			//メッシュフィールドのポインタ
 	vector<CEnemy*> m_pEnemy;					//敵のモデルのポインタ
+	int m_count_pattern = 0;
+	int m_pattern_tex = 0;
 	bool m_bAllConnect;
 };	
 

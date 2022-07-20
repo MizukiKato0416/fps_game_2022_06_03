@@ -215,6 +215,7 @@
     <ClCompile Include="ThunderBill.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="Trajectory.cpp" />
+    <ClCompile Include="ui.cpp" />
     <ClCompile Include="xanimmodel.cpp" />
     <ClCompile Include="x_load.cpp" />
   </ItemGroup>
@@ -281,6 +282,7 @@
     <ClInclude Include="ThunderBill.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="Trajectory.h" />
+    <ClInclude Include="ui.h" />
     <ClInclude Include="xanimmodel.h" />
     <ClInclude Include="x_load.h" />
   </ItemGroup>

@@ -90,6 +90,37 @@ void CGame01::Uninit(void)
 //================================================
 void CGame01::Update(void)
 {
+	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
+	{
+		m_bAllConnect = true;
+	}
+
+	if (m_bAllConnect == false)
+	{
+		if (m_now_loding != nullptr)
+		{
+			m_count_pattern++;
+			if (m_count_pattern >= 25)
+			{
+				m_now_loding->SetTex(m_pattern_tex, 4);
+				m_pattern_tex++;
+				if (m_pattern_tex >= 4)
+				{
+					m_pattern_tex = 0;
+				}
+				m_count_pattern = 0;
+			}
+		}
+	}
+	else if (m_bAllConnect == true)
+	{
+		if (m_now_loding != nullptr)
+		{
+			m_now_loding->Uninit();
+			m_now_loding = nullptr;
+		}
+	}
+
 #ifdef _DEBUG
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
@@ -166,18 +197,17 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-
-	thread ConnectLoading(ConnectLading, &m_bAllConnect);
-
-	ConnectLoading.detach();
+	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
+	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
+	m_now_loding->SetTex(m_pattern_tex, 4);
 
 	pClient->Init();
 	pClient->Connect();
 
+	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	if (pClient->GetConnect() == true)
 	{
 		CManager::GetInstance()->GetNetWorkmanager()->CreateThread();
-		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 		bool bLoop = true;
 		while (bLoop)
@@ -213,16 +243,6 @@ void CGame01::FirstContact(void)
 	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 	{
 		m_pEnemy.push_back(CEnemy::Create());
-	}
-
-	m_bAllConnect = true;
-}
-
-void CGame01::ConnectLading(bool *bConnect)
-{
-	while (*bConnect == false)
-	{
-
 	}
 }
 
