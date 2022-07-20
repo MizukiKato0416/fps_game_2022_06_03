@@ -21,6 +21,7 @@ CXanimModel::CXanimModel()
 	m_size = { 0.0f, 0.0f, 0.0f };
 	m_vtx_min = { 100000.0f, 100000.0f, 100000.0f };
 	m_vtx_max = { -100000.0f, -100000.0f, -100000.0f };
+	m_bParent = false;
 }
 
 //=============================================================================
@@ -37,6 +38,7 @@ CXanimModel::~CXanimModel()
 HRESULT CXanimModel::Init(void)
 {
 	int nMaxAnim;
+	m_bParent = true;
 
 	if (m_anim_controller != nullptr)
 	{
@@ -151,12 +153,15 @@ void CXanimModel::Draw(void)
 						&m_mtx_wold,
 						&trans_matrix);
 
-	mtx_parent = m_mtx_pearent;
+	if (m_bParent)
+	{
+		mtx_parent = m_mtx_pearent;
 
-	//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
-	D3DXMatrixMultiply(	&m_mtx_wold,
-						&m_mtx_wold,
-						&m_mtx_pearent);
+		//パーツのワールドマトリックスと親のワールドマトリックスを掛け合わせる
+		D3DXMatrixMultiply(&m_mtx_wold,
+			&m_mtx_wold,
+			&m_mtx_pearent);
+	}
 
 	DrawMatrix(&m_mtx_wold);
 }

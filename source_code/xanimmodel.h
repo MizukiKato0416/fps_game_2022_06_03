@@ -49,6 +49,7 @@ public:
 	D3DXVECTOR3 GetRot(void) { return m_rot; }	// ゲッター
 	D3DXVECTOR3 GetSize(void) { return m_size; }	// ゲッター
 	string GetAnimation(void) { return m_anim_now_type.first; }	// ゲッター
+	void SetParent(const bool &bParent) { m_bParent = bParent; }		//親設定処理
 private:
 	HierarchyData m_hierarchy_data;	// 階層データ
 	LPD3DXFRAME m_root_frame;	// ルートフレーム
@@ -65,5 +66,6 @@ private:
 	D3DXVECTOR3 m_size;	// サイズ
 	D3DXVECTOR3 m_vtx_min;	// モデルの最小頂点
 	D3DXVECTOR3 m_vtx_max;	// モデルの最大頂点
+	bool m_bParent;			//親を使うかどうか
 };
 #endif

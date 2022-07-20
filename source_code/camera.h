@@ -68,6 +68,8 @@ public:
 	float GetRadius(void) { return m_fRadius; }
 	//画角設定処理
 	void SetRadius(const float fRadius) { m_fRadius = fRadius; }
+	//視点固定しているかどうか設定処理
+	void SetLockPosV(const bool bLockPosV) { m_bLockPosV = bLockPosV; }
 
 private:
 	//メンバ関数
@@ -93,6 +95,7 @@ private:
 	int m_nNum;								//cameraの個体識別番号
 	float m_fDifferVR;						//視点と注視点の距離
 	float m_fRadius;						//画角
+	bool m_bLockPosV;						//視点の位置を固定するかどうか
 };
 
 #endif //!_CAMERA_H_
