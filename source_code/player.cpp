@@ -789,6 +789,23 @@ void CPlayer::Shot(void)
 			//弾の生成
 			pBullet = CBullet::Create();
 
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//反動を設定
+					D3DXVECTOR3 rotV = pCamera->GetRotV();
+					rotV.x -= 0.02f;
+					rotV.y -= ((rand() % 30 + -15) / 1000.0f);
+					pCamera->SetRotV(rotV);
+				}
+			}
+
 			//撃っていない状態にする
 			m_bShot = false;
 		}
