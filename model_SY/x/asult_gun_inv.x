@@ -635,7 +635,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "TEXTURE\\MESH\\gun.jpg";
+    "data\\TEXTURE\\MESH\\gun.jpg";
    }
   }
  }
