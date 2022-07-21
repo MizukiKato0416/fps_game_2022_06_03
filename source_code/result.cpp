@@ -91,7 +91,7 @@ HRESULT CResult::Init(void)
 	m_Ui[1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("p_scoreboard.png"));
 
 	CCommunicationData::COMMUNICATION_DATA *pData[MAX_PLAYER + 1];
-	float difference = 5.0f;
+	float difference = 0.0f;
 	pData[0] = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	for (int count_enemy = 0; count_enemy < max_enemy; count_enemy++)
 	{
@@ -103,24 +103,28 @@ HRESULT CResult::Init(void)
 		switch (pData[count_player]->Player.nNumber)
 		{
 		case 1:
+			difference = 5.0f;
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 2:
+			difference = 6.0f;
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 3:
+			difference = 7.0f;
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 4:
+			difference = 8.0f;
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
@@ -133,7 +137,6 @@ HRESULT CResult::Init(void)
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		}
-		difference += 1.0f;
 	}
 
 	return S_OK;

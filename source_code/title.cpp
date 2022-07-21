@@ -126,7 +126,7 @@ HRESULT CTitle::Init(void)
 
 	m_pointor = CObject2D::Create({ 0.0f, 0.0f, 0.0f }, { 83.0f * 0.9f, 74.0f * 0.9f, 0.0f }, (int)CObject::PRIORITY::UI);
 	m_pointor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
-	ShowCursor(FALSE);
+	//ShowCursor(FALSE);
 
 	return S_OK;
 }
