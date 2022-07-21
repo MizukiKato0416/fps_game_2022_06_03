@@ -561,3 +561,39 @@ D3DXMATRIX *CXanimModel::GetMatrix(string name)
 
 	return buf;
 }
+
+void CXanimModel::SetCol(D3DXCOLOR col)
+{
+	CheckFrame(m_root_frame, col);
+}
+
+void CXanimModel::CheckFrame(LPD3DXFRAME frame, D3DXCOLOR col)
+{
+	FrameData *frame_data = (FrameData*)frame;
+	LPD3DXMESHCONTAINER container_data = frame_data->pMeshContainer;
+
+	// コンテナの数だけ描画する
+	while (container_data != NULL)
+	{
+		int num_material = container_data->NumMaterials;
+
+		for (int count_material = 0; count_material < num_material; count_material++)
+		{
+			container_data->pMaterials[count_material].MatD3D.Diffuse = col;
+		}
+
+		container_data = container_data->pNextMeshContainer;
+	}
+
+	// 兄弟がいれば再帰で呼び出す
+	if (frame_data->pFrameSibling != NULL)
+	{
+		CheckFrame(frame_data->pFrameSibling, col);
+	}
+
+	// 子がいれば再帰で呼び出す
+	if (frame_data->pFrameFirstChild != NULL)
+	{
+		CheckFrame(frame_data->pFrameFirstChild, col);
+	}
+}

@@ -50,6 +50,8 @@ public:
 	D3DXVECTOR3 GetSize(void) { return m_size; }	// ゲッター
 	string GetAnimation(void) { return m_anim_now_type.first; }	// ゲッター
 	void SetParent(const bool &bParent) { m_bParent = bParent; }		//親設定処理
+	void SetCol(D3DXCOLOR col);
+	void CheckFrame(LPD3DXFRAME frame, D3DXCOLOR col);
 private:
 	HierarchyData m_hierarchy_data;	// 階層データ
 	LPD3DXFRAME m_root_frame;	// ルートフレーム
