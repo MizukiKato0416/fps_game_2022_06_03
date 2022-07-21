@@ -39,8 +39,9 @@
 #define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
-#define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
+#define PLAYER_SHOT_COUNTER					(4)										//次の弾が出るまでのカウンター
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -4.2f, 5.5f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -4.3f, 6.2f))		//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
@@ -63,6 +64,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pGunModel = nullptr;
+	m_pGunModelAds = nullptr;
 	m_fObjectiveRot = 0.0f;
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
@@ -118,6 +120,10 @@ HRESULT CPlayer::Init(void)
 	//銃モデルの生成
 	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
 	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+
+	//ADS銃モデルの生成
+	m_pGunModelAds = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
+	m_pGunModelAds->SetMtxParent(m_pGunModelAds->GetModel()->GetModel()->GetMtxPoint());
 
 	//位置の設定
 	SetPos(m_pos);
@@ -184,7 +190,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
 	//死んでいる且つモデルが生成されていたら
-	if (!m_bDeath && m_pAnimModel != nullptr && CManager::GetInstance()->GetGame01()->GetAllConnect())
+	if (!m_bDeath && m_pAnimModel != nullptr/* && CManager::GetInstance()->GetGame01()->GetAllConnect()*/)
 	{
 		//位置取得
 		D3DXVECTOR3 pos = GetPos();
@@ -341,6 +347,8 @@ void CPlayer::Update(void)
 
 		if (!m_bAds)
 		{
+			//描画するようにする
+			m_pGunModel->GetModel()->SetDraw(true);
 			//マトリックスを取得
 			D3DXMATRIX *handR = nullptr;
 			handR = m_pAnimModel->GetMatrix("handR");
@@ -352,16 +360,33 @@ void CPlayer::Update(void)
 			m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
 			m_pGunModel->GetModel()->SetCulliMode(false);
 			m_pGunModel->Draw();
+			//ADS用の描画を消す
+			m_pGunModelAds->GetModel()->SetDraw(false);
 		}
 		else
 		{
+			//描画するようにする
+			m_pGunModelAds->GetModel()->SetDraw(true);
 			//銃と親子関係をつける
-			m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
-			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
-			m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
-			m_pGunModel->GetModel()->SetCulliMode(true);
-			m_pGunModel->Draw();
+			m_pGunModelAds->GetModel()->GetModel()->SetMtxParent(cameraMtx);
+			m_pGunModelAds->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunModelAds->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
+
+			//発射時
+			if (m_bShot)
+			{
+				//オフセットの設定
+				m_pGunModelAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET_SHOT);
+			}
+			else
+			{
+				//オフセットの設定
+				m_pGunModelAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+			}
+			m_pGunModelAds->GetModel()->SetCulliMode(true);
+			m_pGunModelAds->Draw();
+			//普通用の銃のモデルの描画を消す
+			m_pGunModel->GetModel()->SetDraw(false);
 		}
 
 		//射撃処理
@@ -730,9 +755,21 @@ void CPlayer::Shot(void)
 		//撃っている状態なら
 		if (m_bShot == true)
 		{
-			m_pGunModel->GetModel()->GetModel()->SetMtx();
-			//オフセット位置設定
-			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
+			D3DXVECTOR3 pos = { 0.0f, 0.0f,0.0f };
+			//ADSしていなかったら
+			if (!m_bAds)
+			{
+				m_pGunModel->GetModel()->GetModel()->SetMtx();
+				//オフセット位置設定
+				pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
+			}
+			else
+			{//ADSしたら
+				m_pGunModelAds->GetModel()->GetModel()->SetMtx();
+				//オフセット位置設定
+				pos = { m_pGunModelAds->GetMuzzleMtx()._41, m_pGunModelAds->GetMuzzleMtx()._42, m_pGunModelAds->GetMuzzleMtx()._43 };
+			}
+			
 
 			//ADS状態なら
 			if (m_bAds)
@@ -768,6 +805,8 @@ void CPlayer::Shot(void)
 	}
 	else
 	{
+		//撃っていない状態にする
+		m_bShot = false;
 		//弾を使ってない
 		pData->Bullet.bUse = false;
 		pData->Bullet.fDiffer = 0.0f;
@@ -952,6 +991,8 @@ void CPlayer::HitBullet(void)
 				m_bDeath = true;
 				//銃の描画を消す
 				m_pGunModel->GetModel()->SetDraw(false);
+				//銃の描画を消す
+				m_pGunModelAds->GetModel()->SetDraw(false);
 				//デス数を増やす
 				pData->Player.nDeath++;
 				//死んだことをサーバーに設定
@@ -1206,4 +1247,19 @@ bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius)
 	}
 
 	return false;
+}
+
+//================================================
+//銃取得処理
+//================================================
+CGunModel * CPlayer::GetGunModel(void)
+{
+	if (!m_bAds)
+	{
+		return m_pGunModel;
+	}
+	else
+	{
+		return m_pGunModelAds;
+	}
 }
