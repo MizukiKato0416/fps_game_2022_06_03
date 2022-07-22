@@ -13,7 +13,7 @@
 #include "ballistic.h"
 #include "renderer.h"
 #include "player.h"
-#include "gunmodel.h"
+#include "gun_player.h"
 #include "mesh_field.h"
 #include "xanimmodel.h"
 #include "hierarchydata.h"
@@ -192,7 +192,7 @@ HRESULT CBullet::Init(void)
 		}
 	}
 	//銃口のマトリックス
-	D3DXMATRIX mtx = pPlayerObj->GetGunModel()->GetMuzzleMtx();
+	D3DXMATRIX mtx = pPlayerObj->GetGunPlayer()->GetMuzzleMtx();
 	D3DXVECTOR3 gunPos = { mtx._41, mtx._42, mtx._43 };
 
 	//モデルと当たっているとき

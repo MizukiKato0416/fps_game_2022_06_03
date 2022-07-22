@@ -172,6 +172,7 @@
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="game01.cpp" />
     <ClCompile Include="gunmodel.cpp" />
+    <ClCompile Include="gun_player.cpp" />
     <ClCompile Include="hierarchydata.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="floor.h" />
     <ClInclude Include="game01.h" />
     <ClInclude Include="gunmodel.h" />
+    <ClInclude Include="gun_player.h" />
     <ClInclude Include="hierarchydata.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="input_keyboard.h" />

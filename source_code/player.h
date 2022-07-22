@@ -8,7 +8,7 @@
 #include "communicationdata.h"
 
 //前方宣言
-class CGunModel;
+class CGunPlayer;
 class CSparkle;
 class CWind;
 class CXanimModel;
@@ -53,9 +53,11 @@ public:
 	bool GetObjParent(void) { return m_bObjParent; }										//オブジェクトとの親子関係取得処理
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
-	CGunModel *GetGunModel(void);															//銃取得処理
+	CGunPlayer *GetGunPlayer(void);															//銃取得処理
 	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
 	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
+	void SetAnimSpeed(const float &fAnimSpeed) { m_fAnimSpeed = fAnimSpeed; }				//アニメーションのスピード設定処理
+	float GetAnimSpeed(void) { return m_fAnimSpeed; }										//アニメーションのスピード取得処理
 
 private:
 	//メンバ関数
@@ -75,8 +77,8 @@ private:
 	D3DXVECTOR3 m_move;								//ポリゴンの移動量
 	D3DXVECTOR3	m_size;								//サイズ
 	D3DXVECTOR3 m_rot;								//向き
-	CGunModel *m_pGunModel;							//銃モデルのポインタ
-	CGunModel *m_pGunModelAds;						//ADS用の銃モデルのポインタ
+	CGunPlayer *m_pGunPlayer;							//銃モデルのポインタ
+	CGunPlayer *m_pGunPlayerAds;						//ADS用の銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	float m_fObjectiveRot;							//目的の向き
 	float m_fNumRot;								//向きを変える量

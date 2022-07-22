@@ -24,7 +24,7 @@
 #include "game01.h"
 #include "PresetSetEffect.h"
 #include "bullet.h"
-#include "gunmodel.h"
+#include "gun_player.h"
 #include "object2D.h"
 #include "enemy.h"
 #include "networkmanager.h"
@@ -63,8 +63,8 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_offsetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_pGunModel = nullptr;
-	m_pGunModelAds = nullptr;
+	m_pGunPlayer = nullptr;
+	m_pGunPlayerAds = nullptr;
 	m_fObjectiveRot = 0.0f;
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
@@ -118,12 +118,12 @@ HRESULT CPlayer::Init(void)
 	m_nInvincibleCounter = 0;
 
 	//銃モデルの生成
-	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
-	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
+	m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 
 	//ADS銃モデルの生成
-	m_pGunModelAds = CGunModel::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
-	m_pGunModelAds->SetMtxParent(m_pGunModelAds->GetModel()->GetModel()->GetMtxPoint());
+	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
+	m_pGunPlayerAds->SetMtxParent(m_pGunPlayerAds->GetModel()->GetModel()->GetMtxPoint());
 
 	//位置の設定
 	SetPos(m_pos);
@@ -348,45 +348,45 @@ void CPlayer::Update(void)
 		if (!m_bAds)
 		{
 			//描画するようにする
-			m_pGunModel->GetModel()->SetDraw(true);
+			m_pGunPlayer->GetModel()->SetDraw(true);
 			//マトリックスを取得
 			D3DXMATRIX *handR = nullptr;
 			handR = m_pAnimModel->GetMatrix("handR");
-			m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+			m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 			//銃と親子関係をつける
-			m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
-			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
-			m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
-			m_pGunModel->GetModel()->SetCulliMode(false);
-			m_pGunModel->Draw();
+			m_pGunPlayer->GetModel()->GetModel()->SetMtxParent(handR);
+			m_pGunPlayer->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunPlayer->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+			m_pGunPlayer->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+			m_pGunPlayer->GetModel()->SetCulliMode(false);
+			m_pGunPlayer->Draw();
 			//ADS用の描画を消す
-			m_pGunModelAds->GetModel()->SetDraw(false);
+			m_pGunPlayerAds->GetModel()->SetDraw(false);
 		}
 		else
 		{
 			//描画するようにする
-			m_pGunModelAds->GetModel()->SetDraw(true);
+			m_pGunPlayerAds->GetModel()->SetDraw(true);
 			//銃と親子関係をつける
-			m_pGunModelAds->GetModel()->GetModel()->SetMtxParent(cameraMtx);
-			m_pGunModelAds->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunModelAds->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
+			m_pGunPlayerAds->GetModel()->GetModel()->SetMtxParent(cameraMtx);
+			m_pGunPlayerAds->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunPlayerAds->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
 
 			//発射時
 			if (m_bShot)
 			{
 				//オフセットの設定
-				m_pGunModelAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET_SHOT);
+				m_pGunPlayerAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET_SHOT);
 			}
 			else
 			{
 				//オフセットの設定
-				m_pGunModelAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+				m_pGunPlayerAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
 			}
-			m_pGunModelAds->GetModel()->SetCulliMode(true);
-			m_pGunModelAds->Draw();
+			m_pGunPlayerAds->GetModel()->SetCulliMode(true);
+			m_pGunPlayerAds->Draw();
 			//普通用の銃のモデルの描画を消す
-			m_pGunModel->GetModel()->SetDraw(false);
+			m_pGunPlayer->GetModel()->SetDraw(false);
 		}
 
 		//射撃処理
@@ -739,14 +739,29 @@ void CPlayer::Shot(void)
 
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
-		//撃つアニメーションでなかったら
-		if (m_pAnimModel->GetAnimation() != "fireneutral")
+		if (m_move.x != 0.0f || m_move.z != 0.0f)
 		{
-			//撃つモーションにする
-			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
-			memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
-			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+			//撃つアニメーションでなかったら
+			if (m_pAnimModel->GetAnimation() != "fireneutral")
+			{
+				//撃つモーションにする
+				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+				m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+			}
+		}
+		else
+		{
+			//撃つアニメーションでなかったら
+			if (m_pAnimModel->GetAnimation() != "fireneutral")
+			{
+				//撃つモーションにする
+				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+				m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+			}
 		}
 
 		//カウンターを減算
@@ -759,15 +774,15 @@ void CPlayer::Shot(void)
 			//ADSしていなかったら
 			if (!m_bAds)
 			{
-				m_pGunModel->GetModel()->GetModel()->SetMtx();
+				m_pGunPlayer->GetModel()->GetModel()->SetMtx();
 				//オフセット位置設定
-				pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
+				pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
 			}
 			else
 			{//ADSしたら
-				m_pGunModelAds->GetModel()->GetModel()->SetMtx();
+				m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
 				//オフセット位置設定
-				pos = { m_pGunModelAds->GetMuzzleMtx()._41, m_pGunModelAds->GetMuzzleMtx()._42, m_pGunModelAds->GetMuzzleMtx()._43 };
+				pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };
 			}
 			
 
@@ -1007,9 +1022,9 @@ void CPlayer::HitBullet(void)
 				//死んでいる状態にする
 				m_bDeath = true;
 				//銃の描画を消す
-				m_pGunModel->GetModel()->SetDraw(false);
+				m_pGunPlayer->GetModel()->SetDraw(false);
 				//銃の描画を消す
-				m_pGunModelAds->GetModel()->SetDraw(false);
+				m_pGunPlayerAds->GetModel()->SetDraw(false);
 				//デス数を増やす
 				pData->Player.nDeath++;
 				//死んだことをサーバーに設定
@@ -1096,7 +1111,7 @@ void CPlayer::Respawn(void)
 			//死んでいない状態にする
 			m_bDeath = false;
 			//銃の描画をする
-			m_pGunModel->GetModel()->SetDraw(true);
+			m_pGunPlayer->GetModel()->SetDraw(true);
 			//死んだとき用のモデルを消す
 			if (m_pDeathModel != nullptr)
 			{
@@ -1269,14 +1284,14 @@ bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius)
 //================================================
 //銃取得処理
 //================================================
-CGunModel * CPlayer::GetGunModel(void)
+CGunPlayer * CPlayer::GetGunPlayer(void)
 {
 	if (!m_bAds)
 	{
-		return m_pGunModel;
+		return m_pGunPlayer;
 	}
 	else
 	{
-		return m_pGunModelAds;
+		return m_pGunPlayerAds;
 	}
 }

@@ -200,6 +200,7 @@ void CGame01::FirstContact(void)
 	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
 	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
 	m_now_loding->SetTex(m_pattern_tex, 4);
+	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 
 	pClient->Init();
 	pClient->Connect();
