@@ -320,3 +320,5 @@ pos = -1822.82 191.10 63.66
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
+
+END_SCRIPT

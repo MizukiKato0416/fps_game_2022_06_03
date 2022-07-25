@@ -13,6 +13,7 @@
 #include "ui.h"
 #include "object2D.h"
 #include "input_mouse.h"
+#include "fileload.h"
 
 //=============================================================================
 // マクロ定義
@@ -39,89 +40,15 @@ CTitle::~CTitle()
 //=============================================================================
 HRESULT CTitle::Init(void)
 {
-	FILE *pFile;
-	string FileString;
-	D3DXVECTOR3 Pos;
-	D3DXVECTOR3 Size;
-	D3DXVECTOR3 Stop;
-	int nBlinkingType = 0;
-	int nBlinkingSpeed = 0;
-	int nMoveType = 0;
-	float fMoveSpeed;
-	char aFile[1][128];
+	vector<string> txt_data;	// テキストファイルの保存バッファ
+	vector<CFileLoad::TITLE_ALLOCATION_DATA> title;	// ステージ情報
 
-	pFile = fopen("data/titledata.txt", "r");
-
-	if (pFile != NULL)
+	txt_data = CFileLoad::LoadTxt("data/titledata.txt");
+	title = CFileLoad::CreateTitleAllocation(txt_data);
+	int stage_element = title.size();
+	for (int count_stage = 0; count_stage < stage_element; count_stage++)
 	{
-		int nCnt = 0;
-		while (true)
-		{
-			fscanf(pFile, "%s", aFile[0]);
-			if (strcmp(aFile[0], "SET_UI") == 0) // SET_UIの文字列を見つけたら
-			{
-				while (true)
-				{
-					fscanf(pFile, "%s", aFile[0]);
-					// TEX_TYPEの文字列を見つけたら
-					if (strcmp(aFile[0], "TEX_TYPE") == 0) // TEX_TYPEの文字列を見つけたら
-					{
-						char aTypeBuf[1][64];
-						string Type;
-						fscanf(pFile, "%*s%s", aTypeBuf[0]);
-						Type = aTypeBuf[0];
-						m_type.push_back(Type);
-					}
-					// POSの文字列を見つけたら
-					else if (strcmp(aFile[0], "POS") == 0)
-					{
-						fscanf(pFile, "%*s%f%*s%f%*s%f", &Pos.x, &Pos.y, &Pos.z);
-					}
-					// SIZEの文字列を見つけたら
-					else if (strcmp(aFile[0], "SIZE") == 0)
-					{
-						fscanf(pFile, "%*s%f%*s%f%*s%f", &Size.x, &Size.y, &Size.z);
-					}
-					// BLINKINGの文字列を見つけたら
-					else if (strcmp(aFile[0], "BLINKING") == 0)
-					{
-						fscanf(pFile, "%*s%d", &nBlinkingType);
-					}
-					// BLINKING_SPEEDの文字列を見つけたら
-					else if (strcmp(aFile[0], "BLINKING_SPEED") == 0)
-					{
-						fscanf(pFile, "%*s%d", &nBlinkingSpeed);
-					}
-					// MOVEの文字列を見つけたら
-					else if (strcmp(aFile[0], "MOVE") == 0)
-					{
-						fscanf(pFile, "%*s%d", &nMoveType);
-					}
-					// MOVE_SPEEDの文字列を見つけたら
-					else if (strcmp(aFile[0], "MOVE_SPEED") == 0)
-					{
-						fscanf(pFile, "%*s%f", &fMoveSpeed);
-					}
-					// STOP_POINTの文字列を見つけたら
-					else if (strcmp(aFile[0], "STOP_POINT") == 0)
-					{
-						fscanf(pFile, "%*s%f%*s%f%*s%f", &Stop.x, &Stop.y, &Stop.z);
-					}
-					// END_UISETの文字列を見つけたら
-					else if (strcmp(aFile[0], "END_UISET") == 0)
-					{
-						m_ui.push_back(CUi::Create(Pos, Size, Stop, nBlinkingType, nMoveType, nBlinkingSpeed, fMoveSpeed, m_type[nCnt]));
-						nCnt++;
-						break;
-					}
-				}
-			}
-			else if (strcmp(aFile[0], "END") == 0)
-			{
-				break;
-			}
-		}
-		fclose(pFile);
+		m_ui.push_back(CUi::Create(title[count_stage].pos, title[count_stage].size, title[count_stage].stop, title[count_stage].blinking_type, title[count_stage].move_type, title[count_stage].blinking_speed, title[count_stage].move_speed, title[count_stage].pas));
 	}
 
 	m_pointor = CObject2D::Create({ 0.0f, 0.0f, 0.0f }, { 83.0f * 0.9f, 74.0f * 0.9f, 0.0f }, (int)CObject::PRIORITY::UI);
