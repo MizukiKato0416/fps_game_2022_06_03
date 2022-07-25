@@ -51,8 +51,10 @@
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
-#define PLAYER_GUN_RECOIL_X					(((rand() % 30 + -15) / 1000.0f))		//リコイルX
-#define PLAYER_GUN_RECOIL_Y					(0.02f)									//リコイルY
+#define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
+#define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
+#define PLAYER_GUN_MAGAZINE_NUM				(30)									//弾倉の数
+#define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 
 //================================================
 //デフォルトコンストラクタ
@@ -83,6 +85,9 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
 	m_nInvincibleCounter = 0;
+	m_nMagazineNum = 0;
+	m_nReloadCounter = 0;
+	m_bReload = false;
 }
 
 //================================================
@@ -118,9 +123,13 @@ HRESULT CPlayer::Init(void)
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
 	m_nInvincibleCounter = 0;
+	m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+	m_nReloadCounter = 0;
+	m_bReload = false;
+
 
 	//銃モデルの生成
-	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
+	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
 	m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 
 	//ADS銃モデルの生成
@@ -138,9 +147,6 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel = CXanimModel::Create("data/armmotion.x");
 	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
-
-	//当たり判定ボックスの生成
-	//m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -393,6 +399,13 @@ void CPlayer::Update(void)
 
 		//射撃処理
 		Shot();
+
+		//リロード中なら
+		if (m_bReload)
+		{
+			//リロード処理
+			Reload();
+		}
 
 		m_pAnimModel->Update();
 
@@ -766,77 +779,92 @@ void CPlayer::Shot(void)
 			}
 		}
 
-		//カウンターを減算
-		m_nCounter--;
-
-		//撃っている状態なら
-		if (m_bShot == true)
+		//弾倉があったら
+		if (m_nMagazineNum > 0)
 		{
-			D3DXVECTOR3 pos = { 0.0f, 0.0f,0.0f };
-			//ADSしていなかったら
-			if (!m_bAds)
+			//カウンターを減算
+			m_nCounter--;
+
+			//撃っている状態なら
+			if (m_bShot == true)
 			{
-				//ワールドマトリックス設定処理
-				m_pGunPlayer->GetModel()->GetModel()->SetMtx();
-				//オフセット位置設定
-				pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
-			}
-			else
-			{//ADSしたら
-				//ワールドマトリックス設定処理
-				m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
-				//オフセット位置設定
-				pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };
-			}
-			
-
-			//ADS状態なら
-			if (m_bAds)
-			{
-				//マズルフラッシュエフェクトの生成
-				CPresetEffect::SetEffect3D(7, pos, {}, {});
-				CPresetEffect::SetEffect3D(8, pos, {}, {});
-			}
-			else
-			{//ADS状態でないなら
-			 //マズルフラッシュエフェクトの生成
-				CPresetEffect::SetEffect3D(0, pos, {}, {});
-				CPresetEffect::SetEffect3D(1, pos, {}, {});
-			}
-
-			CBullet *pBullet;	// 弾のポインタ
-			//弾の生成
-			pBullet = CBullet::Create();
-
-			//cameraのポインタ配列1番目のアドレス取得
-			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
-
-			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
-			{
-				//cameraの取得
-				CCamera *pCamera = &**pCameraAddress;
-				if (pCamera != nullptr)
+				D3DXVECTOR3 pos = { 0.0f, 0.0f,0.0f };
+				//ADSしていなかったら
+				if (!m_bAds)
 				{
-					//反動を設定
-					D3DXVECTOR3 rotV = pCamera->GetRotV();
-					rotV.x -= 0.02f;
-					rotV.y -= ((rand() % 30 + -15) / 1000.0f);
-					pCamera->SetRotV(rotV);
+					//ワールドマトリックス設定処理
+					m_pGunPlayer->GetModel()->GetModel()->SetMtx();
+					//オフセット位置設定
+					pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
 				}
+				else
+				{//ADSしたら
+				 //ワールドマトリックス設定処理
+					m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
+					//オフセット位置設定
+					pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };
+				}
+
+
+				//ADS状態なら
+				if (m_bAds)
+				{
+					//マズルフラッシュエフェクトの生成
+					CPresetEffect::SetEffect3D(7, pos, {}, {});
+					CPresetEffect::SetEffect3D(8, pos, {}, {});
+				}
+				else
+				{//ADS状態でないなら
+				 //マズルフラッシュエフェクトの生成
+					CPresetEffect::SetEffect3D(0, pos, {}, {});
+					CPresetEffect::SetEffect3D(1, pos, {}, {});
+				}
+
+				//既定の値にする
+				m_nCounter = PLAYER_SHOT_COUNTER;
+
+				CBullet *pBullet;	// 弾のポインタ
+									//弾の生成
+				pBullet = CBullet::Create();
+
+				//弾倉を1減らす
+				m_nMagazineNum--;
+
+				//cameraのポインタ配列1番目のアドレス取得
+				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+				{
+					//cameraの取得
+					CCamera *pCamera = &**pCameraAddress;
+					if (pCamera != nullptr)
+					{
+						//反動を設定
+						D3DXVECTOR3 rotV = pCamera->GetRotV();
+						rotV.x -= PLAYER_GUN_RECOIL_Y;
+						rotV.y -= PLAYER_GUN_RECOIL_X;
+						pCamera->SetRotV(rotV);
+					}
+				}
+
+				//撃っていない状態にする
+				m_bShot = false;
 			}
 
-			//撃っていない状態にする
-			m_bShot = false;
+			//0より小さくなったら
+			if (m_nCounter < 0)
+			{
+				//撃ってる状態にする
+				m_bShot = true;
+			}
 		}
-
-		//0より小さくなったら
-		if (m_nCounter < 0)
-		{
-			//既定の値にする
-			m_nCounter = PLAYER_SHOT_COUNTER;
-
-			//撃ってる状態にする
-			m_bShot = true;
+		else
+		{//弾倉がなかったら
+			if (!m_bReload)
+			{
+				//リロード中にする
+				m_bReload = true;
+			}
 		}
 	}
 	else
@@ -866,13 +894,13 @@ void CPlayer::Shot(void)
 		}
 
 		//既定の値より小さかったら
-		if (m_nCounter > 0 && m_nCounter <= PLAYER_SHOT_COUNTER)
+		if (m_nCounter > 0)
 		{
-			//カウンターを加算
-			m_nCounter++;
+			//カウンターを減算
+			m_nCounter--;
 
-			//既定の値より大きくなったら
-			if (m_nCounter > PLAYER_SHOT_COUNTER)
+			//0以下になったら
+			if (m_nCounter <= 0)
 			{
 				//0にする
 				m_nCounter = 0;
@@ -1196,6 +1224,26 @@ void CPlayer::Respawn(void)
 			//カウンターを0にする
 			m_nInvincibleCounter = 0;
 		}
+	}
+}
+
+//================================================
+//リロード処理
+//================================================
+void CPlayer::Reload(void)
+{
+	//カウンターを加算
+	m_nReloadCounter++;
+
+	//既定の値より大きくなったら
+	if (m_nReloadCounter > PLAYER_GUN_RELOAD_TIME)
+	{
+		//0にする
+		m_nReloadCounter = 0;
+		//弾倉を既定の値にする
+		m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+		//リロード中でなくする
+		m_bReload = false;
 	}
 }
 

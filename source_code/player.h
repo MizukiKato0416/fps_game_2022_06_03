@@ -69,6 +69,7 @@ private:
 	void Chest(void);								//腰の処理
 	void HitBullet(void);							//被弾処理
 	void Respawn(void);								//リスポーン処理
+	void Reload(void);								//リロード処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -100,6 +101,9 @@ private:
 	int m_nRespawnCounter;							//リスポーンするまでのカウンター
 	bool m_bDeath;									//死んでいるかどうか
 	int m_nInvincibleCounter;						//無敵時間カウント用
+	int m_nMagazineNum;								//弾倉の数
+	int m_nReloadCounter;							//リロード時間カウント用
+	bool m_bReload;									//リロード中かどうか
 };
 
 #endif // !_PLAYER_H_
