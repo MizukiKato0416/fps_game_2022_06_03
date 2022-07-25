@@ -51,6 +51,8 @@
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
+#define PLAYER_GUN_RECOIL_X					(((rand() % 30 + -15) / 1000.0f))		//リコイルX
+#define PLAYER_GUN_RECOIL_Y					(0.02f)									//リコイルY
 
 //================================================
 //デフォルトコンストラクタ

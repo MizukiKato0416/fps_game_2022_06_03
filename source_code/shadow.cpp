@@ -84,6 +84,10 @@ void CShadow::Update(void)
 	//対象のオブジェクトの位置を取得
 	D3DXVECTOR3 posObj = m_pObject->GetPos();
 
+	//位置を設定
+	m_pos.x = posObj.x;
+	m_pos.z = posObj.z;
+
 	//高さの差を求める
 	float fDiffer = posObj.y - pos.y;
 
