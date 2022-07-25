@@ -30,10 +30,11 @@ public:
 	
 
 private:
+	vector<string> m_all_file;	//テキストファイルの全ての文字列
 	vector<LPD3DXMESH>  m_apMesh;			//メッシュ(頂点情報)へのポインタ
 	vector<LPD3DXBUFFER> m_apBuffMat;		//マテリアル(材質情報)へのポインタ
 	vector<DWORD> m_aNumMat;				//マテリアル数
-	CFileLoad::FILE_LOAD_DATA m_file_data;
+	CFileLoad::FILE_PAS_TYPE_DATA m_file_data;	//読み込みに必要な情報
 	int m_nNum;								//総数
 };
 
