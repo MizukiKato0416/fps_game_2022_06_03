@@ -260,34 +260,14 @@ vector<CEnemy*> CGame01::GetEnemy(void)
 //================================================
 void CGame01::LoadModelTxt(const string &Pas)
 {
-	//ファイルの読み込み
-	FILE *pFile;
-	pFile = fopen(Pas.c_str(), "r");
-	if (pFile != NULL)
-	{
-		char cStr[128];
-		while (fgets(cStr, 128, pFile) != nullptr)
-		{
-			if (strncmp("SET_MODEL\n", cStr, 11) == 0)
-			{
-				char cBuff[1][128];
-				string sPas;
-				D3DXVECTOR3 pos;
-				D3DXVECTOR3 rot;
-				int nColl;
-				fscanf(pFile, "%*s%*s%s", cBuff);
-				fscanf(pFile, "%*s%*s%f%f%f", &pos.x, &pos.y, &pos.z);
-				fscanf(pFile, "%*s%*s%f%f%f", &rot.x, &rot.y, &rot.z);
-				fscanf(pFile, "%*s%*s%d", &nColl);
+	vector<string> txt_data;	// テキストファイルの保存バッファ
+	vector<CFileLoad::STAGE_ALLOCATION_DATA> stage;	// ステージ情報
 
-				sPas = cBuff[0];
-				CModelSingle::Create(pos, rot, sPas, NULL, nColl);
-			}
-		}
-	}
-	else
+	txt_data = CFileLoad::LoadTxt(Pas);
+	stage = CFileLoad::CreateStageAllocation(txt_data);
+	int stage_element = stage.size();
+	for (int count_stage = 0; count_stage < stage_element; count_stage++)
 	{
-		printf("ファイルが開けませんでした\n");
+		CModelSingle::Create(stage[count_stage].pos, stage[count_stage].rot, stage[count_stage].pas, NULL, stage[count_stage].coll);
 	}
-	fclose(pFile);
 }

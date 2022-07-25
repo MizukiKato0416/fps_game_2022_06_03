@@ -33,7 +33,7 @@ void CXload::Init(void)
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	//デバイスを取得する
 
 	// ファイルを読み込む
-	m_all_file = CFileLoad::Load("data\\MODEL\\");
+	m_all_file = CFileLoad::LoadFile("data\\MODEL\\");
 	// パスと名前を取得
 	m_file_data = CFileLoad::CreateFilePasElement(m_all_file, "data\\MODEL\\");
 

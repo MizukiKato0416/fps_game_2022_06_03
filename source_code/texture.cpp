@@ -39,7 +39,7 @@ void CTexture::Init(void)
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスを取得する
 
 	// ファイルを読み込む
-	m_all_file = CFileLoad::Load("data\\TEXTURE\\");
+	m_all_file = CFileLoad::LoadFile("data\\TEXTURE\\");
 	// パスと名前を取得
 	m_file_data = CFileLoad::CreateFilePasElement(m_all_file, "data\\TEXTURE\\");
 
