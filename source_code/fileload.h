@@ -26,6 +26,7 @@ public:
 	CFileLoad();		//コンストラクタ
 	~CFileLoad();		//デストラクタ
 	static vector<string> Load(string load_file);	// ファイルロード
+	static FILE_PAS_TYPE_DATA CreateFilePasElement(vector<string> all_file_info, string load_file);
 private:
 };
 
