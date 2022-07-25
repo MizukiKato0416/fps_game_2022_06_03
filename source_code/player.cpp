@@ -774,12 +774,14 @@ void CPlayer::Shot(void)
 			//ADSしていなかったら
 			if (!m_bAds)
 			{
+				//ワールドマトリックス設定処理
 				m_pGunPlayer->GetModel()->GetModel()->SetMtx();
 				//オフセット位置設定
 				pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
 			}
 			else
 			{//ADSしたら
+				//ワールドマトリックス設定処理
 				m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
 				//オフセット位置設定
 				pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };

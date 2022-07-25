@@ -39,6 +39,7 @@ public:
 	CModelSingle *GetModel(void) { return m_model; }									//モデル取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxParent = mtx; }							//親のマトリックス取得処理
 	void Shot(void);																	//射撃処理
+	void ADS(void);																		//ADS処理
 
 private:
 	D3DXVECTOR3 m_pos;
@@ -48,6 +49,9 @@ private:
 	string m_type;
 	CModelSingle *m_model;					//モデルのポインタ
 	D3DXMATRIX *m_mtxParent;
+	int m_nCounter;							//連射用カウンター
+	bool m_bShot;							//撃ったかどうか
+	bool m_bAds;							//ADSしているかどうか
 };
 
 #endif

@@ -209,12 +209,14 @@ void CGunPlayer::Shot(void)
 	//				//ADSしていなかったら
 	//				if (!m_bAds)
 	//				{
-	//					m_pGunPlayer->GetModel()->GetModel()->SetMtx();
+	//					//ワールドマトリックス設定処理
+	//					m_model->GetModel()->SetMtx();
 	//					//オフセット位置設定
-	//					pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
+	//					pos = { m_mtx_muzzle_world._41, m_mtx_muzzle_world._42, m_mtx_muzzle_world._43 };
 	//				}
 	//				else
 	//				{//ADSしたら
+	//					//ワールドマトリックス設定処理
 	//					m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
 	//					//オフセット位置設定
 	//					pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };
@@ -307,6 +309,86 @@ void CGunPlayer::Shot(void)
 	//				{
 	//					//0にする
 	//					m_nCounter = 0;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+}
+
+//================================================
+//ADSの処理
+//================================================
+void CGunPlayer::ADS(void)
+{
+	////マウス取得処理
+	//CInputMouse *pInputMouse;
+	//pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	////右クリックをしたら
+	//if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_RIGHT) == true)
+	//{
+	//	//ADS状態でないなら
+	//	if (!m_bAds)
+	//	{
+	//		//ADS状態にする
+	//		m_bAds = true;
+	//	}
+	//	//cameraのポインタ配列1番目のアドレス取得
+	//	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	//	for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	//	{
+	//		//cameraの取得
+	//		CCamera *pCamera = &**pCameraAddress;
+	//		if (pCamera != nullptr)
+	//		{
+	//			//cameraの画角取得
+	//			float fRadius = pCamera->GetRadius();
+	//			//既定より大きいとき
+	//			if (fRadius > PLAYER_ADS_CAMERA_RADIUS)
+	//			{
+	//				//減らす
+	//				fRadius -= PLAYER_ADS_CAMERA_ADD_RADIUS;
+
+	//				//既定より小さくなったら
+	//				if (fRadius < PLAYER_ADS_CAMERA_RADIUS)
+	//				{
+	//					//既定の値にする
+	//					fRadius = PLAYER_ADS_CAMERA_RADIUS;
+	//				}
+	//				//画角を設定
+	//				pCamera->SetRadius(fRadius);
+	//			}
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	//ADS状態なら
+	//	if (m_bAds)
+	//	{
+	//		//ADS状態をやめる
+	//		m_bAds = false;
+
+	//		//cameraのポインタ配列1番目のアドレス取得
+	//		CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+	//		for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+	//		{
+	//			//cameraの取得
+	//			CCamera *pCamera = &**pCameraAddress;
+	//			if (pCamera != nullptr)
+	//			{
+	//				//cameraの画角取得
+	//				float fRadius = pCamera->GetRadius();
+	//				//既定より小さいとき
+	//				if (fRadius < CAMERA_RADIUS)
+	//				{
+	//					//既定の値にする
+	//					fRadius = CAMERA_RADIUS;
+	//					//画角を設定
+	//					pCamera->SetRadius(fRadius);
 	//				}
 	//			}
 	//		}
