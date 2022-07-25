@@ -320,5 +320,53 @@ pos = -1822.82 191.10 63.66
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
+SET_MODEL
+pas = home_01.x
+pos = -292.53 443.55 -1087.49
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = home_03.x
+pos = 1173.65 317.34 -961.21
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = sandbag.x
+pos = 1494.26 104.06 603.36
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = stone001.x
+pos = 2052.30 -72.74 -1500.89
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = wood.x
+pos = 2919.69 -72.14 -185.33
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = drumcan.x
+pos = 943.83 72.14 317.96
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = drumcan.x
+pos = 0.00 0.00 0.00
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container_blue.x
+pos = 234.68 197.13 -2238.65
+rot = 0.00 -1.59 0.00
+coll = 1
+END_SET_MODEL
 
 END_SCRIPT

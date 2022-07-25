@@ -15,8 +15,8 @@
 //=============================================================================
 CCounter::CCounter()
 {
-	D3DXVECTOR3 m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 m_Size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_nNumberMax = 0;	// åÖêî
 	m_nCounter = 0;	// ÉXÉRÉA
 }
