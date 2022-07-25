@@ -20,13 +20,12 @@ class CFileLoad
 public:
 	typedef struct 
 	{
-		vector<string> pas;				// テクスチャのパス
 		pair<vector<string>, vector<string>> file_name_pas;	// パスと名前の読み込み
-		map<string, int> type;		// テクスチャの種類
-	} FILE_LOAD_DATA;
+		map<string, int> type;		// 疑似列挙型
+	} FILE_PAS_TYPE_DATA;
 	CFileLoad();		//コンストラクタ
 	~CFileLoad();		//デストラクタ
-	static pair<vector<string>, vector<string>> Load(string load_file);	// ファイルロード
+	static vector<string> Load(string load_file);	// ファイルロード
 private:
 };
 
