@@ -40,20 +40,22 @@
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
 #define PLAYER_SHOT_COUNTER					(4)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -4.2f, 5.5f))		//ADSしたときの銃のオフセット
-#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -4.3f, 6.2f))		//ADSしたときの銃のオフセット(撃った瞬間)
+//#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -4.2f, 5.5f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -13.8f, 7.9f))		//ADSしたときの銃のオフセット
+//#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -4.3f, 6.2f))	//ADSしたときの銃のオフセット(撃った瞬間)
+#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -13.9f, 8.9f))		//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_RESPAWN_COUNT				(180)									//リスポーンするまでの時間
+#define PLAYER_RESPAWN_COUNT				(150)									//リスポーンするまでの時間
 #define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
 #define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
 #define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
-#define PLAYER_GUN_MAGAZINE_NUM				(30)									//弾倉の数
+#define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 
 //================================================
@@ -133,7 +135,8 @@ HRESULT CPlayer::Init(void)
 	m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 
 	//ADS銃モデルの生成
-	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
+	//m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
+	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv3.x");
 	m_pGunPlayerAds->SetMtxParent(m_pGunPlayerAds->GetModel()->GetModel()->GetMtxPoint());
 
 	//位置の設定
@@ -378,7 +381,7 @@ void CPlayer::Update(void)
 			//銃と親子関係をつける
 			m_pGunPlayerAds->GetModel()->GetModel()->SetMtxParent(cameraMtx);
 			m_pGunPlayerAds->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunPlayerAds->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
+			m_pGunPlayerAds->GetModel()->GetModel()->SetRot({ 0.1f, 0.0f, 0.0f });
 
 			//発射時
 			if (m_bShot)
@@ -400,12 +403,8 @@ void CPlayer::Update(void)
 		//射撃処理
 		Shot();
 
-		//リロード中なら
-		if (m_bReload)
-		{
-			//リロード処理
-			Reload();
-		}
+		//リロード処理
+		Reload();
 
 		m_pAnimModel->Update();
 
@@ -757,11 +756,11 @@ void CPlayer::Shot(void)
 		if (m_move.x != 0.0f || m_move.z != 0.0f)
 		{
 			//撃つアニメーションでなかったら
-			if (m_pAnimModel->GetAnimation() != "fireneutral")
+			if (m_pAnimModel->GetAnimation() != "firewalk")
 			{
 				//撃つモーションにする
 				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-				m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
+				m_pAnimModel->ChangeAnimation("firewalk", m_fAnimSpeed);
 				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
 				memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 			}
@@ -1232,18 +1231,36 @@ void CPlayer::Respawn(void)
 //================================================
 void CPlayer::Reload(void)
 {
-	//カウンターを加算
-	m_nReloadCounter++;
 
-	//既定の値より大きくなったら
-	if (m_nReloadCounter > PLAYER_GUN_RELOAD_TIME)
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	//リロード中でない且つRキーを押したら
+	if (!m_bReload && pInputKeyboard->GetTrigger(DIK_R))
 	{
-		//0にする
-		m_nReloadCounter = 0;
-		//弾倉を既定の値にする
-		m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
-		//リロード中でなくする
-		m_bReload = false;
+		//弾倉を0にする
+		m_nMagazineNum = 0;
+		//リロード中にする
+		m_bReload = true;
+	}
+
+	//リロード中なら
+	if (m_bReload)
+	{
+		//カウンターを加算
+		m_nReloadCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nReloadCounter > PLAYER_GUN_RELOAD_TIME)
+		{
+			//0にする
+			m_nReloadCounter = 0;
+			//弾倉を既定の値にする
+			m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+			//リロード中でなくする
+			m_bReload = false;
+		}
 	}
 }
 

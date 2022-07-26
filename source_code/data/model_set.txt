@@ -327,12 +327,6 @@ rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
 SET_MODEL
-pas = home_03.x
-pos = 1173.65 317.34 -961.21
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
 pas = sandbag.x
 pos = 1494.26 104.06 603.36
 rot = 0.00 0.00 0.00
@@ -345,20 +339,8 @@ rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
 SET_MODEL
-pas = wood.x
-pos = 2919.69 -72.14 -185.33
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
 pas = drumcan.x
 pos = 943.83 72.14 317.96
-rot = 0.00 0.00 0.00
-coll = 1
-END_SET_MODEL
-SET_MODEL
-pas = drumcan.x
-pos = 0.00 0.00 0.00
 rot = 0.00 0.00 0.00
 coll = 1
 END_SET_MODEL
@@ -368,5 +350,52 @@ pos = 234.68 197.13 -2238.65
 rot = 0.00 -1.59 0.00
 coll = 1
 END_SET_MODEL
-
+SET_MODEL
+pas = home_03_beside.x
+pos = 1488.87 190.64 -639.15
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = home_03_vertical.x
+pos = 1376.31 229.64 -733.26
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = wood_leaf.x
+pos = 1415.07 100.44 2139.38
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = box_vertical.x
+pos = 1356.73 -13.53 -2344.85
+rot = 0.00 -4.23 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = dannbo-ru.x
+pos = 471.59 57.72 649.47
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = home_03_beside.x
+pos = 856.90 175.53 -1502.63
+rot = 0.00 7.86 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = home_03_vertical.x
+pos = 1949.35 285.48 -48.82
+rot = 0.00 -3.12 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = wood_tree
+pos = 1949.35 285.48 -48.82
+rot = -72.14 2090.37 0.00
+coll = 0
+END_SET_MODEL
 END_SCRIPT
