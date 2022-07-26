@@ -208,7 +208,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill++;
 					data[cout_player]->Player.bDeath = false;
 					//ƒLƒ‹”‚ªŠù’è‚Ì”‚¾‚Á‚½‚ç
-					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill >= KILL_COUNTER)
+					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill >= WIN_COUNTER)
 					{
 						//Ÿ‚¿‚¶‚á‚È‚©‚Á‚½‚ç
 						if (!data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin)
