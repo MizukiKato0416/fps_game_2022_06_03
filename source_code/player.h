@@ -19,7 +19,7 @@ class CShadow;
 //================================================
 //マクロ定義
 //================================================
-#define MAX_PLAYER_MODEL					(5)			//モデルの数
+#define MAX_PLAYER_MODEL					(5)										//モデルの数
 #define PLAYER_LIFE							(100)									//体力
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 
