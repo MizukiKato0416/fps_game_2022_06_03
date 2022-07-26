@@ -388,14 +388,44 @@ coll = 1
 END_SET_MODEL
 SET_MODEL
 pas = home_03_vertical.x
-pos = 1949.35 285.48 -48.82
+pos = 2002.71 234.47 -39.71
 rot = 0.00 -3.12 0.00
 coll = 1
 END_SET_MODEL
 SET_MODEL
-pas = wood_tree
-pos = 1949.35 285.48 -48.82
-rot = -72.14 2090.37 0.00
-coll = 0
+pas = wood_tree_trunk.x
+pos = 1438.20 -72.14 2057.91
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = rennga_white.x
+pos = 753.94 79.66 570.08
+rot = 0.00 1.59 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = rennga_white.x
+pos = 1046.32 81.92 971.43
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = sandbag.x
+pos = 1502.07 102.81 506.99
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = sandbag.x
+pos = 1505.72 126.20 406.39
+rot = 0.00 0.00 0.00
+coll = 1
+END_SET_MODEL
+SET_MODEL
+pas = container.x
+pos = 1854.04 219.07 1071.14
+rot = 0.00 0.00 0.00
+coll = 1
 END_SET_MODEL
 END_SCRIPT
