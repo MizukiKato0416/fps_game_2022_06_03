@@ -23,7 +23,7 @@ class CNumber;
 class CCounter : public CObject
 {
 public:
-	CCounter();	// デフォルトコンストラクタ
+	CCounter(CObject::PRIORITY Priority = CObject::PRIORITY::UI);	// デフォルトコンストラクタ
 	~CCounter();	// デフォルトデストラクタ
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了

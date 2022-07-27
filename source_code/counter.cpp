@@ -9,11 +9,12 @@
 //=============================================================================
 #include "counter.h"
 #include "number.h"
+#include "manager.h"
 
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
-CCounter::CCounter()
+CCounter::CCounter(CObject::PRIORITY Priority) : CObject(Priority)
 {
 	m_Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -36,7 +37,8 @@ HRESULT CCounter::Init(void)
 {
 	for (int nNumber = 0; nNumber < m_nNumberMax; nNumber++)
 	{
-		m_pNumber.push_back(CNumber::Create(D3DXVECTOR3(m_Pos.x + m_Size.x * nNumber, m_Pos.y, 0.0f), m_Size, m_Type));
+		m_pNumber.push_back(CNumber::Create(D3DXVECTOR3(m_Pos.x + m_Size.x * nNumber, m_Pos.y, 0.0f), m_Size));
+		m_pNumber[nNumber]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(m_Type));
 	}
 	m_nCounter = 0;
 
@@ -123,7 +125,7 @@ void CCounter::SetCounter(int nCounter)
 
 	for (int nNumber = 0; nNumber < m_nNumberMax; nNumber++)
 	{
-		m_pNumber[nNumber]->SetScore(aNumber[nNumber]);
+		m_pNumber[nNumber]->SetNumber(aNumber[nNumber]);
 	}
 }
 
