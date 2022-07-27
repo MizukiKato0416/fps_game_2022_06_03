@@ -487,6 +487,15 @@ void CPlayer::Update(void)
 		}
 	}
 
+	if (m_nMagazineNum <= 10)
+	{
+		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+	else if (m_nMagazineNum > 10)
+	{
+		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+
 	//î•ñÝ’è
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;

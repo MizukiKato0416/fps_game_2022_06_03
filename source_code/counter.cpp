@@ -129,7 +129,7 @@ void CCounter::SetCounter(int nCounter)
 	}
 }
 
-void CCounter::SetCol(D3DCOLORVALUE col)
+void CCounter::SetCol(D3DXCOLOR col)
 {
 	for (int nCntNumber = 0; nCntNumber < m_nNumberMax; nCntNumber++)
 	{

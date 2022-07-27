@@ -38,7 +38,7 @@ public:
 	void Update(void);
 	void Draw(void);
 	void SetNumber(int nNumber);
-	void SetCol(D3DCOLORVALUE col);
+	void SetCol(D3DXCOLOR col);
 
 	static CNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);
 	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);				//テクスチャ割り当て

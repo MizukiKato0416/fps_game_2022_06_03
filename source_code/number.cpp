@@ -170,16 +170,16 @@ void CNumber::SetNumber(int nNumber)
 //================================================
 //カラー設定処理
 //================================================
-void CNumber::SetCol(D3DCOLORVALUE col)
+void CNumber::SetCol(D3DXCOLOR col)
 {
 	VERTEX_2D_NUMBER *pVtx;	// 頂点情報
 	//頂点バッファをロックし、頂点データへのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-	pVtx[0].col = D3DCOLOR_RGBA((int)col.r, (int)col.g, (int)col.b, (int)col.a);
-	pVtx[1].col = D3DCOLOR_RGBA((int)col.r, (int)col.g, (int)col.b, (int)col.a);
-	pVtx[2].col = D3DCOLOR_RGBA((int)col.r, (int)col.g, (int)col.b, (int)col.a);
-	pVtx[3].col = D3DCOLOR_RGBA((int)col.r, (int)col.g, (int)col.b, (int)col.a);
+	pVtx[0].col = col;
+	pVtx[1].col = col;
+	pVtx[2].col = col;
+	pVtx[3].col = col;
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

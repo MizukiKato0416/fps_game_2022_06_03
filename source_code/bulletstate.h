@@ -30,6 +30,7 @@ public:
 	void SetBulletMax(int state) { m_bullet_state[1]->SetCounterNum(state); }
 	void AddBulletNow(int state) { m_bullet_state[0]->AddCounter(state); }
 	void SetBulletNow(int state) { m_bullet_state[0]->SetCounterNum(state); }
+	void SetCol(D3DXCOLOR col) { m_bullet_state[0]->SetCol(col); }
 private:
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_size;
