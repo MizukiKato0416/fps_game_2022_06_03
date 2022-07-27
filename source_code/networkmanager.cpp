@@ -254,7 +254,7 @@ bool CNetWorkManager::GetAllConnect(void)
 		{
 			all_connect.push_back(true);
 		}
-		else if (data->bConnect == false)
+		else
 		{
 			all_connect.push_back(false);
 		}
