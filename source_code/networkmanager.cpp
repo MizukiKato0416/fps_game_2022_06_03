@@ -239,6 +239,10 @@ bool CNetWorkManager::GetAllConnect(void)
 	{
 		all_connect.push_back(true);
 	}
+	else
+	{
+		all_connect.push_back(false);
+	}
 
 	int enemy_size = m_enemy_data.size();	// ƒTƒCƒY‚ğæ“¾
 
