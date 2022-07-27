@@ -90,12 +90,12 @@ void CGame01::Uninit(void)
 //================================================
 void CGame01::Update(void)
 {
-	POINT pos;
+	//POINT pos;
 
-	pos.x = SCREEN_WIDTH / 2;
-	pos.y = SCREEN_HEIGHT / 2;
+	//pos.x = SCREEN_WIDTH / 2;
+	//pos.y = SCREEN_HEIGHT / 2;
 
-	SetCursorPos(pos.x, pos.y);
+	//SetCursorPos(pos.x, pos.y);
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
 	{
