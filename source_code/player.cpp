@@ -151,6 +151,8 @@ HRESULT CPlayer::Init(void)
 
 	m_pBulletState = CBulletState::Create({ SCREEN_WIDTH - (250.0f / 2),SCREEN_HEIGHT - (100.0f / 2), 0.0f }, { 250.0f, 100.0f, 0.0f });
 	m_pBulletState->SetBulletMax(30);
+	m_pBulletState->AddBulletNow(10);
+	m_pBulletState->SetBulletNow(20);
 
 	//ˆÊ’u‚Ìİ’è
 	SetPos(m_pos);
