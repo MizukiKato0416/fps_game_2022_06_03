@@ -30,6 +30,7 @@
 #include "networkmanager.h"
 #include "model_collision.h"
 #include "fade.h"
+#include "bulletstate.h"
 
 //================================================
 //マクロ定義
@@ -143,6 +144,9 @@ HRESULT CPlayer::Init(void)
 	//m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
 	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv3.x");
 	m_pGunPlayerAds->SetMtxParent(m_pGunPlayerAds->GetModel()->GetModel()->GetMtxPoint());
+
+	m_pBulletState = CBulletState::Create({ SCREEN_WIDTH - (250.0f / 2),SCREEN_HEIGHT - (100.0f / 2), 0.0f }, { 250.0f, 100.0f, 0.0f });
+	m_pBulletState->SetBulletMax(30);
 
 	//位置の設定
 	SetPos(m_pos);

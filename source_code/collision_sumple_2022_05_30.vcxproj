@@ -160,6 +160,7 @@
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="billeffect.cpp" />
     <ClCompile Include="BulletHoll.cpp" />
+    <ClCompile Include="bulletstate.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
     <ClCompile Include="counter.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="billboard.h" />
     <ClInclude Include="billeffect.h" />
     <ClInclude Include="BulletHoll.h" />
+    <ClInclude Include="bulletstate.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />
     <ClInclude Include="counter.h" />

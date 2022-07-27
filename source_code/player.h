@@ -15,6 +15,7 @@ class CXanimModel;
 class CObject2D;
 class CModelCollision;
 class CShadow;
+class CBulletState;
 
 //================================================
 //マクロ定義
@@ -79,6 +80,7 @@ private:
 	D3DXVECTOR3 m_move;								//ポリゴンの移動量
 	D3DXVECTOR3	m_size;								//サイズ
 	D3DXVECTOR3 m_rot;								//向き
+	CBulletState *m_pBulletState;
 	CGunPlayer *m_pGunPlayer;							//銃モデルのポインタ
 	CGunPlayer *m_pGunPlayerAds;						//ADS用の銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
