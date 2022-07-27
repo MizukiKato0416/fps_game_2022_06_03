@@ -42,6 +42,8 @@ public:
 		EFFECT3D,			// パーティクル
 		EFFECT2D,			// パーティクル
 		UI,					// UI
+		MASK,				// マスク
+		BLOOD,				// 血
 		FADE,				// フェード
 		MAX
 	};

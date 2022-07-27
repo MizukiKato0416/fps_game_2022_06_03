@@ -40,9 +40,7 @@
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
 #define PLAYER_SHOT_COUNTER					(4)										//次の弾が出るまでのカウンター
-//#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -4.2f, 5.5f))		//ADSしたときの銃のオフセット
 #define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -13.8f, 7.9f))		//ADSしたときの銃のオフセット
-//#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -4.3f, 6.2f))	//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -13.9f, 8.9f))		//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
@@ -59,6 +57,8 @@
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 #define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
 #define PLAYER_HEAL_LIFE_NUM				(2)										//1フレームあたりに回復させるライフ量
+#define PLAYER_DAMAGE_MASK_COUNT			(2)										//被弾した際にでるマスクを表示する時間
+#define PLAYER_DAMAGE_MASK_ALPHA			(0.2f)									//α値を減らす量
 
 //================================================
 //デフォルトコンストラクタ
@@ -94,6 +94,8 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_bReload = false;
 	m_bHealLife = false;
 	m_nHealCounter = 0;
+	m_pDamageMask = nullptr;
+	m_pBlood = nullptr;
 }
 
 //================================================
@@ -134,6 +136,8 @@ HRESULT CPlayer::Init(void)
 	m_bReload = false;
 	m_bHealLife = false;
 	m_nHealCounter = 0;
+	m_pDamageMask = nullptr;
+	m_pBlood = nullptr;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -176,8 +180,14 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	//クロスヘアの生成
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
 	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
+
+	//血の生成
+	m_pBlood = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, (int)CObject::PRIORITY::BLOOD);
+	m_pBlood->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("blood.png"));
+	m_pBlood->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 
 	return S_OK;
 }
@@ -421,6 +431,9 @@ void CPlayer::Update(void)
 
 		//ライフ回復処理
 		HealLife();
+
+		//血の処理
+		Blood();
 	}
 
 	//リスポーン処理
@@ -1056,6 +1069,19 @@ void CPlayer::HitBullet(void)
 			//回復し始めるまでのカウンターを0にする
 			m_nHealCounter = 0;
 
+			//被弾のマスクを生成
+			if (m_pDamageMask == nullptr)
+			{
+				m_pDamageMask = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f },
+					                              (int)CObject::PRIORITY::MASK);
+				m_pDamageMask->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("damage_mask.png"));
+			}
+			else
+			{
+				//0にする
+				m_nDamageMaskCount = 0;
+			}
+
 			//ライフを減らす
 			m_nLife -= pData->Player.nHitDamage;
 			//ライフが0になったら
@@ -1084,6 +1110,36 @@ void CPlayer::HitBullet(void)
 	}
 	pData->Player.bHit = false;
 	pData->Player.nHitDamage = 0;
+
+	//ダメージ用マスクを生成していたら
+	if (m_pDamageMask != nullptr)
+	{
+		//カウンターを加算
+		m_nDamageMaskCount++;
+
+		//既定の値より大きくなったら
+		if (m_nDamageMaskCount > PLAYER_DAMAGE_MASK_COUNT)
+		{
+			//色取得
+			D3DXCOLOR col = m_pDamageMask->GetCol();
+			
+			//α値を薄くする
+			col.a -= PLAYER_DAMAGE_MASK_ALPHA;
+
+			//見えていなかったら
+			if (col.a <= 0.0f)
+			{
+				//マスクを消す
+				m_pDamageMask->Uninit();
+				m_pDamageMask = nullptr;
+			}
+			else
+			{//見えていたら
+				//色を設定
+				m_pDamageMask->SetCol(col);
+			}
+		}
+	}
 }
 
 //================================================
@@ -1306,6 +1362,21 @@ void CPlayer::HealLife(void)
 			}
 		}
 	}
+}
+
+//================================================
+//血の処理
+//================================================
+void CPlayer::Blood(void)
+{
+	//カラー取得
+	D3DXCOLOR col = m_pBlood->GetCol();
+
+	//α値をライフの残量によって変える
+	col.a = 1.0f - ((float)m_nLife / (float)PLAYER_LIFE);
+
+	//カラー設定
+	m_pBlood->SetCol(col);
 }
 
 //================================================

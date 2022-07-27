@@ -71,6 +71,7 @@ private:
 	void Respawn(void);								//リスポーン処理
 	void Reload(void);								//リロード処理
 	void HealLife(void);							//ライフ回復処理
+	void Blood(void);								//血の処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -107,6 +108,9 @@ private:
 	bool m_bReload;									//リロード中かどうか
 	bool m_bHealLife;								//ライフ回復処理
 	int m_nHealCounter;								//ダメージを受けてから回復し始めるまでのカウンター
+	CObject2D *m_pDamageMask;						//被弾時のマスク
+	CObject2D *m_pBlood;							//ダメージを受けた際の血
+	int m_nDamageMaskCount;							//ダメージを受けた際に出るマスクを表示する時間
 };
 
 #endif // !_PLAYER_H_
