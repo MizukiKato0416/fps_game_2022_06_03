@@ -70,6 +70,7 @@ private:
 	void HitBullet(void);							//被弾処理
 	void Respawn(void);								//リスポーン処理
 	void Reload(void);								//リロード処理
+	void HealLife(void);							//ライフ回復処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -104,6 +105,8 @@ private:
 	int m_nMagazineNum;								//弾倉の数
 	int m_nReloadCounter;							//リロード時間カウント用
 	bool m_bReload;									//リロード中かどうか
+	bool m_bHealLife;								//ライフ回復処理
+	int m_nHealCounter;								//ダメージを受けてから回復し始めるまでのカウンター
 };
 
 #endif // !_PLAYER_H_

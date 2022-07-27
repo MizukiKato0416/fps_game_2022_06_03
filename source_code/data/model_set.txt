@@ -424,8 +424,8 @@ coll = 1
 END_SET_MODEL
 SET_MODEL
 pas = container.x
-pos = 1854.04 219.07 1071.14
-rot = 0.00 0.00 0.00
+pos = 2260.14 219.07 1373.62
+rot = 0.00 -4.68 0.00
 coll = 1
 END_SET_MODEL
 END_SCRIPT

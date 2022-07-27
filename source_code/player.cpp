@@ -57,6 +57,8 @@
 #define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
 #define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
+#define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
+#define PLAYER_HEAL_LIFE_NUM				(2)										//1フレームあたりに回復させるライフ量
 
 //================================================
 //デフォルトコンストラクタ
@@ -90,6 +92,8 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nMagazineNum = 0;
 	m_nReloadCounter = 0;
 	m_bReload = false;
+	m_bHealLife = false;
+	m_nHealCounter = 0;
 }
 
 //================================================
@@ -128,7 +132,8 @@ HRESULT CPlayer::Init(void)
 	m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
 	m_nReloadCounter = 0;
 	m_bReload = false;
-
+	m_bHealLife = false;
+	m_nHealCounter = 0;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -413,6 +418,9 @@ void CPlayer::Update(void)
 
 		//当たったかどうか
 		HitBullet();
+
+		//ライフ回復処理
+		HealLife();
 	}
 
 	//リスポーン処理
@@ -1043,6 +1051,11 @@ void CPlayer::HitBullet(void)
 			//当たった位置を示すエフェクトを出す
 			CPresetEffect::SetEffect2D(0, { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, pData->Bullet.hitPlayerPos, m_pos, { 0.0f, cameraRot.y, 0.0f });
 
+			//回復する状態にする
+			m_bHealLife = true;
+			//回復し始めるまでのカウンターを0にする
+			m_nHealCounter = 0;
+
 			//ライフを減らす
 			m_nLife -= pData->Player.nHitDamage;
 			//ライフが0になったら
@@ -1260,6 +1273,37 @@ void CPlayer::Reload(void)
 			m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
 			//リロード中でなくする
 			m_bReload = false;
+		}
+	}
+}
+
+//================================================
+//ライフ回復処理
+//================================================
+void CPlayer::HealLife(void)
+{
+	//回復する状態なら
+	if (m_bHealLife)
+	{
+		//カウンターを加算
+		m_nHealCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nHealCounter > PLAYER_HEAL_LIFE_COUNT)
+		{
+			//ライフを回復させる
+			m_nLife += PLAYER_HEAL_LIFE_NUM;
+
+			//ライフ最大値以上になったら
+			if (m_nLife >= PLAYER_LIFE)
+			{
+				//最大値にする
+				m_nLife = PLAYER_LIFE;
+				//回復していない状態にする
+				m_bHealLife = false;
+				//カウンターを0にする
+				m_nHealCounter = 0;
+			}
 		}
 	}
 }
