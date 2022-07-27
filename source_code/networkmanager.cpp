@@ -238,20 +238,21 @@ bool CNetWorkManager::GetAllConnect(void)
 	if (player_data->bConnect == true)
 	{
 		all_connect.push_back(true);
-		int enemy_size = m_enemy_data.size();	// サイズを取得
+	}
 
-		for (int count_enemy = 0; count_enemy < enemy_size; count_enemy++)
+	int enemy_size = m_enemy_data.size();	// サイズを取得
+
+	for (int count_enemy = 0; count_enemy < enemy_size; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+
+		if (data->bConnect == true)
 		{
-			CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
-
-			if (data->bConnect == true)
-			{
-				all_connect.push_back(true);
-			}
-			else if (data->bConnect == false)
-			{
-				all_connect.push_back(false);
-			}
+			all_connect.push_back(true);
+		}
+		else if (data->bConnect == false)
+		{
+			all_connect.push_back(false);
 		}
 	}
 
