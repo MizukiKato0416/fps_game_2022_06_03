@@ -31,6 +31,7 @@
 #include "model_collision.h"
 #include "fade.h"
 #include "bulletstate.h"
+#include "ui.h"
 
 //================================================
 //マクロ定義
@@ -74,6 +75,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pGunPlayer = nullptr;
 	m_pGunPlayerAds = nullptr;
+	m_pReload = nullptr;
 	m_fObjectiveRot = 0.0f;
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
@@ -1333,6 +1335,17 @@ void CPlayer::Reload(void)
 	//リロード中なら
 	if (m_bReload)
 	{
+		if (m_pReload == nullptr)
+		{
+			m_pReload = CUi::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50.0f, 0.0f),
+				D3DXVECTOR3(180.0f, 50.0f, 0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				(int)CUi::BLINKING_TYPE::FADE,
+				(int)CUi::MOVE_TYPE::NONE,
+				1,
+				0,
+				"reloading.png");
+		}
 		//カウンターを加算
 		m_nReloadCounter++;
 
@@ -1347,6 +1360,14 @@ void CPlayer::Reload(void)
 			m_pBulletState->SetBulletNow(m_nMagazineNum);
 			//リロード中でなくする
 			m_bReload = false;
+		}
+	}
+	else if(!m_bReload)
+	{
+		if (m_pReload != nullptr)
+		{
+			m_pReload->Uninit();
+			m_pReload = nullptr;
 		}
 	}
 }
