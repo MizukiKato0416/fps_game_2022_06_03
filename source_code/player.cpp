@@ -145,14 +145,13 @@ HRESULT CPlayer::Init(void)
 	m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 
 	//ADS銃モデルの生成
-	//m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_ads.x");
 	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv3.x");
 	m_pGunPlayerAds->SetMtxParent(m_pGunPlayerAds->GetModel()->GetModel()->GetMtxPoint());
 
+	//残段数UIの生成
 	m_pBulletState = CBulletState::Create({ SCREEN_WIDTH - (250.0f / 2),SCREEN_HEIGHT - (100.0f / 2), 0.0f }, { 250.0f, 100.0f, 0.0f });
-	m_pBulletState->SetBulletMax(30);
-	m_pBulletState->AddBulletNow(10);
-	m_pBulletState->SetBulletNow(20);
+	m_pBulletState->SetBulletMax(PLAYER_GUN_MAGAZINE_NUM);
+	m_pBulletState->SetBulletNow(PLAYER_GUN_MAGAZINE_NUM);
 
 	//位置の設定
 	SetPos(m_pos);
@@ -855,6 +854,7 @@ void CPlayer::Shot(void)
 
 				//弾倉を1減らす
 				m_nMagazineNum--;
+				m_pBulletState->SetBulletNow(m_nMagazineNum);
 
 				//cameraのポインタ配列1番目のアドレス取得
 				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
@@ -1306,7 +1306,6 @@ void CPlayer::Respawn(void)
 //================================================
 void CPlayer::Reload(void)
 {
-
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
@@ -1318,6 +1317,8 @@ void CPlayer::Reload(void)
 		m_nMagazineNum = 0;
 		//リロード中にする
 		m_bReload = true;
+		//UIに弾倉数を設定
+		m_pBulletState->SetBulletNow(m_nMagazineNum);
 	}
 
 	//リロード中なら
@@ -1333,6 +1334,8 @@ void CPlayer::Reload(void)
 			m_nReloadCounter = 0;
 			//弾倉を既定の値にする
 			m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+			//UIに弾倉数を設定
+			m_pBulletState->SetBulletNow(m_nMagazineNum);
 			//リロード中でなくする
 			m_bReload = false;
 		}
