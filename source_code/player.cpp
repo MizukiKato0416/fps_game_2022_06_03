@@ -974,6 +974,14 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
 			CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
 
+			//ヒットしたときのUIが生成されていたら
+			if (m_pBulletHitUi != nullptr)
+			{
+				//消す
+				m_pBulletHitUi->Uninit();
+				m_pBulletHitUi = nullptr;
+			}
+
 			//ヒットしたときのUIが生成されていなったら
 			if (m_pBulletHitUi == nullptr)
 			{
@@ -1372,8 +1380,8 @@ void CPlayer::Reload(void)
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
-	//リロード中でない且つRキーを押したら
-	if (!m_bReload && pInputKeyboard->GetTrigger(DIK_R))
+	//リロード中でない且つRキーを押したら且つ弾が最大五数より少なくなっていたら
+	if (!m_bReload && pInputKeyboard->GetTrigger(DIK_R) && m_nMagazineNum < PLAYER_GUN_MAGAZINE_NUM)
 	{
 		//弾倉を0にする
 		m_nMagazineNum = 0;
