@@ -47,16 +47,16 @@ HRESULT CResult::Init(void)
 		switch (pPlayerData->Player.nNumber)
 		{
 		case 1:
-			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player1.png"));
 			break;
 		case 2:
-			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player2.png"));
 			break;
 		case 3:
-			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player3.png"));
 			break;
 		case 4:
-			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+			m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player4.png"));
 			break;
 		default:
 			break;
@@ -70,16 +70,16 @@ HRESULT CResult::Init(void)
 			switch (pEnemyData->Player.nNumber)
 			{
 			case 1:
-				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player1.png"));
 				break;
 			case 2:
-				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player2.png"));
 				break;
 			case 3:
-				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player3.png"));
 				break;
 			case 4:
-				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture(""));
+				m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win_player4.png"));
 				break;
 			default:
 				break;
@@ -87,54 +87,56 @@ HRESULT CResult::Init(void)
 		}
 	}
 
+	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
+	m_Ui[1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("p_scoreboard.png"));
+
 	CCommunicationData::COMMUNICATION_DATA *pData[MAX_PLAYER + 1];
-	float difference = 5.0f;
+	float difference = 0.0f;
 	pData[0] = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	for (int count_enemy = 0; count_enemy < max_enemy; count_enemy++)
 	{
 		pData[count_enemy + 1] = EnemyData[count_enemy].GetCmmuData();
 	}
 
-	for (int count_player = 0, count_arry = 0; count_player < MAX_PLAYER + 1; count_player++, count_arry++)
+	for (int count_player = 0, countor = 0; count_player < MAX_PLAYER + 1; count_player++, countor += 2)
 	{
 		switch (pData[count_player]->Player.nNumber)
 		{
 		case 1:
-			m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
-			m_Ui[count_player + 1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("Basket.png"));
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "kill_num.png"));
-			m_Countor[count_arry]->SetCounterNum(pData[count_player]->Player.nKill);
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f + 150.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "death_num.png"));
-			m_Countor[count_arry + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
+			difference = 5.0f;
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
+			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
+			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 2:
-			m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
-			m_Ui[count_player + 1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("box.jpg"));
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "kill_num.png"));
-			m_Countor[count_arry]->SetCounterNum(pData[count_player]->Player.nKill);
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f + 150.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "death_num.png"));
-			m_Countor[count_arry + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
+			difference = 6.0f;
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
+			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
+			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 3:
-			m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
-			m_Ui[count_player + 1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("building300.jpg"));
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "kill_num.png"));
-			m_Countor[count_arry]->SetCounterNum(pData[count_player]->Player.nKill);
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f + 150.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "death_num.png"));
-			m_Countor[count_arry + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
+			difference = 7.0f;
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
+			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
+			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		case 4:
-			m_Ui.push_back(CObject2D::Create(D3DXVECTOR3((SCREEN_WIDTH / 2) - 100.0f, 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(166.0f, 65.0f, 0.0f), (int)CObject::PRIORITY::UI));
-			m_Ui[count_player + 1]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("Container.jpg"));
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "kill_num.png"));
-			m_Countor[count_arry]->SetCounterNum(pData[count_player]->Player.nKill);
-			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (140.0f + 150.0f), 0.0f + (65.0f * difference), 0.0f), D3DXVECTOR3(50.0f, 65.0f, 0.0f), 2, "death_num.png"));
-			m_Countor[count_arry + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
+			difference = 8.0f;
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
+			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
+			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		default:
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
+			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
+			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
+			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
 			break;
 		}
-		difference += 1.0f;
 	}
 
 	return S_OK;
@@ -147,6 +149,13 @@ void CResult::Uninit(void)
 {	
 	//オブジェクトの破棄
 	Release();
+
+	//通信切る
+	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
+	pClient->Uninit();
+
+	//コミュデータ初期化
+	CManager::GetInstance()->GetNetWorkmanager()->Reset();
 }
 
 //================================================

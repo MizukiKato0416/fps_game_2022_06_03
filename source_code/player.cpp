@@ -24,12 +24,14 @@
 #include "game01.h"
 #include "PresetSetEffect.h"
 #include "bullet.h"
-#include "gunmodel.h"
+#include "gun_player.h"
 #include "object2D.h"
 #include "enemy.h"
 #include "networkmanager.h"
 #include "model_collision.h"
 #include "fade.h"
+#include "bulletstate.h"
+#include "ui.h"
 
 //================================================
 //マクロ定義
@@ -39,13 +41,26 @@
 #define PLAYER_WALK_SPEED					(3.5f)									//歩き移動の移動量
 #define PLAYER_RUN_SPEED					(6.0f)									//走り移動の移動量
 #define PLAYER_ADS_WALK_SPEED				(2.0f)									//ADS中の移動速度
-#define PLAYER_SHOT_COUNTER					(5)										//次の弾が出るまでのカウンター
-#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -3.3f, 5.5f))		//ADSしたときの銃のオフセット
+#define PLAYER_SHOT_COUNTER					(4)										//次の弾が出るまでのカウンター
+#define PLAYER_ADS_GUN_OFFSET				(D3DXVECTOR3(0.0f, -13.8f, 7.9f))		//ADSしたときの銃のオフセット
+#define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -13.9f, 8.9f))		//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_RESPAWN_COUNT				(180)									//リスポーンするまでの時間
+#define PLAYER_RESPAWN_COUNT				(150)									//リスポーンするまでの時間
+#define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
+#define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
+#define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
+#define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
+#define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
+#define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
+#define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
+#define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
+#define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
+#define PLAYER_HEAL_LIFE_NUM				(2)										//1フレームあたりに回復させるライフ量
+#define PLAYER_DAMAGE_MASK_COUNT			(2)										//被弾した際にでるマスクを表示する時間
+#define PLAYER_DAMAGE_MASK_ALPHA			(0.2f)									//α値を減らす量
 
 //================================================
 //デフォルトコンストラクタ
@@ -58,7 +73,9 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_offsetPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_pGunModel = nullptr;
+	m_pGunPlayer = nullptr;
+	m_pGunPlayerAds = nullptr;
+	m_pReload = nullptr;
 	m_fObjectiveRot = 0.0f;
 	m_fNumRot = 0.0f;
 	m_bRotate = false;
@@ -74,6 +91,14 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nRespawnCounter = 0;
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
+	m_nInvincibleCounter = 0;
+	m_nMagazineNum = 0;
+	m_nReloadCounter = 0;
+	m_bReload = false;
+	m_bHealLife = false;
+	m_nHealCounter = 0;
+	m_pDamageMask = nullptr;
+	m_pBlood = nullptr;
 }
 
 //================================================
@@ -108,10 +133,27 @@ HRESULT CPlayer::Init(void)
 	m_nRespawnCounter = 0;
 	m_bDeath = false;
 	m_pDeathModel = nullptr;
+	m_nInvincibleCounter = 0;
+	m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+	m_nReloadCounter = 0;
+	m_bReload = false;
+	m_bHealLife = false;
+	m_nHealCounter = 0;
+	m_pDamageMask = nullptr;
+	m_pBlood = nullptr;
 
 	//銃モデルの生成
-	m_pGunModel = CGunModel::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv.x");
-	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
+	m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
+
+	//ADS銃モデルの生成
+	m_pGunPlayerAds = CGunPlayer::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv3.x");
+	m_pGunPlayerAds->SetMtxParent(m_pGunPlayerAds->GetModel()->GetModel()->GetMtxPoint());
+
+	//残段数UIの生成
+	m_pBulletState = CBulletState::Create({ SCREEN_WIDTH - (250.0f / 2),SCREEN_HEIGHT - (100.0f / 2), 0.0f }, { 250.0f, 100.0f, 0.0f });
+	m_pBulletState->SetBulletMax(PLAYER_GUN_MAGAZINE_NUM);
+	m_pBulletState->SetBulletNow(PLAYER_GUN_MAGAZINE_NUM);
 
 	//位置の設定
 	SetPos(m_pos);
@@ -124,9 +166,6 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel = CXanimModel::Create("data/armmotion.x");
 	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
-
-	//当たり判定ボックスの生成
-	//m_pCollModel = CModelCollision::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, "player_coll.x", nullptr, true);
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -148,11 +187,14 @@ HRESULT CPlayer::Init(void)
 	//影の設定
 	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
+	//クロスヘアの生成
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
 	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
 
-	//サーバーデータ初期化
-	//CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->Init();
+	//血の生成
+	m_pBlood = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, (int)CObject::PRIORITY::BLOOD);
+	m_pBlood->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("blood.png"));
+	m_pBlood->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 
 	return S_OK;
 }
@@ -162,15 +204,6 @@ HRESULT CPlayer::Init(void)
 //================================================
 void CPlayer::Uninit(void)
 {
-	//マトリックスを取得
-	D3DXMATRIX *handR = nullptr;
-	handR = m_pAnimModel->GetMatrix("handR");
-
-	//newしたので消す
-	delete handR;
-	handR = nullptr;
-
-	m_pAnimModel->Uninit();
 	Release();
 }
 
@@ -189,7 +222,8 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 posCameraV = { 0.0f, 0.0f, 0.0f };
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
-	if (!m_bDeath)
+	//死んでいる且つモデルが生成されていたら
+	if (!m_bDeath && m_pAnimModel != nullptr/* && CManager::GetInstance()->GetGame01()->GetAllConnect()*/)
 	{
 		//位置取得
 		D3DXVECTOR3 pos = GetPos();
@@ -346,31 +380,53 @@ void CPlayer::Update(void)
 
 		if (!m_bAds)
 		{
+			//描画するようにする
+			m_pGunPlayer->GetModel()->SetDraw(true);
 			//マトリックスを取得
 			D3DXMATRIX *handR = nullptr;
 			handR = m_pAnimModel->GetMatrix("handR");
-			m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+			m_pGunPlayer->SetMtxParent(m_pGunPlayer->GetModel()->GetModel()->GetMtxPoint());
 			//銃と親子関係をつける
-			m_pGunModel->GetModel()->GetModel()->SetMtxParent(handR);
-			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
-			m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
-			m_pGunModel->GetModel()->SetCulliMode(false);
-			m_pGunModel->Draw();
+			m_pGunPlayer->GetModel()->GetModel()->SetMtxParent(handR);
+			m_pGunPlayer->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunPlayer->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+			m_pGunPlayer->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+			m_pGunPlayer->GetModel()->SetCulliMode(false);
+			m_pGunPlayer->Draw();
+			//ADS用の描画を消す
+			m_pGunPlayerAds->GetModel()->SetDraw(false);
 		}
 		else
 		{
+			//描画するようにする
+			m_pGunPlayerAds->GetModel()->SetDraw(true);
 			//銃と親子関係をつける
-			m_pGunModel->GetModel()->GetModel()->SetMtxParent(cameraMtx);
-			m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-			m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, 0.0f, 0.0f });
-			m_pGunModel->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
-			m_pGunModel->GetModel()->SetCulliMode(true);
-			m_pGunModel->Draw();
+			m_pGunPlayerAds->GetModel()->GetModel()->SetMtxParent(cameraMtx);
+			m_pGunPlayerAds->GetModel()->GetModel()->SetObjParent(true);
+			m_pGunPlayerAds->GetModel()->GetModel()->SetRot({ 0.1f, 0.0f, 0.0f });
+
+			//発射時
+			if (m_bShot)
+			{
+				//オフセットの設定
+				m_pGunPlayerAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET_SHOT);
+			}
+			else
+			{
+				//オフセットの設定
+				m_pGunPlayerAds->GetModel()->GetModel()->SetPos(PLAYER_ADS_GUN_OFFSET);
+			}
+			m_pGunPlayerAds->GetModel()->SetCulliMode(true);
+			m_pGunPlayerAds->Draw();
+			//普通用の銃のモデルの描画を消す
+			m_pGunPlayer->GetModel()->SetDraw(false);
 		}
 
 		//射撃処理
 		Shot();
+
+		//リロード処理
+		Reload();
 
 		m_pAnimModel->Update();
 
@@ -379,13 +435,33 @@ void CPlayer::Update(void)
 
 		//当たったかどうか
 		HitBullet();
+
+		//ライフ回復処理
+		HealLife();
+
+		//血の処理
+		Blood();
 	}
 
 	//リスポーン処理
 	Respawn();
 
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	int enemy = data.size();
+	bool win = false;
+
+	for (int count = 0; count < enemy; count++)
+	{
+		if (data[count].GetCmmuData()->Player.bWin == true ||
+			pData->Player.bWin == true)
+		{
+			win = true;
+			break;
+		}
+	}
+
 	//勝ったら
-	if (pData->Player.bWin)
+	if (win == true)
 	{
 		//フェード取得処理
 		CFade *pFade;
@@ -393,8 +469,33 @@ void CPlayer::Update(void)
 
 		if (pFade->GetFade() == CFade::FADE_NONE)
 		{
-			//pFade->SetFade(CManager::MODE::RESULT);
+			//マトリックスを取得
+			//D3DXMATRIX *handR = nullptr;
+			//handR = m_pAnimModel->GetMatrix("handR");
+
+			//newしたので消す
+			//delete handR;
+			//handR = nullptr;
+
+			if (m_pAnimModel != nullptr)
+			{
+				//モデルを消す
+				m_pAnimModel->Uninit();
+				m_pAnimModel = nullptr;
+			}
+			
+			//リザルトに行く
+			pFade->SetFade(CManager::MODE::RESULT);
 		}
+	}
+
+	if (m_nMagazineNum <= 10)
+	{
+		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+	else if (m_nMagazineNum > 10)
+	{
+		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
 	//情報設定
@@ -421,7 +522,13 @@ void CPlayer::Update(void)
 //================================================
 void CPlayer::Draw(void)
 {
-	
+	if (m_pDeathModel != nullptr)
+	{
+		//位置の設定
+		m_pDeathModel->SetPos(m_pos);
+		//死のモデルの描画
+		m_pDeathModel->Draw();
+	}
 }
 
 //================================================
@@ -683,60 +790,124 @@ void CPlayer::Shot(void)
 
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
-		//撃つアニメーションでなかったら
-		if (m_pAnimModel->GetAnimation() != "fireneutral")
+		if (m_move.x != 0.0f || m_move.z != 0.0f)
 		{
-			//撃つモーションにする
-			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
-			m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
-			memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
-			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
-		}
-
-		//カウンターを減算
-		m_nCounter--;
-
-		//撃っている状態なら
-		if (m_bShot == true)
-		{
-			m_pGunModel->GetModel()->GetModel()->SetMtx();
-			//オフセット位置設定
-			D3DXVECTOR3 pos = { m_pGunModel->GetMuzzleMtx()._41, m_pGunModel->GetMuzzleMtx()._42, m_pGunModel->GetMuzzleMtx()._43 };
-
-			//ADS状態なら
-			if (m_bAds)
+			//撃つアニメーションでなかったら
+			if (m_pAnimModel->GetAnimation() != "firewalk")
 			{
-				//マズルフラッシュエフェクトの生成
-				CPresetEffect::SetEffect3D(7, pos, {}, {});
-				CPresetEffect::SetEffect3D(8, pos, {}, {});
+				//撃つモーションにする
+				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+				m_pAnimModel->ChangeAnimation("firewalk", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 			}
-			else
-			{//ADS状態でないなら
-			 //マズルフラッシュエフェクトの生成
-				CPresetEffect::SetEffect3D(0, pos, {}, {});
-				CPresetEffect::SetEffect3D(1, pos, {}, {});
+		}
+		else
+		{
+			//撃つアニメーションでなかったら
+			if (m_pAnimModel->GetAnimation() != "fireneutral")
+			{
+				//撃つモーションにする
+				m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+				m_pAnimModel->ChangeAnimation("fireneutral", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
 			}
-
-			CBullet *pBullet;	// 弾のポインタ
-			//弾の生成
-			pBullet = CBullet::Create();
-
-			//撃っていない状態にする
-			m_bShot = false;
 		}
 
-		//0より小さくなったら
-		if (m_nCounter < 0)
+		//弾倉があったら
+		if (m_nMagazineNum > 0)
 		{
-			//既定の値にする
-			m_nCounter = PLAYER_SHOT_COUNTER;
+			//カウンターを減算
+			m_nCounter--;
 
-			//撃ってる状態にする
-			m_bShot = true;
+			//撃っている状態なら
+			if (m_bShot == true)
+			{
+				D3DXVECTOR3 pos = { 0.0f, 0.0f,0.0f };
+				//ADSしていなかったら
+				if (!m_bAds)
+				{
+					//ワールドマトリックス設定処理
+					m_pGunPlayer->GetModel()->GetModel()->SetMtx();
+					//オフセット位置設定
+					pos = { m_pGunPlayer->GetMuzzleMtx()._41, m_pGunPlayer->GetMuzzleMtx()._42, m_pGunPlayer->GetMuzzleMtx()._43 };
+				}
+				else
+				{//ADSしたら
+				 //ワールドマトリックス設定処理
+					m_pGunPlayerAds->GetModel()->GetModel()->SetMtx();
+					//オフセット位置設定
+					pos = { m_pGunPlayerAds->GetMuzzleMtx()._41, m_pGunPlayerAds->GetMuzzleMtx()._42, m_pGunPlayerAds->GetMuzzleMtx()._43 };
+				}
+
+
+				//ADS状態なら
+				if (m_bAds)
+				{
+					//マズルフラッシュエフェクトの生成
+					CPresetEffect::SetEffect3D(7, pos, {}, {});
+					CPresetEffect::SetEffect3D(8, pos, {}, {});
+				}
+				else
+				{//ADS状態でないなら
+				 //マズルフラッシュエフェクトの生成
+					CPresetEffect::SetEffect3D(0, pos, {}, {});
+					CPresetEffect::SetEffect3D(1, pos, {}, {});
+				}
+
+				//既定の値にする
+				m_nCounter = PLAYER_SHOT_COUNTER;
+
+				CBullet *pBullet;	// 弾のポインタ
+									//弾の生成
+				pBullet = CBullet::Create();
+
+				//弾倉を1減らす
+				m_nMagazineNum--;
+				m_pBulletState->SetBulletNow(m_nMagazineNum);
+
+				//cameraのポインタ配列1番目のアドレス取得
+				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+				{
+					//cameraの取得
+					CCamera *pCamera = &**pCameraAddress;
+					if (pCamera != nullptr)
+					{
+						//反動を設定
+						D3DXVECTOR3 rotV = pCamera->GetRotV();
+						rotV.x -= PLAYER_GUN_RECOIL_Y;
+						rotV.y -= PLAYER_GUN_RECOIL_X;
+						pCamera->SetRotV(rotV);
+					}
+				}
+
+				//撃っていない状態にする
+				m_bShot = false;
+			}
+
+			//0より小さくなったら
+			if (m_nCounter < 0)
+			{
+				//撃ってる状態にする
+				m_bShot = true;
+			}
+		}
+		else
+		{//弾倉がなかったら
+			if (!m_bReload)
+			{
+				//リロード中にする
+				m_bReload = true;
+			}
 		}
 	}
 	else
 	{
+		//撃っていない状態にする
+		m_bShot = false;
 		//弾を使ってない
 		pData->Bullet.bUse = false;
 		pData->Bullet.fDiffer = 0.0f;
@@ -760,13 +931,13 @@ void CPlayer::Shot(void)
 		}
 
 		//既定の値より小さかったら
-		if (m_nCounter > 0 && m_nCounter <= PLAYER_SHOT_COUNTER)
+		if (m_nCounter > 0)
 		{
-			//カウンターを加算
-			m_nCounter++;
+			//カウンターを減算
+			m_nCounter--;
 
-			//既定の値より大きくなったら
-			if (m_nCounter > PLAYER_SHOT_COUNTER)
+			//0以下になったら
+			if (m_nCounter <= 0)
 			{
 				//0にする
 				m_nCounter = 0;
@@ -910,6 +1081,24 @@ void CPlayer::HitBullet(void)
 			//当たった位置を示すエフェクトを出す
 			CPresetEffect::SetEffect2D(0, { SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, pData->Bullet.hitPlayerPos, m_pos, { 0.0f, cameraRot.y, 0.0f });
 
+			//回復する状態にする
+			m_bHealLife = true;
+			//回復し始めるまでのカウンターを0にする
+			m_nHealCounter = 0;
+
+			//被弾のマスクを生成
+			if (m_pDamageMask == nullptr)
+			{
+				m_pDamageMask = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f },
+					                              (int)CObject::PRIORITY::MASK);
+				m_pDamageMask->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("damage_mask.png"));
+			}
+			else
+			{
+				//0にする
+				m_nDamageMaskCount = 0;
+			}
+
 			//ライフを減らす
 			m_nLife -= pData->Player.nHitDamage;
 			//ライフが0になったら
@@ -920,7 +1109,9 @@ void CPlayer::HitBullet(void)
 				//死んでいる状態にする
 				m_bDeath = true;
 				//銃の描画を消す
-				m_pGunModel->GetModel()->SetDraw(false);
+				m_pGunPlayer->GetModel()->SetDraw(false);
+				//銃の描画を消す
+				m_pGunPlayerAds->GetModel()->SetDraw(false);
 				//デス数を増やす
 				pData->Player.nDeath++;
 				//死んだことをサーバーに設定
@@ -936,6 +1127,36 @@ void CPlayer::HitBullet(void)
 	}
 	pData->Player.bHit = false;
 	pData->Player.nHitDamage = 0;
+
+	//ダメージ用マスクを生成していたら
+	if (m_pDamageMask != nullptr)
+	{
+		//カウンターを加算
+		m_nDamageMaskCount++;
+
+		//既定の値より大きくなったら
+		if (m_nDamageMaskCount > PLAYER_DAMAGE_MASK_COUNT)
+		{
+			//色取得
+			D3DXCOLOR col = m_pDamageMask->GetCol();
+			
+			//α値を薄くする
+			col.a -= PLAYER_DAMAGE_MASK_ALPHA;
+
+			//見えていなかったら
+			if (col.a <= 0.0f)
+			{
+				//マスクを消す
+				m_pDamageMask->Uninit();
+				m_pDamageMask = nullptr;
+			}
+			else
+			{//見えていたら
+				//色を設定
+				m_pDamageMask->SetCol(col);
+			}
+		}
+	}
 }
 
 //================================================
@@ -943,18 +1164,53 @@ void CPlayer::HitBullet(void)
 //================================================
 void CPlayer::Respawn(void)
 {
+	// 通信データ取得処理
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
 	//死んだら
 	if (m_bDeath)
 	{
 		//最初だけ
 		if (m_nRespawnCounter == 0)
 		{
+			//死んだモーションにする
 			if (m_pDeathModel == nullptr)
 			{
-				//死んだモーションにする
-				//m_pDeathModel = CXanimModel::Create("data/motion.x");
-				//m_pDeathModel->ChangeAnimation("death", (20.0f * 3.0f) / 4800.0f);
+				//死んだとき用のモデルを出す
+				m_pDeathModel = CXanimModel::Create("data/motion.x");
+				m_fAnimSpeed = (60.0f * 1.0f) / 4800.0f;
+				m_pDeathModel->ChangeAnimation("death", m_fAnimSpeed);
+				memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+				memcpy(pData->Player.aMotion[0], m_pDeathModel->GetAnimation().c_str(), m_pDeathModel->GetAnimation().size());
+				//親の設定
+				m_pDeathModel->SetParent(false);
+
+				//cameraのポインタ配列1番目のアドレス取得
+				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+				{
+					//cameraの取得
+					CCamera *pCamera = &**pCameraAddress;
+					if (pCamera != nullptr)
+					{
+						//カメラの注視点をプレイヤーの位置に固定
+						pCamera->SetPosR(m_pos);
+						//カメラの視点を頭上に固定
+						D3DXVECTOR3 posV = { 0.0f, 0.0f, 0.0f };
+						posV.y = m_pos.y + PLAYER_DEATH_CAMERA_INIT_DIFFER;
+						pCamera->SetPosV(posV);
+						//視点から注視点までの距離を既定の値にする
+						pCamera->SetDiffer(PLAYER_DEATH_CAMERA_INIT_DIFFER);
+						//視点の固定を解除する
+						pCamera->SetLockPosV(false);
+						//カメラの向きを固定
+						D3DXVECTOR3 cameraRot = { 0.0f, m_rot.y, 0.0f };
+						pCamera->SetRotV(cameraRot);
+					}
+				}
 			}
+			//無敵にする
+			pData->Player.bInvincible = true;
 		}
 		//カウンターを加算
 		m_nRespawnCounter++;
@@ -972,12 +1228,194 @@ void CPlayer::Respawn(void)
 			//死んでいない状態にする
 			m_bDeath = false;
 			//銃の描画をする
-			m_pGunModel->GetModel()->SetDraw(true);
+			m_pGunPlayer->GetModel()->SetDraw(true);
 			//死んだとき用のモデルを消す
-			//m_pDeathModel->Uninit();
-			//m_pDeathModel = nullptr;
+			if (m_pDeathModel != nullptr)
+			{
+				m_pDeathModel->Uninit();
+				m_pDeathModel = nullptr;
+			}
+			//ニュートラルモーションにする
+			m_fAnimSpeed = (20.0f * 3.0f) / 4800.0f;
+			m_pAnimModel->ChangeAnimation("neutral", m_fAnimSpeed);
+			memset(pData->Player.aMotion[0], NULL, sizeof(pData->Player.aMotion[0]));
+			memcpy(pData->Player.aMotion[0], m_pAnimModel->GetAnimation().c_str(), m_pAnimModel->GetAnimation().size());
+
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//視点の固定をオンにする
+					pCamera->SetLockPosV(true);
+					//カメラの向きを設定
+					pCamera->SetRotV(D3DXVECTOR3(CAMERA_INIT_ROT_X, D3DX_PI, 0.0f));
+				}
+			}
+		}
+
+		//死のモデルが生成されていたら
+		if (m_pDeathModel != nullptr)
+		{
+			//cameraのポインタ配列1番目のアドレス取得
+			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
+
+			for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++, pCameraAddress++)
+			{
+				//cameraの取得
+				CCamera *pCamera = &**pCameraAddress;
+				if (pCamera != nullptr)
+				{
+					//視点の位置を取得
+					float fDiffer = pCamera->GetDiffer();
+
+					//既定の値より小さいとき
+					if (fDiffer < PLAYER_DEATH_CAMERA_MAX_DIFFER)
+					{
+						//既定の値分距離を離す
+						fDiffer += PLAYER_DEATH_CAMERA_ADD_DIFFER;
+
+						//既定の値より大きくなったら
+						if (fDiffer > PLAYER_DEATH_CAMERA_MAX_DIFFER)
+						{
+							//既定の値にする
+							fDiffer = PLAYER_DEATH_CAMERA_MAX_DIFFER;
+						}
+
+						//距離を設定
+						pCamera->SetDiffer(fDiffer);
+					}
+				}
+			}
+
+			//死のモデルの更新処理
+			m_pDeathModel->Update();
 		}
 	}
+	else if(!m_bDeath && pData->Player.bInvincible == true)
+	{//死んでいない且つ無敵なら
+		//無敵用カウンターを加算
+		m_nInvincibleCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nInvincibleCounter > PLAYER_INVINCIBLE_COUNT)
+		{
+			//無敵じゃない状態にする
+			pData->Player.bInvincible = false;
+			//カウンターを0にする
+			m_nInvincibleCounter = 0;
+		}
+	}
+}
+
+//================================================
+//リロード処理
+//================================================
+void CPlayer::Reload(void)
+{
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	//リロード中でない且つRキーを押したら
+	if (!m_bReload && pInputKeyboard->GetTrigger(DIK_R))
+	{
+		//弾倉を0にする
+		m_nMagazineNum = 0;
+		//リロード中にする
+		m_bReload = true;
+		//UIに弾倉数を設定
+		m_pBulletState->SetBulletNow(m_nMagazineNum);
+	}
+
+	//リロード中なら
+	if (m_bReload)
+	{
+		if (m_pReload == nullptr)
+		{
+			m_pReload = CUi::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50.0f, 0.0f),
+				D3DXVECTOR3(180.0f, 50.0f, 0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				(int)CUi::BLINKING_TYPE::FADE,
+				(int)CUi::MOVE_TYPE::NONE,
+				1,
+				0,
+				"reloading.png");
+		}
+		//カウンターを加算
+		m_nReloadCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nReloadCounter > PLAYER_GUN_RELOAD_TIME)
+		{
+			//0にする
+			m_nReloadCounter = 0;
+			//弾倉を既定の値にする
+			m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+			//UIに弾倉数を設定
+			m_pBulletState->SetBulletNow(m_nMagazineNum);
+			//リロード中でなくする
+			m_bReload = false;
+		}
+	}
+	else if(!m_bReload)
+	{
+		if (m_pReload != nullptr)
+		{
+			m_pReload->Uninit();
+			m_pReload = nullptr;
+		}
+	}
+}
+
+//================================================
+//ライフ回復処理
+//================================================
+void CPlayer::HealLife(void)
+{
+	//回復する状態なら
+	if (m_bHealLife)
+	{
+		//カウンターを加算
+		m_nHealCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nHealCounter > PLAYER_HEAL_LIFE_COUNT)
+		{
+			//ライフを回復させる
+			m_nLife += PLAYER_HEAL_LIFE_NUM;
+
+			//ライフ最大値以上になったら
+			if (m_nLife >= PLAYER_LIFE)
+			{
+				//最大値にする
+				m_nLife = PLAYER_LIFE;
+				//回復していない状態にする
+				m_bHealLife = false;
+				//カウンターを0にする
+				m_nHealCounter = 0;
+			}
+		}
+	}
+}
+
+//================================================
+//血の処理
+//================================================
+void CPlayer::Blood(void)
+{
+	//カラー取得
+	D3DXCOLOR col = m_pBlood->GetCol();
+
+	//α値をライフの残量によって変える
+	col.a = 1.0f - ((float)m_nLife / (float)PLAYER_LIFE);
+
+	//カラー設定
+	m_pBlood->SetCol(col);
 }
 
 //================================================
@@ -1064,4 +1502,19 @@ bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius)
 	}
 
 	return false;
+}
+
+//================================================
+//銃取得処理
+//================================================
+CGunPlayer * CPlayer::GetGunPlayer(void)
+{
+	if (!m_bAds)
+	{
+		return m_pGunPlayer;
+	}
+	else
+	{
+		return m_pGunPlayerAds;
+	}
 }

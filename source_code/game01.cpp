@@ -90,6 +90,44 @@ void CGame01::Uninit(void)
 //================================================
 void CGame01::Update(void)
 {
+	//POINT pos;
+
+	//pos.x = SCREEN_WIDTH / 2;
+	//pos.y = SCREEN_HEIGHT / 2;
+
+	//SetCursorPos(pos.x, pos.y);
+
+	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
+	{
+		m_bAllConnect = true;
+	}
+
+	if (m_bAllConnect == false)
+	{
+		if (m_now_loding != nullptr)
+		{
+			m_count_pattern++;
+			if (m_count_pattern >= 25)
+			{
+				m_now_loding->SetTex(m_pattern_tex, 4);
+				m_pattern_tex++;
+				if (m_pattern_tex >= 4)
+				{
+					m_pattern_tex = 0;
+				}
+				m_count_pattern = 0;
+			}
+		}
+	}
+	else if (m_bAllConnect == true)
+	{
+		if (m_now_loding != nullptr)
+		{
+			m_now_loding->Uninit();
+			m_now_loding = nullptr;
+		}
+	}
+
 #ifdef _DEBUG
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
@@ -166,17 +204,18 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
+	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
+	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
+	m_now_loding->SetTex(m_pattern_tex, 4);
+	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 
-	thread ConnectLoading(ConnectLading, &m_bAllConnect);
-
-	ConnectLoading.detach();
-
+	pClient->Init();
 	pClient->Connect();
 
+	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	if (pClient->GetConnect() == true)
 	{
 		CManager::GetInstance()->GetNetWorkmanager()->CreateThread();
-		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 		bool bLoop = true;
 		while (bLoop)
@@ -199,10 +238,6 @@ void CGame01::FirstContact(void)
 				m_pPlayer = CPlayer::Create(D3DXVECTOR3(-1000.0f, 1000.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				bLoop = false;
 				break;
-			case 5:
-				m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				bLoop = false;
-				break;
 			default:
 				break;
 			}
@@ -216,16 +251,6 @@ void CGame01::FirstContact(void)
 	for (int count_enemy = 0; count_enemy < MAX_PLAYER; count_enemy++)
 	{
 		m_pEnemy.push_back(CEnemy::Create());
-	}
-
-	m_bAllConnect = true;
-}
-
-void CGame01::ConnectLading(bool *bConnect)
-{
-	while (*bConnect == false)
-	{
-
 	}
 }
 
@@ -242,34 +267,14 @@ vector<CEnemy*> CGame01::GetEnemy(void)
 //================================================
 void CGame01::LoadModelTxt(const string &Pas)
 {
-	//ファイルの読み込み
-	FILE *pFile;
-	pFile = fopen(Pas.c_str(), "r");
-	if (pFile != NULL)
-	{
-		char cStr[128];
-		while (fgets(cStr, 128, pFile) != nullptr)
-		{
-			if (strncmp("SET_MODEL\n", cStr, 11) == 0)
-			{
-				char cBuff[1][128];
-				string sPas;
-				D3DXVECTOR3 pos;
-				D3DXVECTOR3 rot;
-				int nColl;
-				fscanf(pFile, "%*s%*s%s", cBuff);
-				fscanf(pFile, "%*s%*s%f%f%f", &pos.x, &pos.y, &pos.z);
-				fscanf(pFile, "%*s%*s%f%f%f", &rot.x, &rot.y, &rot.z);
-				fscanf(pFile, "%*s%*s%d", &nColl);
+	vector<string> txt_data;	// テキストファイルの保存バッファ
+	vector<CFileLoad::STAGE_ALLOCATION_DATA> stage;	// ステージ情報
 
-				sPas = cBuff[0];
-				CModelSingle::Create(pos, rot, sPas, NULL, nColl);
-			}
-		}
-	}
-	else
+	txt_data = CFileLoad::LoadTxt(Pas);
+	stage = CFileLoad::CreateStageAllocation(txt_data);
+	int stage_element = stage.size();
+	for (int count_stage = 0; count_stage < stage_element; count_stage++)
 	{
-		printf("ファイルが開けませんでした\n");
+		CModelSingle::Create(stage[count_stage].pos, stage[count_stage].rot, stage[count_stage].pas, NULL, stage[count_stage].coll);
 	}
-	fclose(pFile);
 }

@@ -208,11 +208,15 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill++;
 					data[cout_player]->Player.bDeath = false;
 					//キル数が既定の数だったら
-					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill == KILL_COUNTER)
+					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill >= WIN_COUNTER)
 					{
-						//そのプレイヤーを勝ちにする
-						data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin = true;
-					}
+						//勝ちじゃなかったら
+						if (!data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin)
+						{
+							//そのプレイヤーを勝ちにする
+							data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin = true;
+						}
+					}	
 				}
 
 				// プレイヤーの撃った弾の数
@@ -229,8 +233,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					// プレイヤー分回す
 					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
 					{
-						// プレイヤーじゃなかったら
-						if (cout_player != cout_enemy)
+						// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
+						if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
 						{
 							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
 							float differ = 0.0f;
@@ -331,10 +335,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 				{
 					// メモリのコピー
-					memcpy(&recv_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 					// sendする
-					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				}
 				// 敵にsendoする
 				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
@@ -346,10 +350,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						if (countenemy != count_player)
 						{
 							// メモリのコピー
-							memcpy(&recv_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 							// sendする
-							communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 						}
 					}
 				}
@@ -357,10 +361,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
 				{
 					// メモリのコピー
-					memcpy(&recv_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 					// sendする
-					communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 					// 敵分回す
 					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
@@ -369,10 +373,10 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						if (countenemy != count_player)
 						{
 							// メモリのコピー
-							memcpy(&recv_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
 							// sendする
-							communication[count_player]->Send(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 						}
 					}
 				}
@@ -434,7 +438,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 void AllAcceptInit(CTcpListener* listener, int room_num)
 {
 	vector<CCommunication*> communication;	// 通信クラス
-	CCommunicationData::COMMUNICATION_DATA data;	// 割り振るためのデータ
+	CCommunicationData::COMMUNICATION_DATA data = {};	// 割り振るためのデータ
 	int count_player = 0;	// カウント
 	char recv_data[MAX_COMMU_DATA];	// レシーブ用
 
@@ -447,6 +451,7 @@ void AllAcceptInit(CTcpListener* listener, int room_num)
 		data.Player.nNumber = count_player + 1;
 		data.SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER;
 		data.bConnect = true;
+		
 
 		// メモリのコピー
 		memcpy(&recv_data[0], &data, sizeof(CCommunicationData::COMMUNICATION_DATA));

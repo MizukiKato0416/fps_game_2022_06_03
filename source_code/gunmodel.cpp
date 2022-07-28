@@ -12,7 +12,6 @@
 #include "renderer.h"
 #include "model_single.h"
 #include "model.h"
-#include "model.h"
 
 //=============================================================================
 // デフォルトコンストラクタ

@@ -99,6 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,6 +160,7 @@
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="billeffect.cpp" />
     <ClCompile Include="BulletHoll.cpp" />
+    <ClCompile Include="bulletstate.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="communicationdata.cpp" />
     <ClCompile Include="counter.cpp" />
@@ -172,6 +174,7 @@
     <ClCompile Include="floor.cpp" />
     <ClCompile Include="game01.cpp" />
     <ClCompile Include="gunmodel.cpp" />
+    <ClCompile Include="gun_player.cpp" />
     <ClCompile Include="hierarchydata.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="input_keyboard.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="ThunderBill.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="Trajectory.cpp" />
+    <ClCompile Include="ui.cpp" />
     <ClCompile Include="xanimmodel.cpp" />
     <ClCompile Include="x_load.cpp" />
   </ItemGroup>
@@ -225,6 +229,7 @@
     <ClInclude Include="billboard.h" />
     <ClInclude Include="billeffect.h" />
     <ClInclude Include="BulletHoll.h" />
+    <ClInclude Include="bulletstate.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="communicationdata.h" />
     <ClInclude Include="counter.h" />
@@ -238,6 +243,7 @@
     <ClInclude Include="floor.h" />
     <ClInclude Include="game01.h" />
     <ClInclude Include="gunmodel.h" />
+    <ClInclude Include="gun_player.h" />
     <ClInclude Include="hierarchydata.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="input_keyboard.h" />
@@ -281,6 +287,7 @@
     <ClInclude Include="ThunderBill.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="Trajectory.h" />
+    <ClInclude Include="ui.h" />
     <ClInclude Include="xanimmodel.h" />
     <ClInclude Include="x_load.h" />
   </ItemGroup>

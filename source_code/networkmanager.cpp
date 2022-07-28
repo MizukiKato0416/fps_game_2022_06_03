@@ -18,6 +18,7 @@
 CCommunicationData CNetWorkManager::m_player_data;
 vector<CCommunicationData> CNetWorkManager::m_enemy_data;
 CTcpClient* CNetWorkManager::m_communication;
+bool CNetWorkManager::m_all_connect;
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -33,7 +34,8 @@ CNetWorkManager::CNetWorkManager()
 //=============================================================================
 CNetWorkManager::~CNetWorkManager()
 {
-
+	m_communication = nullptr;
+	m_enemy_data.clear();
 }
 
 //=============================================================================
@@ -54,10 +56,6 @@ void CNetWorkManager::Init(void)
 	if (m_communication == nullptr)
 	{
 		m_communication = new CTcpClient;
-		if (m_communication != nullptr)
-		{
-			m_communication->Init();
-		}
 	}
 }
 
@@ -69,7 +67,6 @@ void CNetWorkManager::Uninit(void)
 	// 終了処理
 	if (m_communication != nullptr)
 	{
-		m_communication->Uninit();
 		delete m_communication;
 		m_communication = nullptr;
 	}
@@ -220,4 +217,62 @@ void CNetWorkManager::Recv(void)
 			data->bConnect = false;
 		}
 	}
+}
+
+void CNetWorkManager::Reset(void)
+{
+	m_player_data.Init();
+	int enemy_max = m_enemy_data.size();
+
+	for (int count_enemy = 0; count_enemy < enemy_max; count_enemy++)
+	{
+		m_enemy_data[count_enemy].Init();
+	}
+}
+
+bool CNetWorkManager::GetAllConnect(void)
+{
+	vector<bool> all_connect;
+	CCommunicationData::COMMUNICATION_DATA *player_data = m_player_data.GetCmmuData();
+
+	if (player_data->bConnect == true)
+	{
+		all_connect.push_back(true);
+	}
+	else
+	{
+		all_connect.push_back(false);
+	}
+
+	int enemy_size = m_enemy_data.size();	// サイズを取得
+
+	for (int count_enemy = 0; count_enemy < enemy_size; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *data = m_enemy_data[count_enemy].GetCmmuData();
+
+		if (data->bConnect == true)
+		{
+			all_connect.push_back(true);
+		}
+		else
+		{
+			all_connect.push_back(false);
+		}
+	}
+
+	int size = all_connect.size();
+
+	for (int count_enemy = 0; count_enemy < size; count_enemy++)
+	{
+		if (all_connect[count_enemy] == true)
+		{
+			m_all_connect = true;
+		}
+		else
+		{
+			m_all_connect = false;
+		}
+	}
+
+	return m_all_connect;
 }

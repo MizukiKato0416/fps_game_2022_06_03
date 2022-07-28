@@ -23,7 +23,7 @@ class CNumber;
 class CCounter : public CObject
 {
 public:
-	CCounter();	// デフォルトコンストラクタ
+	CCounter(CObject::PRIORITY Priority = CObject::PRIORITY::UI);	// デフォルトコンストラクタ
 	~CCounter();	// デフォルトデストラクタ
 	HRESULT Init(void);	// 初期化
 	void Uninit(void);	// 終了
@@ -32,7 +32,7 @@ public:
 	void AddCounter(int nValue) { m_nCounter += nValue; }	// スコア加算 { スコア += 引数}
 	int GetCounter(void) { return m_nCounter; }				// ゲッター
 	void SetCounter(int nCounter);	// セッター
-	void SetCol(D3DCOLORVALUE col);	// セッター
+	void SetCol(D3DXCOLOR col);	// セッター
 	void SetCounterNum(int nCounter) { m_nCounter = nCounter; }	// セッター
 	int GetCounterNum(void) { return m_nCounter; }	// ゲッダー
 	static CCounter *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, int nNumbderLength, string type);	// オブジェクトの生成

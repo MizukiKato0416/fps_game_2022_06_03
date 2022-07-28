@@ -1,36 +1,56 @@
-//=============================================================================
-//
-// 数処理 [number.h]
-// Author : 羽鳥太一
-//
-//=============================================================================
+//===========================================
+//ナンバー処理
+//Author:KatoMizuki
+//===========================================
 #ifndef _NUMBER_H_
 #define _NUMBER_H_
 
-//*****************************************************************************
-// ヘッダファイルのインクルード
-//*****************************************************************************
-#include "object2D.h"
+//================================================
+//マクロ定義
+//================================================
+#define FVF_VERTEX_2D_NUMBER (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)	//頂点フォーマット
+#define VERTEX_NUM_NUMBER (4)												//頂点数
 
-//*****************************************************************************
-// クラス定義
-//*****************************************************************************
-class CNumber : public CObject2D
+//========================================================
+//構造体の定義
+//========================================================
+typedef struct
+{
+	D3DXVECTOR3 pos;		//頂点座標
+	float rhw;				//1.0fで固定
+	D3DCOLOR col;			//頂点カラー
+	D3DXVECTOR2 tex;		//テクスチャ座標
+} VERTEX_2D_NUMBER;
+
+//================================================
+//クラスの定義
+//================================================
+//クラスの定義
+class CNumber
 {
 public:
-	CNumber(CObject::PRIORITY Priority = CObject::PRIORITY::UI);	// デフォルトコンストラクタ
-	~CNumber();	// デフォルトデストラクタ
-	HRESULT Init(void);	// ポリゴンの初期化(位置、サイズ、テクスチャ)
-	void Uninit(void);	// ポリゴンの終了
-	void Update(void);	// ポリゴンの更新
-	void Draw(void);	// ポリゴンの描画
-	static CNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size, string type);	// オブジェクトの生成(位置, サイズ、テクスチャ)
-	void SetScore(int nScore) { CObject2D::SetTex(nScore); };	// スコア
-	void SetCol(D3DCOLORVALUE col) { CObject2D::SetCol(col); }	// セッター
+	CNumber();			//コンストラクタ
+	~CNumber();							//デストラクタ
+
+	//メンバ関数
+	HRESULT Init(D3DXVECTOR3 pos, D3DXVECTOR3 size);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+	void SetNumber(int nNumber);
+	void SetCol(D3DXCOLOR col);
+
+	static CNumber *Create(D3DXVECTOR3 pos, D3DXVECTOR3 size);
+	void BindTexture(LPDIRECT3DTEXTURE9 pTexture);				//テクスチャ割り当て
+
 private:
-	D3DXVECTOR3 m_Pos;	// 位置
-	D3DXVECTOR3 m_Size;	// サイズ
-	string m_Type;	// テクスチャ
+	LPDIRECT3DTEXTURE9 m_pTexture;			//テクスチャへのポインタ
+	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//頂点バッファへのポインタ
+	D3DXVECTOR3 m_pos;						//ポリゴンの位置
+	D3DXVECTOR3	m_size;						// サイズ
 };
 
-#endif
+//================================================
+//プロトタイプ宣言
+//================================================
+#endif // !_NUMBER_H_

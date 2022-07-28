@@ -8,18 +8,20 @@
 #include "communicationdata.h"
 
 //前方宣言
-class CGunModel;
+class CGunPlayer;
 class CSparkle;
 class CWind;
 class CXanimModel;
 class CObject2D;
 class CModelCollision;
 class CShadow;
+class CBulletState;
+class CUi;
 
 //================================================
 //マクロ定義
 //================================================
-#define MAX_PLAYER_MODEL					(5)			//モデルの数
+#define MAX_PLAYER_MODEL					(5)										//モデルの数
 #define PLAYER_LIFE							(100)									//体力
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
 
@@ -53,9 +55,11 @@ public:
 	bool GetObjParent(void) { return m_bObjParent; }										//オブジェクトとの親子関係取得処理
 	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
 	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
-	CGunModel *GetGunModel(void) { return m_pGunModel; }									//銃取得処理
+	CGunPlayer *GetGunPlayer(void);															//銃取得処理
 	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
 	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
+	void SetAnimSpeed(const float &fAnimSpeed) { m_fAnimSpeed = fAnimSpeed; }				//アニメーションのスピード設定処理
+	float GetAnimSpeed(void) { return m_fAnimSpeed; }										//アニメーションのスピード取得処理
 
 private:
 	//メンバ関数
@@ -67,6 +71,9 @@ private:
 	void Chest(void);								//腰の処理
 	void HitBullet(void);							//被弾処理
 	void Respawn(void);								//リスポーン処理
+	void Reload(void);								//リロード処理
+	void HealLife(void);							//ライフ回復処理
+	void Blood(void);								//血の処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -75,7 +82,10 @@ private:
 	D3DXVECTOR3 m_move;								//ポリゴンの移動量
 	D3DXVECTOR3	m_size;								//サイズ
 	D3DXVECTOR3 m_rot;								//向き
-	CGunModel *m_pGunModel;							//銃モデルのポインタ
+	CUi *m_pReload;
+	CBulletState *m_pBulletState;
+	CGunPlayer *m_pGunPlayer;							//銃モデルのポインタ
+	CGunPlayer *m_pGunPlayerAds;						//ADS用の銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	float m_fObjectiveRot;							//目的の向き
 	float m_fNumRot;								//向きを変える量
@@ -96,6 +106,15 @@ private:
 	CShadow *m_pShadow;								//影のポインタ
 	int m_nRespawnCounter;							//リスポーンするまでのカウンター
 	bool m_bDeath;									//死んでいるかどうか
+	int m_nInvincibleCounter;						//無敵時間カウント用
+	int m_nMagazineNum;								//弾倉の数
+	int m_nReloadCounter;							//リロード時間カウント用
+	bool m_bReload;									//リロード中かどうか
+	bool m_bHealLife;								//ライフ回復処理
+	int m_nHealCounter;								//ダメージを受けてから回復し始めるまでのカウンター
+	CObject2D *m_pDamageMask;						//被弾時のマスク
+	CObject2D *m_pBlood;							//ダメージを受けた際の血
+	int m_nDamageMaskCount;							//ダメージを受けた際に出るマスクを表示する時間
 };
 
 #endif // !_PLAYER_H_

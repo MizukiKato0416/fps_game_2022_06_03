@@ -28,21 +28,25 @@ CXload::~CXload()
 void CXload::Init(void)
 {
 	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
+	vector<string> folder_name;	// フォルダの保存バッファ
+	int pas_element;	// パスの要素数
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	//デバイスを取得する
 
-	int element_max;		// テクスチャカウント様
-
 	// ファイルを読み込む
-	m_file_data.file_name_pas = CFileLoad::Load("data\\MODEL\\");
-	element_max = m_file_data.file_name_pas.second.size();
+	m_all_file = CFileLoad::LoadFile("data\\MODEL\\");
+	// パスと名前を取得
+	m_file_data = CFileLoad::CreateFilePasElement(m_all_file, "data\\MODEL\\");
 
-	for (int count_element = 0; count_element < element_max; count_element++)
+	// パスの要素数
+	pas_element = m_file_data.file_name_pas.second.size();
+
+	for (int count_element = 0; count_element < pas_element; count_element++)
 	{
 		// 疑似列挙型を作る
 		m_file_data.type[m_file_data.file_name_pas.second[count_element]] = count_element;
 	}
-	// パスとサイズを保存
-	m_file_data.pas = m_file_data.file_name_pas.first;
+
+	// パスの要素数を取得
 	m_nNum = m_file_data.file_name_pas.first.size();
 
 	// サイズ分回す
