@@ -1389,13 +1389,13 @@ void CPlayer::Reload(void)
 		if (m_pReload == nullptr)
 		{
 			m_pReload = CUi::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50.0f, 0.0f),
-				D3DXVECTOR3(180.0f, 50.0f, 0.0f),
-				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				(int)CUi::BLINKING_TYPE::FADE,
-				(int)CUi::MOVE_TYPE::NONE,
-				1,
-				0,
-				"reloading.png");
+									D3DXVECTOR3(180.0f, 50.0f, 0.0f),
+									D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+									(int)CUi::BLINKING_TYPE::FADE,
+									(int)CUi::MOVE_TYPE::NONE,
+									1,
+									0,
+									"reloading.png");
 		}
 		//カウンターを加算
 		m_nReloadCounter++;
