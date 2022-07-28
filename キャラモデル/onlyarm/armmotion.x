@@ -4174,7 +4174,208 @@ AnimationSet walk {
   }
 } //End of AnimationSet
 
-AnimationSet fire {
+AnimationSet fireneutral {
+  Animation {
+    {Armature}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;    -10.445645,-14.349895,-32.373035;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;     0.974679, 0.084350,-0.031755, 0.204640;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;    32.248352,32.248356,32.248356;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_L_001}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;    -0.627410, 0.724446, 0.707964;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.839602,-0.196055,-0.500936,-0.075462;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_L_002}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     0.000000, 0.577348, 0.000000;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.900806,-0.292804, 0.047030,-0.317178;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_L_003}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     0.000000, 0.470102,-0.000000;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.986026,-0.063003, 0.025933,-0.152020;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_R_001}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     0.190389,-0.266597, 0.917713;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.810503,-0.181138, 0.372702,-0.413966;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_R_002}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     0.000000, 0.577349, 0.000000;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.871422,-0.104451, 0.052235, 0.476432;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {Armature_Bone_R_003}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     0.000000, 0.470101, 0.000000;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.978047,-0.076927, 0.139947, 0.133868;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     1.000000, 1.000000, 1.000000;;;
+    }
+  }
+  Animation {
+    {armL}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;    -0.042839,-0.679024,-1.068515;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.981108, 0.004770, 0.029053,-0.191207;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     0.864408, 0.404646, 0.437145;;;
+    }
+  }
+  Animation {
+    {armR}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;    -0.277238,-0.003787,-0.957814;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;     0.000001,-0.000000, 0.000000, 1.000000;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     0.864408, 0.404646, 0.437145;;;
+    }
+  }
+  Animation {
+    {handL}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;    -1.699522,-0.004029, 0.975936;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.981108, 0.004770, 0.029053,-0.191207;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     0.161241, 0.161302, 0.161302;;;
+    }
+  }
+  Animation {
+    {handR}
+    AnimationKey { //Position
+      2;
+      1;
+      0;3;     1.623960,-0.003787, 0.977854;;;
+    }
+    AnimationKey { //Rotation
+      0;
+      1;
+      0;4;    -0.997049,-0.070183,-0.030212,-0.007402;;;
+    }
+    AnimationKey { //Scale
+      1;
+      1;
+      0;3;     0.161241, 0.161302, 0.161302;;;
+    }
+  }
+} //End of AnimationSet
+
+AnimationSet firewalk {
   Animation {
     {Armature}
     AnimationKey { //Position
