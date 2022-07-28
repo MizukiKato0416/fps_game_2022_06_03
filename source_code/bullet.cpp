@@ -23,13 +23,15 @@
 //================================================
 //マクロ定義
 //================================================
-#define BULLET_MOVE_SPEED			(450.0f)		//軌道の速さ
-#define BULLET_SIZE_X				(200.0f)		//軌道のサイズ
-#define BULLET_SIZE_Y				(2.5f)			//軌道のサイズ
-#define BULLET_MAX_END_POS			(10000.0f)		//軌道の終点最大値
-#define BULLET_DAMAGE				(20)			//ダメージ
-#define BULLET_PLAYER_COL_SIZE_Y	(90.0f)			//当たり判定サイズ調整値
-#define BULLET_PLAYER_COL_RADIUS	(28.0f)			//当たり判定半径
+#define BULLET_MOVE_SPEED			(450.0f)						//軌道の速さ
+#define BULLET_SIZE_X				(200.0f)						//軌道のサイズ
+#define BULLET_SIZE_Y				(2.5f)							//軌道のサイズ
+#define BULLET_MAX_END_POS			(10000.0f)						//軌道の終点最大値
+#define BULLET_DAMAGE				(20)							//ダメージ
+#define BULLET_PLAYER_COL_SIZE_Y	(90.0f)							//当たり判定サイズ調整値
+#define BULLET_PLAYER_COL_RADIUS	(28.0f)							//当たり判定半径
+#define BULLET_RAND					(rand() % 280 + -140)			//拡散量
+#define BULLET_RAND_JUMP			(rand() % 360 + -180)			//ジャンプしたときの拡散量
 
 //================================================
 //静的メンバ変数宣言
@@ -90,6 +92,36 @@ HRESULT CBullet::Init(void)
 	bool bHitModel = false;
 	m_nDamage = BULLET_DAMAGE;
 
+	//ADSしているかどうか保存用変数
+	bool bAds = false;
+	//ジャンプしているかどうか保存用変数
+	bool bJump = false;
+
+	//オブジェクト情報を入れるポインタ
+	vector<CObject*> object;
+
+	//先頭のポインタを代入
+	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
+	int nProprty_Size = object.size();
+
+	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+	{
+		//オブジェクトの種類がプレイヤーだったら
+		if (object[nCnt]->GetObjType() == CObject::OBJTYPE::PLAYER)
+		{
+			//プレイヤーにキャスト
+			CPlayer *pPlayerObj = nullptr;
+			pPlayerObj = (CPlayer*)object[nCnt];
+
+			//ADSしているかどうか取得
+			bAds = pPlayerObj->GetAds();
+			//ジャンプ取得
+			bJump = pPlayerObj->GetJump();
+		}
+	}
+
+
+
 	//cameraのポインタ配列1番目のアドレス取得
 	CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
 
@@ -102,8 +134,39 @@ HRESULT CBullet::Init(void)
 			//カメラの位置取得
 			posCameraV = pCamera->GetPosV();
 			posCameraR = pCamera->GetPosR();
+
 			//カメラの向き取得
 			rotCamera = pCamera->GetRotV();
+
+			//腰うちだったら
+			if (!bAds)
+			{
+				////ジャンプしていたら
+				//if (bJump)
+				//{
+				//	//拡散させる量設定
+				//	m_rand.x = float(BULLET_RAND_JUMP);
+				//	m_rand.y = float(BULLET_RAND_JUMP);
+				//	m_rand.z = float(BULLET_RAND_JUMP);
+				//}
+				//else
+				//{//ジャンプしていなかったら
+				//	//拡散させる量設定
+				//	m_rand.x = float(BULLET_RAND);
+				//	m_rand.y = float(BULLET_RAND);
+				//	m_rand.z = float(BULLET_RAND);
+				//}
+
+				//拡散させる量設定
+				m_rand.x = float(BULLET_RAND);
+				m_rand.y = float(BULLET_RAND);
+				m_rand.z = float(BULLET_RAND);
+
+				//腰うちの場合はランダムに拡散させる
+				posCameraR.x += cosf(rotCamera.y) * m_rand.x;
+				posCameraR.z += sinf(rotCamera.y) * m_rand.z;
+				posCameraR.y += m_rand.y;
+			}
 
 			//レイを飛ばす方向を算出
 			m_rayVec = posCameraR - posCameraV;
@@ -117,11 +180,11 @@ HRESULT CBullet::Init(void)
 	}
 
 	//オブジェクト情報を入れるポインタ
-	vector<CObject*> object;
+	object.clear();
 
 	//先頭のポインタを代入
 	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::MODEL));
-	int nProprty_Size = object.size();
+	nProprty_Size = object.size();
 
 	for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
 	{
@@ -348,6 +411,8 @@ HRESULT CBullet::Init(void)
 	pData->Ballistic.Rot = rotCamera;
 	pData->Ballistic.EndPos = m_endPos;
 	pData->Ballistic.fSpeed = BULLET_MOVE_SPEED;
+	pData->Player.CamV = posCameraV;
+	pData->Player.CamR = posCameraR;
 
 	return S_OK;
 }

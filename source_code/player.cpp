@@ -61,6 +61,11 @@
 #define PLAYER_HEAL_LIFE_NUM				(2)										//1フレームあたりに回復させるライフ量
 #define PLAYER_DAMAGE_MASK_COUNT			(2)										//被弾した際にでるマスクを表示する時間
 #define PLAYER_DAMAGE_MASK_ALPHA			(0.2f)									//α値を減らす量
+#define PLAYER_MAGAZIN_CHANGE_COL_NUM		(10)									//弾倉表示の色を変え始める球数数
+#define PLAYER_RETICLE_SIZE					(0.8f)									//腰うちレティクルのサイズ倍率
+#define PLAYER_BULLET_HIT_UI_COUNT			(5)										//ヒット時UIが消え始めるまでの時間
+#define PLAYER_BULLET_HIT_UI_SIZE			(1.0f)									//ヒット時UIのサイズ倍率
+#define PLAYER_BULLET_HIT_UI_ALPHA			(0.1f)									//ヒット時UIのα値減算量
 
 //================================================
 //デフォルトコンストラクタ
@@ -99,6 +104,9 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nHealCounter = 0;
 	m_pDamageMask = nullptr;
 	m_pBlood = nullptr;
+	m_pBulletHitUi = nullptr;
+	m_pBulletKillUi = nullptr;
+	m_nBulletHitUiCounter = 0;
 }
 
 //================================================
@@ -141,6 +149,9 @@ HRESULT CPlayer::Init(void)
 	m_nHealCounter = 0;
 	m_pDamageMask = nullptr;
 	m_pBlood = nullptr;
+	m_pBulletHitUi = nullptr;
+	m_pBulletKillUi = nullptr;
+	m_nBulletHitUiCounter = 0;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -188,7 +199,8 @@ HRESULT CPlayer::Init(void)
 	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	//クロスヘアの生成
-	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, {SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f}, (int)CObject::PRIORITY::UI);
+	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
+	                             {SCREEN_WIDTH * PLAYER_RETICLE_SIZE, SCREEN_HEIGHT * PLAYER_RETICLE_SIZE, 0.0f}, (int)CObject::PRIORITY::UI);
 	m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
 
 	//血の生成
@@ -425,6 +437,9 @@ void CPlayer::Update(void)
 		//射撃処理
 		Shot();
 
+		//ヒット時UI処理
+		BulletHitUi();
+
 		//リロード処理
 		Reload();
 
@@ -489,12 +504,15 @@ void CPlayer::Update(void)
 		}
 	}
 
-	if (m_nMagazineNum <= 10)
+	//マガジンの数が既定の値以下になったら
+	if (m_nMagazineNum <= PLAYER_MAGAZIN_CHANGE_COL_NUM)
 	{
+		//色を赤くする
 		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 	}
-	else if (m_nMagazineNum > 10)
-	{
+	else
+	{//マガジンの数が既定の値より大きくなったら
+		//色を白にする
 		m_pBulletState->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
@@ -502,8 +520,6 @@ void CPlayer::Update(void)
 	pData->Player.Pos = m_pos;
 	pData->Player.Rot = m_rot;
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
-	pData->Player.CamV = posCameraV;
-	pData->Player.CamR = posCameraR;
 	pData->Player.ModelMatrix = m_mtxWorld;
 
 	//サーバーに送る
@@ -957,6 +973,19 @@ void CPlayer::Shot(void)
 			//当たった位置にエフェクトを出す
 			CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
 			CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
+
+			//ヒットしたときのUIが生成されていなったら
+			if (m_pBulletHitUi == nullptr)
+			{
+				//ヒットしたときのUIの生成
+				m_pBulletHitUi = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
+												   { SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
+					                               (int)CObject::PRIORITY::UI);
+				m_pBulletHitUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hit_ui.png"));
+
+				//カウンターを0にする
+				m_nBulletHitUiCounter = 0;
+			}
 		}
 	}
 	//弾の撃った数を0にする
@@ -980,6 +1009,13 @@ void CPlayer::ADS(void)
 		{
 			//ADS状態にする
 			m_bAds = true;
+
+			//クロスヘアが生成されていたら
+			if (m_pCloss != nullptr)
+			{
+				//ADS用のクロスヘアにする
+				m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs_ads.png"));
+			}
 		}
 		//cameraのポインタ配列1番目のアドレス取得
 		CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
@@ -1017,6 +1053,13 @@ void CPlayer::ADS(void)
 		{
 			//ADS状態をやめる
 			m_bAds = false;
+
+			//クロスヘアが生成されていたら
+			if (m_pCloss != nullptr)
+			{
+				//腰うち用のクロスヘアにする
+				m_pCloss->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("closs.png"));
+			}
 
 			//cameraのポインタ配列1番目のアドレス取得
 			CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
@@ -1227,6 +1270,14 @@ void CPlayer::Respawn(void)
 			m_nLife = PLAYER_LIFE;
 			//死んでいない状態にする
 			m_bDeath = false;
+			//0にする
+			m_nReloadCounter = 0;
+			//弾倉を既定の値にする
+			m_nMagazineNum = PLAYER_GUN_MAGAZINE_NUM;
+			//UIに弾倉数を設定
+			m_pBulletState->SetBulletNow(m_nMagazineNum);
+			//リロード中でなくする
+			m_bReload = false;
 			//銃の描画をする
 			m_pGunPlayer->GetModel()->SetDraw(true);
 			//死んだとき用のモデルを消す
@@ -1416,6 +1467,43 @@ void CPlayer::Blood(void)
 
 	//カラー設定
 	m_pBlood->SetCol(col);
+}
+
+//================================================
+//弾がヒットしたときの処理
+//================================================
+void CPlayer::BulletHitUi(void)
+{
+	//ヒット時のUIが生成されていたら
+	if (m_pBulletHitUi != nullptr)
+	{
+		//カウンターを加算
+		m_nBulletHitUiCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nBulletHitUiCounter > PLAYER_BULLET_HIT_UI_COUNT)
+		{
+			//カラー取得
+			D3DXCOLOR col = m_pBulletHitUi->GetCol();
+			//α値を減らす
+			col.a -= PLAYER_BULLET_HIT_UI_ALPHA;
+
+			//見えなくなったら
+			if (col.a <= 0.0f)
+			{
+				//0にする
+				m_nBulletHitUiCounter = 0;
+				//消す
+				m_pBulletHitUi->Uninit();
+				m_pBulletHitUi = nullptr;
+			}
+			else
+			{//見えているなら
+				//色を設定
+				m_pBulletHitUi->SetCol(col);
+			}
+		}
+	}
 }
 
 //================================================
