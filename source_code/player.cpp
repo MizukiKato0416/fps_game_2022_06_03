@@ -177,6 +177,8 @@ HRESULT CPlayer::Init(void)
 	m_pAnimModel = CXanimModel::Create("data/armmotion.x");
 	//ニュートラルモーションにする
 	m_pAnimModel->ChangeAnimation("neutral", 60.0f / 4800.0f);
+	//色を設定
+	m_pAnimModel->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 
 	//サイズを取得
 	D3DXVECTOR3 modelSize = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -1271,9 +1273,13 @@ void CPlayer::Respawn(void)
 		{
 			//カウンターを0にする
 			m_nRespawnCounter = 0;
-			//リスポーン
-			m_pos = { 0.0f, 1000.0f, 0.0f };
-			SetPos(m_pos);
+
+			if (CManager::GetInstance()->GetGame01() != nullptr)
+			{
+				//リスポーン
+				CManager::GetInstance()->GetGame01()->RespawnPlayer();
+			}
+
 			//ライフを回復
 			m_nLife = PLAYER_LIFE;
 			//死んでいない状態にする

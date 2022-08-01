@@ -11,6 +11,7 @@
 // インクルード
 //-------------------------------
 #include "main.h"
+#include "game01.h"
 
 //-------------------------------
 // マクロ定義
@@ -71,6 +72,7 @@ public:
 		bool bDeath;		//死んだかどうか
 		bool bInvincible;	//無敵かどうか
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
+		int nRespawnPos;			//リスポーンの場所
 	} PLAYUER_DATA;
 
 	typedef struct

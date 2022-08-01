@@ -18,6 +18,8 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
+#define TITLE_BULLET_HOLE_UI_SIZE		(100.0f)		//弾痕UIのサイズ
+
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -100,6 +102,12 @@ void CTitle::Update(void)
 					if (fade->GetFade() == CFade::FADE_NONE)
 					{
 						fade->SetFade(CManager::MODE::GAME01);
+
+						//弾痕のUIを出す
+						CObject2D *pObject2D = CObject2D::Create({ (float)mouse_pos.x, (float)mouse_pos.y, 0.0f },
+						                                         { TITLE_BULLET_HOLE_UI_SIZE, TITLE_BULLET_HOLE_UI_SIZE, 0.0f },
+							                                     (int)CObject::PRIORITY::UI);
+						pObject2D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hole_ui.png"));
 					}
 				}
 			}

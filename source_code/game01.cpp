@@ -22,7 +22,15 @@
 //================================================
 //マクロ定義
 //================================================
-#define GAME01_FIELD_SIZE		(50000.0f)			//マップの広さ
+#define GAME01_FIELD_SIZE				(50000.0f)									//マップの広さ
+#define GAME01_PLAYER_RESPAWN_POS_00	(D3DXVECTOR3(-300.0f, 150.0f, 2000.0f))		//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_01	(D3DXVECTOR3(2400.0f, 100.0f, 2800.0f))		//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_02	(D3DXVECTOR3(2700.0f, 170.0f, 600.0f))		//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_03	(D3DXVECTOR3(-2300.0f, 100.0f, -1500.0f))	//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_04	(D3DXVECTOR3(200.0f, 100.0f, -1000.0f))		//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(2000.0f, 200.0f, -1000.0f))	//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_06	(D3DXVECTOR3(2500.0f, 200.0f, -2500.0f))	//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_07	(D3DXVECTOR3(-1000.0f, 160.0f, 1700.0f))	//リスポーンの場所
 
 //================================================
 //静的メンバ変数宣言
@@ -37,6 +45,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_pMeshField = nullptr;
 	m_bAllConnect = false;
 	m_pEnemy.clear();
+	m_respawnPos = PlayerRespawnPos::NONE;
 }
 
 //================================================
@@ -57,6 +66,9 @@ CGame01::~CGame01()
 //================================================
 HRESULT CGame01::Init(void)
 {
+	//変数初期化
+	m_respawnPos = PlayerRespawnPos::NONE;
+
 	FirstContact();
 
 	//メッシュフィールド生成
@@ -260,6 +272,75 @@ void CGame01::FirstContact(void)
 vector<CEnemy*> CGame01::GetEnemy(void)
 {
 	return m_pEnemy;
+}
+
+//================================================
+//プレイヤーリスポーン関数
+//================================================
+void CGame01::RespawnPlayer(void)
+{
+	//リスポーンの場所保存用変数
+	D3DXVECTOR3 respawnPos = { 0.0f, 0.0f, 0.0f };
+
+	//敵のデータ取得
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+
+	while (0)
+	{
+		//リスポーン位置を数字で指定
+		m_respawnPos = static_cast<PlayerRespawnPos>(rand() % (static_cast<int>(PlayerRespawnPos::MAX) - 1) + 1);
+
+		//設定した数値によってリスポーン場所を変える
+		switch (m_respawnPos)
+		{
+		case CGame01::PlayerRespawnPos::POS_00:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_00;
+			break;
+		case CGame01::PlayerRespawnPos::POS_01:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_01;
+			break;
+		case CGame01::PlayerRespawnPos::POS_02:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_02;
+			break;
+		case CGame01::PlayerRespawnPos::POS_03:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_03;
+			break;
+		case CGame01::PlayerRespawnPos::POS_04:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_04;
+			break;
+		case CGame01::PlayerRespawnPos::POS_05:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_05;
+			break;
+		case CGame01::PlayerRespawnPos::POS_06:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_06;
+			break;
+		case CGame01::PlayerRespawnPos::POS_07:
+			respawnPos = GAME01_PLAYER_RESPAWN_POS_07;
+			break;
+		default:
+			break;
+		}
+
+		for (int nCntEnemy = 0; nCntEnemy < data.size(); nCntEnemy++)
+		{
+			//敵が接続されていたら
+			if (data[nCntEnemy].GetCmmuData()->bConnect)
+			{
+				//敵の位置とかぶっていなかったら
+				if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	//プレイヤーが生成されていたら
+	if (m_pPlayer != nullptr)
+	{
+		//プレイヤーの位置を設定
+		m_pPlayer->SetPos(respawnPos);
+	}
 }
 
 //================================================

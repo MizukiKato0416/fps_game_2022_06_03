@@ -27,6 +27,22 @@ class CObject2D;
 class CGame01 : public CObject
 {
 public:
+	//プレイヤーリスポーン位置の種類
+	enum class PlayerRespawnPos
+	{
+		NONE = 0,
+		POS_00,
+		POS_01,
+		POS_02,
+		POS_03,
+		POS_04,
+		POS_05,
+		POS_06,
+		POS_07,
+		MAX
+	};
+
+
 	CGame01(CObject::PRIORITY Priority = CObject::PRIORITY::NONE);		//コンストラクタ
 	~CGame01();									//デストラクタ
 
@@ -40,6 +56,7 @@ public:
 	void FirstContact(void);
 	//敵のモデル取得処理
 	vector<CEnemy*> GetEnemy(void);
+	void RespawnPlayer(void);			//プレイヤーリスポーン関数
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理
@@ -52,6 +69,7 @@ private:
 	int m_count_pattern = 0;
 	int m_pattern_tex = 0;
 	bool m_bAllConnect;
+	PlayerRespawnPos m_respawnPos;
 };	
 
 #endif // !_GAME01_H_
