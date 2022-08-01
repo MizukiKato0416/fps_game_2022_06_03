@@ -137,6 +137,9 @@ void CGame01::Update(void)
 		{
 			m_now_loding->Uninit();
 			m_now_loding = nullptr;
+
+			//リスポーン
+			RespawnPlayer();
 		}
 	}
 
@@ -285,7 +288,8 @@ void CGame01::RespawnPlayer(void)
 	//敵のデータ取得
 	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
 
-	while (0)
+	int nCntTrue = 0;
+	while (1)
 	{
 		//リスポーン位置を数字で指定
 		m_respawnPos = static_cast<PlayerRespawnPos>(rand() % (static_cast<int>(PlayerRespawnPos::MAX) - 1) + 1);
@@ -321,7 +325,9 @@ void CGame01::RespawnPlayer(void)
 			break;
 		}
 
-		for (int nCntEnemy = 0; nCntEnemy < data.size(); nCntEnemy++)
+		int nEnemyNum = data.size();
+
+		for (int nCntEnemy = 0; nCntEnemy < nEnemyNum; nCntEnemy++)
 		{
 			//敵が接続されていたら
 			if (data[nCntEnemy].GetCmmuData()->bConnect)
@@ -329,9 +335,17 @@ void CGame01::RespawnPlayer(void)
 				//敵の位置とかぶっていなかったら
 				if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
 				{
-					break;
+					//データ取得
+					CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+					PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
+					nCntTrue++;
 				}
 			}
+		}
+
+		if (nCntTrue == nEnemyNum)
+		{
+			break;
 		}
 	}
 
