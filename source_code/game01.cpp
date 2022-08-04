@@ -28,7 +28,7 @@
 #define GAME01_PLAYER_RESPAWN_POS_02	(D3DXVECTOR3(2700.0f, 170.0f, 600.0f))		//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_03	(D3DXVECTOR3(-2300.0f, 100.0f, -1500.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_04	(D3DXVECTOR3(200.0f, 100.0f, -1000.0f))		//リスポーンの場所
-#define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(2000.0f, 200.0f, -1000.0f))	//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(2100.0f, 200.0f, -800.0f))		//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_06	(D3DXVECTOR3(2500.0f, 200.0f, -2500.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_07	(D3DXVECTOR3(-1000.0f, 160.0f, 1700.0f))	//リスポーンの場所
 
@@ -46,6 +46,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_bAllConnect = false;
 	m_pEnemy.clear();
 	m_respawnPos = PlayerRespawnPos::NONE;
+	m_pMapBg = nullptr;
 }
 
 //================================================
@@ -73,17 +74,20 @@ HRESULT CGame01::Init(void)
 
 	//メッシュフィールド生成
 	m_pMeshField = CMeshField::CreateLoadText("data/mesh_field.txt");
-	m_pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("grass001.png"));
+	m_pMeshField->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("floor_01.jpg"));
 
 	//メッシュスフィア生成
 	CMeshSphere *pMeshSphere = CMeshSphere::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, GAME01_FIELD_SIZE, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		                                           32, 8);
 	pMeshSphere->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("sky.jpg"));
 
+	//床の生成
 	CObject3D *pObject3D = CObject3D::Create(D3DXVECTOR3(0.0f, -100.0f, 0.0f), D3DXVECTOR3(GAME01_FIELD_SIZE, 0.0f, GAME01_FIELD_SIZE), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pObject3D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("mist.png"));
 
+	//モデルの読み込み設置
 	LoadModelTxt("data/model_set.txt");
+
 
 	return S_OK;
 }
@@ -133,6 +137,14 @@ void CGame01::Update(void)
 	}
 	else if (m_bAllConnect == true)
 	{
+		//マップBGが生成されていたら
+		if (m_pMapBg != nullptr)
+		{
+			//消す
+			m_pMapBg->Uninit();
+			m_pMapBg = nullptr;
+		}
+
 		if (m_now_loding != nullptr)
 		{
 			m_now_loding->Uninit();
@@ -160,6 +172,7 @@ void CGame01::Update(void)
 			pFade->SetFade(CManager::MODE::RESULT);
 		}
 	}
+
 #endif // !_DEBUG
 }
 
@@ -219,10 +232,8 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
-	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
-	m_now_loding->SetTex(m_pattern_tex, 4);
-	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+
+	
 
 	pClient->Init();
 	pClient->Connect();
@@ -267,6 +278,16 @@ void CGame01::FirstContact(void)
 	{
 		m_pEnemy.push_back(CEnemy::Create());
 	}
+
+	//マップBGの生成
+	m_pMapBg = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, (int)CObject::PRIORITY::UI);
+	m_pMapBg->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("map_000.jpg"));
+	m_pMapBg->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+
+	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
+	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
+	m_now_loding->SetTex(m_pattern_tex, 4);
+	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 }
 
 //================================================

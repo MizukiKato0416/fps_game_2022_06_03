@@ -69,7 +69,8 @@ private:
 	int m_count_pattern = 0;
 	int m_pattern_tex = 0;
 	bool m_bAllConnect;
-	PlayerRespawnPos m_respawnPos;
+	PlayerRespawnPos m_respawnPos;		//プレイヤーをリスポーンさせる位置
+	CObject2D *m_pMapBg;				//マップ背景
 };	
 
 #endif // !_GAME01_H_

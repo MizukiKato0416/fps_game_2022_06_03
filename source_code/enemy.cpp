@@ -20,7 +20,6 @@
 #include "ballistic.h"
 #include "player.h"
 #include "networkmanager.h"
-#include "manager.h"
 #include "shadow.h"
 
 //=============================================================================
