@@ -12,6 +12,7 @@ class CPlayer;
 class CMeshField;
 class CEnemy;
 class CObject2D;
+class CScoreUi;
 
 //================================================
 //マクロ定義
@@ -71,6 +72,9 @@ private:
 	bool m_bAllConnect;
 	PlayerRespawnPos m_respawnPos;		//プレイヤーをリスポーンさせる位置
 	CObject2D *m_pMapBg;				//マップ背景
+	CScoreUi *m_pScorUiTop;				//上のスコアUI
+	CScoreUi *m_pScorUiUnder;			//下のスコアUI
+
 };	
 
 #endif // !_GAME01_H_

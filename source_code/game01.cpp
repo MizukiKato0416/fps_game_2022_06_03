@@ -18,6 +18,7 @@
 #include "enemy.h"
 #include "object3D.h"
 #include "networkmanager.h"
+#include "score_ui.h"
 
 //================================================
 //マクロ定義
@@ -47,6 +48,8 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_pEnemy.clear();
 	m_respawnPos = PlayerRespawnPos::NONE;
 	m_pMapBg = nullptr;
+	m_pScorUiTop = nullptr;
+	m_pScorUiUnder = nullptr;
 }
 
 //================================================
@@ -87,7 +90,6 @@ HRESULT CGame01::Init(void)
 
 	//モデルの読み込み設置
 	LoadModelTxt("data/model_set.txt");
-
 
 	return S_OK;
 }
@@ -152,6 +154,29 @@ void CGame01::Update(void)
 
 			//リスポーン
 			RespawnPlayer();
+
+			//スコアUIの生成
+			m_pScorUiTop = CScoreUi::Create({ 100.0f, 566.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiUnder = CScoreUi::Create({ 100.0f, 600.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+
+			//一位のスコアを表示
+			m_pScorUiTop->SetRank(1);
+		}
+
+		//プレイヤーのデータ取得
+		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+		//一位が自分だったら
+		if (m_pScorUiUnder->GetRankData(0).nKill == PlayerDataBuf->Player.nKill)
+		{
+			m_pScorUiTop->SetRank(1);
+			m_pScorUiUnder->SetPlayerNum(false);
+			m_pScorUiUnder->SetRank(2);
+		}
+		else
+		{//一位が自分じゃなかったら
+			m_pScorUiTop->SetRank(1);
+			m_pScorUiUnder->SetPlayerNum(true);
 		}
 	}
 
@@ -265,6 +290,8 @@ void CGame01::FirstContact(void)
 				bLoop = false;
 				break;
 			default:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			}
 		}

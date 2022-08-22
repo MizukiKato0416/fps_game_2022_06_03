@@ -14,7 +14,6 @@
 #include "model_single.h"
 #include "texture.h"
 #include "camera.h"
-#include "shadow.h"
 #include "floor.h"
 #include "mesh_field.h"
 #include "xanimmodel.h"
@@ -196,9 +195,6 @@ HRESULT CPlayer::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
-
-	//影の設定
-	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	//クロスヘアの生成
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
