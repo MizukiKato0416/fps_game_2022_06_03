@@ -35,6 +35,7 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.bDeath = false;
 	m_CommuData.Player.nNumShot = 0;
 	m_CommuData.Bullet.nDamage = 0.0f;
+	m_CommuData.Player.nRespawnPos = 0;
 	m_CommuData.Bullet.nGiveDamagePlayerNum = 0;
 	m_CommuData.Bullet.fDiffer = 0.0f;
 	m_CommuData.Bullet.bUse = false;
@@ -82,6 +83,7 @@ void CCommunicationData::Init(void)
 	m_CommuData.Player.bWin = false;
 	m_CommuData.Player.bDeath = false;
 	m_CommuData.Player.nNumShot = 0;
+	m_CommuData.Player.nRespawnPos = 0;
 	m_CommuData.Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.hitPlayerPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.type = CCommunicationData::HIT_TYPE::NONE;

@@ -60,7 +60,8 @@ public:
 	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
 	void SetAnimSpeed(const float &fAnimSpeed) { m_fAnimSpeed = fAnimSpeed; }				//アニメーションのスピード設定処理
 	float GetAnimSpeed(void) { return m_fAnimSpeed; }										//アニメーションのスピード取得処理
-
+	bool GetAds(void) { return m_bAds; }													//ADSしているかどうか取得処理
+	bool GetJump(void) { return m_bJump; }													//ジャンプしているかどうか取得処理
 private:
 	//メンバ関数
 	void Move(void);								//移動処理
@@ -74,6 +75,7 @@ private:
 	void Reload(void);								//リロード処理
 	void HealLife(void);							//ライフ回復処理
 	void Blood(void);								//血の処理
+	void BulletHitUi(void);							//弾がヒットしたときの処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -84,8 +86,8 @@ private:
 	D3DXVECTOR3 m_rot;								//向き
 	CUi *m_pReload;
 	CBulletState *m_pBulletState;
-	CGunPlayer *m_pGunPlayer;							//銃モデルのポインタ
-	CGunPlayer *m_pGunPlayerAds;						//ADS用の銃モデルのポインタ
+	CGunPlayer *m_pGunPlayer;						//銃モデルのポインタ
+	CGunPlayer *m_pGunPlayerAds;					//ADS用の銃モデルのポインタ
 	D3DXMATRIX m_mtxWorld;							//ワールドマトリックス
 	float m_fObjectiveRot;							//目的の向き
 	float m_fNumRot;								//向きを変える量
@@ -115,6 +117,9 @@ private:
 	CObject2D *m_pDamageMask;						//被弾時のマスク
 	CObject2D *m_pBlood;							//ダメージを受けた際の血
 	int m_nDamageMaskCount;							//ダメージを受けた際に出るマスクを表示する時間
+	CObject2D *m_pBulletHitUi;						//弾がヒットしたときのUI
+	CObject2D *m_pBulletKillUi;						//キルしたときののUI
+	int m_nBulletHitUiCounter;						//弾がヒットしたときのUIを出す時間
 };
 
 #endif // !_PLAYER_H_

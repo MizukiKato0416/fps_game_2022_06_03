@@ -51,6 +51,7 @@ private:
 	float m_fDiffer;							//終点までの距離
 	int m_nPlayer;								//プレイヤー番号
 	int m_nDamage;								//ダメージ
+	D3DXVECTOR3 m_rand;							//ランダムに拡散させる量保存用
 };
 //================================================
 //プロトタイプ宣言

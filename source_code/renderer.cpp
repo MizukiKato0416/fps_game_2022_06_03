@@ -248,7 +248,6 @@ void CRenderer::DrawFrame(void)
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	char strtage[1000];
 	CCamera** pCameraAddress = CManager::GetInstance()->GetCamera();
-	//pCameraAddress++;
 	CCamera* pCamera = &**pCameraAddress;
 	D3DXVECTOR3 posV = pCamera->GetPosV();
 
