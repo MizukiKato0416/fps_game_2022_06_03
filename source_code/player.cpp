@@ -525,7 +525,7 @@ void CPlayer::Update(void)
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	pData->Player.nFrameCount++;
 	pData->Bullet.bUse = false;
-	if (pData->Player.nFrameCount <= SEND_COUNTER - 1)
+	if (pData->Player.nFrameCount >= SEND_COUNTER - 1)
 	{
 		pData->Player.nFrameCount = 0;
 	}

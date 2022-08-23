@@ -233,74 +233,81 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					// プレイヤー分回す
 					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
 					{
-						// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
-						if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
+						// サイズを取得
+						int frame_lag_size = frame_lag[cout_enemy].size();
+
+						// サイズが0より大きかったら
+						if (frame_lag_size > 0)
 						{
-							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
-							float differ = 0.0f;
-
-							// レイを飛ばす方向を算出
-							D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-
-							// ベクトルを正規化
-							D3DXVec3Normalize(&ray_vec, &ray_vec);
-
-							D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-							D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
-
-							// レイとカプセルの当たり判定
-							if (calcRayCapsule(	posV.x, posV.y, posV.z,
-												ray_vec.x, ray_vec.y, ray_vec.z,
-												modelMtx._41, modelMtx._42, modelMtx._43,
-												modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
-												PLAYER_COL_RADIUS,
-												HitPos.x, HitPos.y, HitPos.z,
-												EndPos.x, EndPos.y, EndPos.z))
+							// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
+							if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
 							{
-								D3DXVECTOR3 hitVec = HitPos - posV;
+								D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
+								float differ = 0.0f;
+
+								// レイを飛ばす方向を算出
+								D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+
 								// ベクトルを正規化
-								D3DXVec3Normalize(&hitVec, &hitVec);
+								D3DXVec3Normalize(&ray_vec, &ray_vec);
 
+								D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+								D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
 
-								if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
-									(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
-									(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
+								// レイとカプセルの当たり判定
+								if (calcRayCapsule(posV.x, posV.y, posV.z,
+									ray_vec.x, ray_vec.y, ray_vec.z,
+									modelMtx._41, modelMtx._42, modelMtx._43,
+									modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
+									PLAYER_COL_RADIUS,
+									HitPos.x, HitPos.y, HitPos.z,
+									EndPos.x, EndPos.y, EndPos.z))
 								{
-									//当たっていない
-								}
-								else
-								{//当たってる
-									// 当たった場所までの距離を算出
-									D3DXVECTOR3 differVec = HitPos - posV;
-									differ = D3DXVec3Length(&differVec);
+									D3DXVECTOR3 hitVec = HitPos - posV;
+									// ベクトルを正規化
+									D3DXVec3Normalize(&hitVec, &hitVec);
 
-									if (save_differ > differ)
+
+									if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
+										(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
+										(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
 									{
-										// 距離を保存
-										save_differ = differ;
+										//当たっていない
+									}
+									else
+									{//当たってる
+									 // 当たった場所までの距離を算出
+										D3DXVECTOR3 differVec = HitPos - posV;
+										differ = D3DXVec3Length(&differVec);
 
-										//ダメージを保存
-										data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
-										// 敵の番号保存
-										save_hit_enemy = cout_enemy;
+										if (save_differ > differ)
+										{
+											// 距離を保存
+											save_differ = differ;
 
-										// 当たった
-										hit = true;
+											//ダメージを保存
+											data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
+											// 敵の番号保存
+											save_hit_enemy = cout_enemy;
 
-										//当たった場所を保存
-										data[cout_player]->Player.HitPos[count_bullet] = HitPos;
-										//プレイヤーにデータを送信する状態にする
-										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-										//プレイヤーに当たった状態にする
-										data[cout_enemy]->Player.bHit = true;
-										//当たったオブジェクトを敵に設定する
-										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
-										//当たった敵をプレイヤーにデータを送信する状態にする
-										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-										//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
-										data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
-										//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
-										data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
+											// 当たった
+											hit = true;
+
+											//当たった場所を保存
+											data[cout_player]->Player.HitPos[count_bullet] = HitPos;
+											//プレイヤーにデータを送信する状態にする
+											data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+											//プレイヤーに当たった状態にする
+											data[cout_enemy]->Player.bHit = true;
+											//当たったオブジェクトを敵に設定する
+											data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
+											//当たった敵をプレイヤーにデータを送信する状態にする
+											data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+											//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
+											data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
+											//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
+											data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
+										}
 									}
 								}
 							}
@@ -398,8 +405,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				cout << "Player : " << nCntSend << "->当たった物への距離" << data[nCntSend]->Bullet.fDiffer << endl;
 				cout << "Player : " << nCntSend << "->どれに当たったか" << (int)data[nCntSend]->Bullet.type << endl;
 				cout << "Player : " << nCntSend << "->弾を使ってるか" << data[nCntSend]->Bullet.bUse << endl;
-				cout << "Player : " << nCntSend << "->弾道の始点" << *data[nCntSend]->Ballistic.BigenPos << endl;
-				cout << "Player : " << nCntSend << "->弾道の終点" << *data[nCntSend]->Ballistic.EndPos << endl;
+				cout << "Player : " << nCntSend << "->キル数" << data[nCntSend]->Player.nKill << endl;
+				cout << "Player : " << nCntSend << "->デス数" << data[nCntSend]->Player.nDeath << endl;
 				cout << "Player : " << nCntSend << "->サーバーからクライアントへのsendタイプ" << (int)data[nCntSend]->SendType << endl;
 				cout << "Player : " << nCntSend << "->通信が確立されてるか" << data[nCntSend]->bConnect << endl;
 			}
