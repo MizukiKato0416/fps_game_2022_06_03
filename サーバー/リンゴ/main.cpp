@@ -175,7 +175,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				if (data[count_player]->Bullet.bUse == true)
 				{
 					// フレーム数の保存
-					g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
+					g_save_display_count[count_player].push_back(g_display_count - 1);
 					//弾が当たったオブジェクトを保存
 					data[count_player]->Player.type[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.type;
 					//弾が当たった場所を保存
