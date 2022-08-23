@@ -46,14 +46,14 @@
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_RESPAWN_COUNT				(150)									//リスポーンするまでの時間
 #define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
 #define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
-#define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
+#define PLAYER_GUN_RECOIL_Y					(0.03f)									//リコイルY
 #define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 #define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
@@ -960,7 +960,7 @@ void CPlayer::Shot(void)
 	}
 
 	//弾の数分まわす
-	for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
+	for (int nCntBullet = 0; nCntBullet < sizeof(pData->Player.HitPos); nCntBullet++)
 	{
 		//当たった場所を取得
 		D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
