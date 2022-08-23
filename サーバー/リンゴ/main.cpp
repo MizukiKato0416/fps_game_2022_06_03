@@ -169,12 +169,12 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[count_player].SetCmmuData(*data[count_player]);
-				frame_lag[count_player].push_back(*data[count_player]);
 
 				// 弾を使ってたら
 				if (data[count_player]->Bullet.bUse == true)
 				{
 					// フレーム数の保存
+					//g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
 					g_save_display_count[count_player].push_back(g_display_count - 1);
 					//弾が当たったオブジェクトを保存
 					data[count_player]->Player.type[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.type;
@@ -184,6 +184,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					data[count_player]->Player.nNumShot++;
 				}
 			}
+
+			frame_lag[count_player].push_back(*data[count_player]);
 		}
 
 		// 指定した秒数に一回
@@ -237,81 +239,84 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						int frame_lag_size = frame_lag[cout_enemy].size();
 
 						// サイズが0より大きかったら
-						if (frame_lag_size > 0)
+						/*if (frame_lag_size > 0)
 						{
-							// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
-							if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
+							
+						}*/
+
+						// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
+						if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
+						{
+							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
+							float differ = 0.0f;
+
+							// レイを飛ばす方向を算出
+							D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+
+							// ベクトルを正規化
+							D3DXVec3Normalize(&ray_vec, &ray_vec);
+
+							D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
+							D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
+
+							// レイとカプセルの当たり判定
+							if (calcRayCapsule(posV.x, posV.y, posV.z,
+								ray_vec.x, ray_vec.y, ray_vec.z,
+								modelMtx._41, modelMtx._42, modelMtx._43,
+								modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
+								PLAYER_COL_RADIUS,
+								HitPos.x, HitPos.y, HitPos.z,
+								EndPos.x, EndPos.y, EndPos.z))
 							{
-								D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
-								float differ = 0.0f;
-
-								// レイを飛ばす方向を算出
-								D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-
+								D3DXVECTOR3 hitVec = HitPos - posV;
 								// ベクトルを正規化
-								D3DXVec3Normalize(&ray_vec, &ray_vec);
+								D3DXVec3Normalize(&hitVec, &hitVec);
 
-								D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-								D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
 
-								// レイとカプセルの当たり判定
-								if (calcRayCapsule(posV.x, posV.y, posV.z,
-									ray_vec.x, ray_vec.y, ray_vec.z,
-									modelMtx._41, modelMtx._42, modelMtx._43,
-									modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
-									PLAYER_COL_RADIUS,
-									HitPos.x, HitPos.y, HitPos.z,
-									EndPos.x, EndPos.y, EndPos.z))
+								if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
+									(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
+									(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
 								{
-									D3DXVECTOR3 hitVec = HitPos - posV;
-									// ベクトルを正規化
-									D3DXVec3Normalize(&hitVec, &hitVec);
+									//当たっていない
+								}
+								else
+								{//当たってる
+								 // 当たった場所までの距離を算出
+									D3DXVECTOR3 differVec = HitPos - posV;
+									differ = D3DXVec3Length(&differVec);
 
-
-									if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
-										(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
-										(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
+									if (save_differ > differ)
 									{
-										//当たっていない
-									}
-									else
-									{//当たってる
-									 // 当たった場所までの距離を算出
-										D3DXVECTOR3 differVec = HitPos - posV;
-										differ = D3DXVec3Length(&differVec);
+										// 距離を保存
+										save_differ = differ;
 
-										if (save_differ > differ)
-										{
-											// 距離を保存
-											save_differ = differ;
+										//ダメージを保存
+										data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
+										// 敵の番号保存
+										save_hit_enemy = cout_enemy;
 
-											//ダメージを保存
-											data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
-											// 敵の番号保存
-											save_hit_enemy = cout_enemy;
+										// 当たった
+										hit = true;
 
-											// 当たった
-											hit = true;
-
-											//当たった場所を保存
-											data[cout_player]->Player.HitPos[count_bullet] = HitPos;
-											//プレイヤーにデータを送信する状態にする
-											data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-											//プレイヤーに当たった状態にする
-											data[cout_enemy]->Player.bHit = true;
-											//当たったオブジェクトを敵に設定する
-											data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
-											//当たった敵をプレイヤーにデータを送信する状態にする
-											data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-											//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
-											data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
-											//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
-											data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
-										}
+										//当たった場所を保存
+										data[cout_player]->Player.HitPos[count_bullet] = HitPos;
+										//プレイヤーにデータを送信する状態にする
+										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+										//プレイヤーに当たった状態にする
+										data[cout_enemy]->Player.bHit = true;
+										//当たったオブジェクトを敵に設定する
+										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
+										//当たった敵をプレイヤーにデータを送信する状態にする
+										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
+										//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
+										data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
+										//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
+										data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
 									}
 								}
 							}
 						}
+
 					}
 					//何にもあたっていなかったら
 					if (data[cout_player]->Player.type[count_bullet] == CCommunicationData::HIT_TYPE::NONE)

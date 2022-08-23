@@ -962,10 +962,10 @@ void CPlayer::Shot(void)
 	//’e‚Ì”•ª‚Ü‚í‚·
 	for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
 	{
-		if (nCntBullet > sizeof(pData->Player.HitPos))
+		/*if (nCntBullet > sizeof(pData->Player.HitPos))
 		{
 			break;
-		}
+		}*/
 		//“–‚½‚Á‚½êŠ‚ğæ“¾
 		D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
 
