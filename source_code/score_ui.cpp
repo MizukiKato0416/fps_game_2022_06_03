@@ -17,12 +17,14 @@
 //=============================================================================
 // 静的メンバ変数宣言
 //=============================================================================
-#define SCORE_UI_FRAME_DEFAULT_SIZE_X	(304.0f)		//フレームのデフォルトサイズ
-#define SCORE_UI_FRAME_DEFAULT_SIZE_Y	(42.0f)			//フレームのデフォルトサイズ
-#define SCORE_UI_RANK_DEFAULT_SIZE_X	(15.0f)			//ランクのデフォルトサイズ
-#define SCORE_UI_RANK_DEFAULT_SIZE_Y	(15.0f)			//ランクのデフォルトサイズ
-#define SCORE_UI_NAME_DEFAULT_SIZE_X	(160.0f)		//名前ののデフォルトサイズ
-#define SCORE_UI_MAX_PLAYER_NUM			(4)				//プレイヤーの最大人数
+#define SCORE_UI_FRAME_DEFAULT_SIZE_X			(304.0f)		//フレームのデフォルトサイズ
+#define SCORE_UI_FRAME_DEFAULT_SIZE_Y			(42.0f)			//フレームのデフォルトサイズ
+#define SCORE_UI_RANK_DEFAULT_SIZE_X			(15.0f)			//ランクのデフォルトサイズ
+#define SCORE_UI_RANK_DEFAULT_SIZE_Y			(25.0f)			//ランクのデフォルトサイズ
+#define SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_X	(40.0f)			//ランクのあとの英語のデフォルトサイズ
+#define SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_Y	(30.0f)			//ランクのあとの英語のデフォルトサイズ
+#define SCORE_UI_NAME_DEFAULT_SIZE_X			(160.0f)		//名前ののデフォルトサイズ
+#define SCORE_UI_MAX_PLAYER_NUM					(4)				//プレイヤーの最大人数
 
 //=============================================================================
 // コンストラクタ
@@ -37,6 +39,7 @@ CScoreUi::CScoreUi(CObject::PRIORITY Priority) : CObject(Priority)
 	m_ranking.clear();
 	m_bSetPlayerNum = false;
 	m_pPlayerName = nullptr;
+	m_pRank = nullptr;
 }
 
 //=============================================================================
@@ -72,9 +75,19 @@ HRESULT CScoreUi::Init(void)
 	m_pos = pFrame->GetPos();
 
 	//順位UIの生成
-	m_pRankCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (30.0f * m_scale.x), m_pos.y , 0.0f),
+	m_pRankCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (20.0f * m_scale.x), m_pos.y , 0.0f),
 		                              D3DXVECTOR3(SCORE_UI_RANK_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
 		                              1, "Number.png");
+
+	
+	//順位の後の英語UIの生成
+	m_pRank = CObject2D::Create(D3DXVECTOR3(m_pos.x + (45.0f * m_scale.x), m_pos.y, 0.0f),
+	                            D3DXVECTOR3(SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
+		                        (int)CObject::PRIORITY::UI);
+	m_pRank->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("ranking.png"));
+	//割り当てるUV座標の設定
+	m_pRank->SetTex(0, 4);
+
 	//表示する順位を指定
 	m_pRankCounter->SetCounterNum(m_nRank);
 
@@ -141,7 +154,6 @@ void CScoreUi::Update(void)
 	//敵がいたら
 	if (nDataSize > 0)
 	{
-		
 		//プレイヤーのデータ取得
 		CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
@@ -203,6 +215,8 @@ void CScoreUi::Update(void)
 				//プレイヤー番号と一致していたら
 				if (m_ranking[nCnt].nPlayerNum == pData->Player.nNumber)
 				{
+					//表示するランキングをこのデータのランキングに設定
+					m_nRank = nCnt + 1;
 					//表示するキル数を設定
 					m_pKillCounter->SetCounterNum(m_ranking[nCnt].nKill);
 					//割り当てるUV座標の設定
@@ -213,7 +227,22 @@ void CScoreUi::Update(void)
 				}
 			}
 		}
-		
+	}
+
+	//順位の数字の後の英語UIが生成されていたら
+	if (m_pRank != nullptr)
+	{
+		//3位いないだったら
+		if (m_nRank <= 3)
+		{
+			//順位の数字の後の英語を指定
+			m_pRank->SetTex(m_nRank - 1, 4);
+		}
+		else
+		{//4位以上なら
+			//順位の数字の後の英語を指定
+			m_pRank->SetTex(3, 4);
+		}
 	}
 }
 

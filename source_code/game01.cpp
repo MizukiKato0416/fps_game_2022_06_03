@@ -156,8 +156,8 @@ void CGame01::Update(void)
 			RespawnPlayer();
 
 			//スコアUIの生成
-			m_pScorUiTop = CScoreUi::Create({ 100.0f, 566.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-			m_pScorUiUnder = CScoreUi::Create({ 100.0f, 600.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiTop = CScoreUi::Create({ 50.0f, 666.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiUnder = CScoreUi::Create({ 50.0f, 700.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 
 			//一位のスコアを表示
 			m_pScorUiTop->SetRank(1);

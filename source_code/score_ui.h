@@ -60,6 +60,7 @@ private:
 	vector<Ranking> m_ranking;		//ランキングデータ
 	bool m_bSetPlayerNum;			//プレイヤーの番号から表示するデータを参照するかしないか
 	CObject2D *m_pPlayerName;		//プレイヤーの名前
+	CObject2D *m_pRank;				//ランキングの数字の後の英語
 };
 
 #endif
