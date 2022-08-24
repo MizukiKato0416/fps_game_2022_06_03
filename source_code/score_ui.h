@@ -47,6 +47,8 @@ public:
 	Ranking GetRankData(const int &nRank) { return m_ranking[nRank]; }
 	//プレイヤーの番号から表示するデータを参照するかしないか設定処理
 	void SetPlayerNum(const bool &bSetPlayerNum) { m_bSetPlayerNum = bSetPlayerNum; }
+	//プレイヤーの番号から表示するデータを参照するかしないか取得処理
+	bool GetPlayerNum(void) { return m_bSetPlayerNum; }
 
 
 private:
@@ -57,6 +59,7 @@ private:
 	CCounter *m_pKillCounter;		//キル数UI表示用
 	vector<Ranking> m_ranking;		//ランキングデータ
 	bool m_bSetPlayerNum;			//プレイヤーの番号から表示するデータを参照するかしないか
+	CObject2D *m_pPlayerName;		//プレイヤーの名前
 };
 
 #endif

@@ -21,6 +21,8 @@
 #define SCORE_UI_FRAME_DEFAULT_SIZE_Y	(42.0f)			//フレームのデフォルトサイズ
 #define SCORE_UI_RANK_DEFAULT_SIZE_X	(15.0f)			//ランクのデフォルトサイズ
 #define SCORE_UI_RANK_DEFAULT_SIZE_Y	(15.0f)			//ランクのデフォルトサイズ
+#define SCORE_UI_NAME_DEFAULT_SIZE_X	(160.0f)		//名前ののデフォルトサイズ
+#define SCORE_UI_MAX_PLAYER_NUM			(4)				//プレイヤーの最大人数
 
 //=============================================================================
 // コンストラクタ
@@ -34,6 +36,7 @@ CScoreUi::CScoreUi(CObject::PRIORITY Priority) : CObject(Priority)
 	m_pKillCounter = nullptr;
 	m_ranking.clear();
 	m_bSetPlayerNum = false;
+	m_pPlayerName = nullptr;
 }
 
 //=============================================================================
@@ -77,7 +80,12 @@ HRESULT CScoreUi::Init(void)
 
 
 	//名前UIの生成
-
+	m_pPlayerName = CObject2D::Create(D3DXVECTOR3(m_pos.x + (160.0f * m_scale.x), m_pos.y, 0.0f), 
+	                                  D3DXVECTOR3(SCORE_UI_NAME_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
+		                              (int)CObject::PRIORITY::UI);
+	m_pPlayerName->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("player_name.png"));
+	//割り当てるUV座標の設定
+	m_pPlayerName->SetTex(0, SCORE_UI_MAX_PLAYER_NUM);
 
 	//キル数UIの生成
 	m_pKillCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (268.0f * m_scale.x), m_pos.y , 0.0f),
@@ -94,7 +102,6 @@ HRESULT CScoreUi::Init(void)
 	//敵がいたら
 	if (nDataSize > 0)
 	{
-
 		//プレイヤーのデータ取得
 		CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
@@ -184,6 +191,8 @@ void CScoreUi::Update(void)
 		{
 			//表示するキル数を設定
 			m_pKillCounter->SetCounterNum(m_ranking[m_nRank - 1].nKill);
+			//割り当てるUV座標の設定
+			m_pPlayerName->SetTex(m_ranking[m_nRank - 1].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
 			//表示する順位を指定
 			m_pRankCounter->SetCounterNum(m_nRank);
 		}
@@ -196,6 +205,8 @@ void CScoreUi::Update(void)
 				{
 					//表示するキル数を設定
 					m_pKillCounter->SetCounterNum(m_ranking[nCnt].nKill);
+					//割り当てるUV座標の設定
+					m_pPlayerName->SetTex(m_ranking[nCnt].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
 					//表示する順位を指定
 					m_pRankCounter->SetCounterNum(nCnt + 1);
 					break;

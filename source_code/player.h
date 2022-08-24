@@ -62,6 +62,8 @@ public:
 	float GetAnimSpeed(void) { return m_fAnimSpeed; }										//アニメーションのスピード取得処理
 	bool GetAds(void) { return m_bAds; }													//ADSしているかどうか取得処理
 	bool GetJump(void) { return m_bJump; }													//ジャンプしているかどうか取得処理
+	bool GetDeath(void) { return m_bDeath; }												//死んでいるかどうか取得処理
+
 private:
 	//メンバ関数
 	void Move(void);								//移動処理
