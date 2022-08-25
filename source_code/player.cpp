@@ -14,7 +14,6 @@
 #include "model_single.h"
 #include "texture.h"
 #include "camera.h"
-#include "shadow.h"
 #include "floor.h"
 #include "mesh_field.h"
 #include "xanimmodel.h"
@@ -47,14 +46,14 @@
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
 #define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.0005f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_RESPAWN_COUNT				(150)									//リスポーンするまでの時間
 #define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
 #define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
-#define PLAYER_GUN_RECOIL_Y					(0.015f)								//リコイルY
+#define PLAYER_GUN_RECOIL_Y					(0.03f)									//リコイルY
 #define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 #define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
@@ -196,9 +195,6 @@ HRESULT CPlayer::Init(void)
 
 	//サイズの設定
 	SetSize(m_size);
-
-	//影の設定
-	m_pShadow = CShadow::Create(D3DXVECTOR3(m_pos.x, 0.0f, m_pos.z), D3DXVECTOR3(m_size.x, 0.0f, m_size.z), this);
 
 	//クロスヘアの生成
 	m_pCloss = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
@@ -529,7 +525,7 @@ void CPlayer::Update(void)
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	pData->Player.nFrameCount++;
 	pData->Bullet.bUse = false;
-	if (pData->Player.nFrameCount <= SEND_COUNTER - 1)
+	if (pData->Player.nFrameCount >= SEND_COUNTER - 1)
 	{
 		pData->Player.nFrameCount = 0;
 	}
@@ -966,6 +962,10 @@ void CPlayer::Shot(void)
 	//弾の数分まわす
 	for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
 	{
+		/*if (nCntBullet > sizeof(pData->Player.HitPos))
+		{
+			break;
+		}*/
 		//当たった場所を取得
 		D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
 

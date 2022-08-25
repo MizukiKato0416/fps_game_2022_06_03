@@ -169,13 +169,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[count_player].SetCmmuData(*data[count_player]);
-				frame_lag[count_player].push_back(*data[count_player]);
 
 				// 弾を使ってたら
 				if (data[count_player]->Bullet.bUse == true)
 				{
 					// フレーム数の保存
-					g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
+					//g_save_display_count[count_player].push_back(data[count_player]->Player.nFrameCount);
+					g_save_display_count[count_player].push_back(g_display_count - 1);
 					//弾が当たったオブジェクトを保存
 					data[count_player]->Player.type[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.type;
 					//弾が当たった場所を保存
@@ -184,6 +184,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					data[count_player]->Player.nNumShot++;
 				}
 			}
+
+			frame_lag[count_player].push_back(*data[count_player]);
 		}
 
 		// 指定した秒数に一回
@@ -233,6 +235,15 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					// プレイヤー分回す
 					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
 					{
+						// サイズを取得
+						int frame_lag_size = frame_lag[cout_enemy].size();
+
+						// サイズが0より大きかったら
+						/*if (frame_lag_size > 0)
+						{
+							
+						}*/
+
 						// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
 						if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
 						{
@@ -249,13 +260,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 							D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
 
 							// レイとカプセルの当たり判定
-							if (calcRayCapsule(	posV.x, posV.y, posV.z,
-												ray_vec.x, ray_vec.y, ray_vec.z,
-												modelMtx._41, modelMtx._42, modelMtx._43,
-												modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
-												PLAYER_COL_RADIUS,
-												HitPos.x, HitPos.y, HitPos.z,
-												EndPos.x, EndPos.y, EndPos.z))
+							if (calcRayCapsule(posV.x, posV.y, posV.z,
+								ray_vec.x, ray_vec.y, ray_vec.z,
+								modelMtx._41, modelMtx._42, modelMtx._43,
+								modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
+								PLAYER_COL_RADIUS,
+								HitPos.x, HitPos.y, HitPos.z,
+								EndPos.x, EndPos.y, EndPos.z))
 							{
 								D3DXVECTOR3 hitVec = HitPos - posV;
 								// ベクトルを正規化
@@ -270,7 +281,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 								}
 								else
 								{//当たってる
-									// 当たった場所までの距離を算出
+								 // 当たった場所までの距離を算出
 									D3DXVECTOR3 differVec = HitPos - posV;
 									differ = D3DXVec3Length(&differVec);
 
@@ -305,6 +316,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 								}
 							}
 						}
+
 					}
 					//何にもあたっていなかったら
 					if (data[cout_player]->Player.type[count_bullet] == CCommunicationData::HIT_TYPE::NONE)
@@ -398,8 +410,8 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				cout << "Player : " << nCntSend << "->当たった物への距離" << data[nCntSend]->Bullet.fDiffer << endl;
 				cout << "Player : " << nCntSend << "->どれに当たったか" << (int)data[nCntSend]->Bullet.type << endl;
 				cout << "Player : " << nCntSend << "->弾を使ってるか" << data[nCntSend]->Bullet.bUse << endl;
-				cout << "Player : " << nCntSend << "->弾道の始点" << *data[nCntSend]->Ballistic.BigenPos << endl;
-				cout << "Player : " << nCntSend << "->弾道の終点" << *data[nCntSend]->Ballistic.EndPos << endl;
+				cout << "Player : " << nCntSend << "->キル数" << data[nCntSend]->Player.nKill << endl;
+				cout << "Player : " << nCntSend << "->デス数" << data[nCntSend]->Player.nDeath << endl;
 				cout << "Player : " << nCntSend << "->サーバーからクライアントへのsendタイプ" << (int)data[nCntSend]->SendType << endl;
 				cout << "Player : " << nCntSend << "->通信が確立されてるか" << data[nCntSend]->bConnect << endl;
 			}

@@ -171,24 +171,6 @@ void CCamera::Set(void)
 
 	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
-
-
-	//オブジェクト情報を入れるポインタ
-	vector<CObject*> object;
-	//先頭のポインタを代入
-	object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
-	int object_size = object.size();
-
-	for (int count_object = 0; count_object < object_size; count_object++)
-	{
-		if (object[count_object]->GetObjType() == CObject::OBJTYPE::PLAYER)
-		{
-			//プレイヤーにキャスト
-			CPlayer *pPlayer = (CPlayer*)object[count_object];
-
-			//pPlayer->GetAnimModel()->Draw();
-		}
-	}
 }
 
 //=======================================================================

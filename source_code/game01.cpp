@@ -18,6 +18,7 @@
 #include "enemy.h"
 #include "object3D.h"
 #include "networkmanager.h"
+#include "score_ui.h"
 
 //================================================
 //マクロ定義
@@ -28,7 +29,7 @@
 #define GAME01_PLAYER_RESPAWN_POS_02	(D3DXVECTOR3(2700.0f, 170.0f, 600.0f))		//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_03	(D3DXVECTOR3(-2300.0f, 100.0f, -1500.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_04	(D3DXVECTOR3(200.0f, 100.0f, -1000.0f))		//リスポーンの場所
-#define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(2100.0f, 200.0f, -800.0f))		//リスポーンの場所
+#define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(1900.0f, 200.0f, -1000.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_06	(D3DXVECTOR3(2500.0f, 200.0f, -2500.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_07	(D3DXVECTOR3(-1000.0f, 160.0f, 1700.0f))	//リスポーンの場所
 
@@ -47,6 +48,8 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_pEnemy.clear();
 	m_respawnPos = PlayerRespawnPos::NONE;
 	m_pMapBg = nullptr;
+	m_pScorUiTop = nullptr;
+	m_pScorUiUnder = nullptr;
 }
 
 //================================================
@@ -87,7 +90,6 @@ HRESULT CGame01::Init(void)
 
 	//モデルの読み込み設置
 	LoadModelTxt("data/model_set.txt");
-
 
 	return S_OK;
 }
@@ -152,6 +154,44 @@ void CGame01::Update(void)
 
 			//リスポーン
 			RespawnPlayer();
+
+			//スコアUIの生成
+			m_pScorUiTop = CScoreUi::Create({ 50.0f, 666.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiUnder = CScoreUi::Create({ 50.0f, 700.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+
+			//一位のスコアを表示
+			m_pScorUiTop->SetRank(1);
+		}
+
+		//プレイヤーのデータ取得
+		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+		//一位が自分だったら
+		if (m_pScorUiUnder->GetRankData(0).nKill == PlayerDataBuf->Player.nKill)
+		{
+			//上のUIは1位を表示するようにする
+			m_pScorUiTop->SetRank(1);
+
+			//下のUIが自分の順位を表示する設定になっているなら
+			if (m_pScorUiUnder->GetPlayerNum())
+			{
+				//指定した順位を表示できる状態にする
+				m_pScorUiUnder->SetPlayerNum(false);
+			}
+			
+			//下のUIは2位を表示するようにする
+			m_pScorUiUnder->SetRank(2);
+		}
+		else
+		{//一位が自分じゃなかったら
+			//上のUIは1位を表示するようにする
+			m_pScorUiTop->SetRank(1);
+			//下のUIが自分の順位を表示する設定になっていないなら
+			if (!m_pScorUiUnder->GetPlayerNum())
+			{
+				//自分の順位をい表示する状態にする
+				m_pScorUiUnder->SetPlayerNum(true);
+			}
 		}
 	}
 
@@ -265,6 +305,8 @@ void CGame01::FirstContact(void)
 				bLoop = false;
 				break;
 			default:
+				m_pPlayer = CPlayer::Create(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				bLoop = false;
 				break;
 			}
 		}
