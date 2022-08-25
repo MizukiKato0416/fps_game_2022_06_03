@@ -161,18 +161,26 @@ void CEnemy::Draw(void)
 		&m_mtx_wld);
 
 	m_model->SetMatrix(&m_mtx_wld);
-	m_model->Draw();
 
-	//マトリックスを取得
-	D3DXMATRIX *hand = nullptr;
-	hand = m_model->GetMatrix("handR");
-	m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
-	//銃と親子関係をつける
-	m_pGunModel->GetModel()->GetModel()->SetMtxParent(hand);
-	m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
-	m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
-	m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
-	m_pGunModel->GetModel()->SetCulliMode(false);
+	//敵の情報取得
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+
+	//死んでいなかったら
+	if (!data[m_my_number].GetCmmuData()->Player.bDeath)
+	{
+		m_model->Draw();
+
+		//マトリックスを取得
+		D3DXMATRIX *hand = nullptr;
+		hand = m_model->GetMatrix("handR");
+		m_pGunModel->SetMtxParent(m_pGunModel->GetModel()->GetModel()->GetMtxPoint());
+		//銃と親子関係をつける
+		m_pGunModel->GetModel()->GetModel()->SetMtxParent(hand);
+		m_pGunModel->GetModel()->GetModel()->SetObjParent(true);
+		m_pGunModel->GetModel()->GetModel()->SetRot({ 0.0f, D3DX_PI / 2.0f, 0.0f });
+		m_pGunModel->GetModel()->GetModel()->SetPos({ 0.0f, 0.0f, 0.0f });
+		m_pGunModel->GetModel()->SetCulliMode(false);
+	}
 }
 
 //=============================================================================

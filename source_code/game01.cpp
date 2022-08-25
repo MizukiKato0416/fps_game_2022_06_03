@@ -32,6 +32,8 @@
 #define GAME01_PLAYER_RESPAWN_POS_05	(D3DXVECTOR3(1900.0f, 200.0f, -1000.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_06	(D3DXVECTOR3(2500.0f, 200.0f, -2500.0f))	//リスポーンの場所
 #define GAME01_PLAYER_RESPAWN_POS_07	(D3DXVECTOR3(-1000.0f, 160.0f, 1700.0f))	//リスポーンの場所
+#define GAME01_SCORE_UI_POS_00			(D3DXVECTOR3(0.0f, 666.0f, 0.0f))			//スコアUIの位置
+#define GAME01_SCORE_UI_POS_01			(D3DXVECTOR3(0.0f, 700.0f, 0.0f))			//スコアUIの位置
 
 //================================================
 //静的メンバ変数宣言
@@ -156,8 +158,8 @@ void CGame01::Update(void)
 			RespawnPlayer();
 
 			//スコアUIの生成
-			m_pScorUiTop = CScoreUi::Create({ 50.0f, 666.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-			m_pScorUiUnder = CScoreUi::Create({ 50.0f, 700.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiTop = CScoreUi::Create(GAME01_SCORE_UI_POS_00, { 1.0f, 1.0f, 1.0f });
+			m_pScorUiUnder = CScoreUi::Create(GAME01_SCORE_UI_POS_01, { 1.0f, 1.0f, 1.0f });
 
 			//一位のスコアを表示
 			m_pScorUiTop->SetRank(1);
