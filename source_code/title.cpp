@@ -53,8 +53,14 @@ HRESULT CTitle::Init(void)
 		m_ui.push_back(CUi::Create(title[count_stage].pos, title[count_stage].size, title[count_stage].stop, title[count_stage].blinking_type, title[count_stage].move_type, title[count_stage].blinking_speed, title[count_stage].move_speed, title[count_stage].pas));
 	}
 
+	//右下のプレイヤーの生成
+	CObject2D *pPlayer = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f },
+		                                  (int)CObject::PRIORITY::UI);
+	pPlayer->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("title_player.png"));
+
 	m_pointor = CObject2D::Create({ 0.0f, 0.0f, 0.0f }, { 83.0f * 0.9f, 74.0f * 0.9f, 0.0f }, (int)CObject::PRIORITY::UI);
 	m_pointor->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+
 	//ShowCursor(FALSE);
 
 	return S_OK;

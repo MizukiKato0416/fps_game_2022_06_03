@@ -19,6 +19,7 @@
 #include "object3D.h"
 #include "networkmanager.h"
 #include "score_ui.h"
+#include "option.h"
 
 //================================================
 //マクロ定義
@@ -52,6 +53,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_pMapBg = nullptr;
 	m_pScorUiTop = nullptr;
 	m_pScorUiUnder = nullptr;
+	m_pOption = nullptr;
 }
 
 //================================================
@@ -74,6 +76,7 @@ HRESULT CGame01::Init(void)
 {
 	//変数初期化
 	m_respawnPos = PlayerRespawnPos::NONE;
+	m_pOption = nullptr;
 
 	FirstContact();
 
@@ -92,6 +95,9 @@ HRESULT CGame01::Init(void)
 
 	//モデルの読み込み設置
 	LoadModelTxt("data/model_set.txt");
+
+	//設定画面を生成する
+	m_pOption = COption::Create();
 
 	return S_OK;
 }
@@ -197,11 +203,11 @@ void CGame01::Update(void)
 		}
 	}
 
-#ifdef _DEBUG
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
+#ifdef _DEBUG
 	//Enterキーを押したら
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
 	{
@@ -216,6 +222,26 @@ void CGame01::Update(void)
 	}
 
 #endif // !_DEBUG
+
+	//ESCキーを押したら
+	if (pInputKeyboard->GetTrigger(DIK_ESCAPE) == true)
+	{
+		//設定画面を生成しているなら
+		if (m_pOption != nullptr)
+		{
+			//設定画面を開いていないなら
+			if (!m_pOption->GetOpen())
+			{
+				//設定画面を開く
+				m_pOption->Open();
+			}
+			else
+			{
+				//設定画面を閉じる
+				m_pOption->Close();
+			}
+		}
+	}
 }
 
 //================================================
