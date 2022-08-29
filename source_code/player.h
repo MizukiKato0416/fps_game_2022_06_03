@@ -24,6 +24,8 @@ class CUi;
 #define MAX_PLAYER_MODEL					(5)										//モデルの数
 #define PLAYER_LIFE							(100)									//体力
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
+#define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
 
 //================================================
 //クラスの定義
@@ -63,6 +65,8 @@ public:
 	bool GetAds(void) { return m_bAds; }													//ADSしているかどうか取得処理
 	bool GetJump(void) { return m_bJump; }													//ジャンプしているかどうか取得処理
 	bool GetDeath(void) { return m_bDeath; }												//死んでいるかどうか取得処理
+	D3DXVECTOR2 GetCameraSpeed(void) { return m_cameraSpeed; }								//カメラスピード取得処理
+	void SetCameraSpeed(const D3DXVECTOR2 &cameraSpeed) { m_cameraSpeed = cameraSpeed; }	//カメラスピード設定処理
 
 private:
 	//メンバ関数
@@ -122,6 +126,7 @@ private:
 	CObject2D *m_pBulletHitUi;						//弾がヒットしたときのUI
 	CObject2D *m_pBulletKillUi;						//キルしたときののUI
 	int m_nBulletHitUiCounter;						//弾がヒットしたときのUIを出す時間
+	D3DXVECTOR2 m_cameraSpeed;						//カメラのスピード
 };
 
 #endif // !_PLAYER_H_
