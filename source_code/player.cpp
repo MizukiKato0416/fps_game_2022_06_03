@@ -45,8 +45,6 @@
 #define PLAYER_ADS_GUN_OFFSET_SHOT			(D3DXVECTOR3(0.0f, -13.9f, 8.9f))		//ADSしたときの銃のオフセット(撃った瞬間)
 #define PLAYER_ADS_CAMERA_ADD_RADIUS		(10.0f)									//ADSしたときの画角加算量
 #define PLAYER_ADS_CAMERA_RADIUS			(65.0f)									//ADSしたときの画角
-#define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
 #define PLAYER_RESPAWN_COUNT				(150)									//リスポーンするまでの時間
 #define PLAYER_INVINCIBLE_COUNT				(90)									//無敵時間
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
@@ -106,6 +104,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_pBulletHitUi = nullptr;
 	m_pBulletKillUi = nullptr;
 	m_nBulletHitUiCounter = 0;
+	m_cameraSpeed = { 0.0f, 0.0f };
 }
 
 //================================================
@@ -151,6 +150,8 @@ HRESULT CPlayer::Init(void)
 	m_pBulletHitUi = nullptr;
 	m_pBulletKillUi = nullptr;
 	m_nBulletHitUiCounter = 0;
+	m_cameraSpeed.x = PLAYER_CAMERA_V__MOUSE_SPEED_XZ;
+	m_cameraSpeed.y = PLAYER_CAMERA_V__MOUSE_SPEED_Y;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -233,7 +234,7 @@ void CPlayer::Update(void)
 	D3DXVECTOR3 posCameraR = { 0.0f, 0.0f, 0.0f };
 
 	//死んでいる且つモデルが生成されていたら
-	if (!m_bDeath && m_pAnimModel != nullptr && CManager::GetInstance()->GetGame01()->GetAllConnect())
+	if (!m_bDeath && m_pAnimModel != nullptr/* && CManager::GetInstance()->GetGame01()->GetAllConnect()*/)
 	{
 		//位置取得
 		D3DXVECTOR3 pos = GetPos();
@@ -747,11 +748,11 @@ void CPlayer::Rotate(void)
 			//================================================
 			if (mouseVelocity.x != 0.0f)
 			{
-				cameraRot.y += mouseVelocity.x * PLAYER_CAMERA_V__MOUSE_SPEED_Y;
+				cameraRot.y += mouseVelocity.x * m_cameraSpeed.y;
 			}
 			if (mouseVelocity.y != 0.0f)
 			{
-				cameraRot.x -= mouseVelocity.y * PLAYER_CAMERA_V__MOUSE_SPEED_XZ;
+				cameraRot.x -= mouseVelocity.y * m_cameraSpeed.x;
 			}
 
 			pCamera->SetRotV(cameraRot);
@@ -801,6 +802,48 @@ void CPlayer::Shot(void)
 
 	// 通信データ取得処理
 	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+	//弾の数分まわす
+	for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
+	{
+		//当たった場所を取得
+		D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
+
+		//当たったオブジェクトによって処理分け
+		if (pData->Player.type[nCntBullet] == CCommunicationData::HIT_TYPE::ENEMY)
+		{
+			//当たった位置にエフェクトを出す
+			CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
+			CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
+
+			//ヒットしたときのUIが生成されていたら
+			if (m_pBulletHitUi != nullptr)
+			{
+				//消す
+				m_pBulletHitUi->Uninit();
+				m_pBulletHitUi = nullptr;
+			}
+
+			//ヒットしたときのUIが生成されていなったら
+			if (m_pBulletHitUi == nullptr)
+			{
+				//ヒットしたときのUIの生成
+				m_pBulletHitUi = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
+				{ SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
+					(int)CObject::PRIORITY::UI);
+				m_pBulletHitUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hit_ui.png"));
+
+				//カウンターを0にする
+				m_nBulletHitUiCounter = 0;
+			}
+		}
+
+		//タイプをリセット
+		pData->Player.type[nCntBullet] = CCommunicationData::HIT_TYPE::NONE;
+	}
+	//弾の撃った数を0にする
+	pData->Player.nNumShot = 0;
+
 
 	if (pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
 	{
@@ -958,48 +1001,6 @@ void CPlayer::Shot(void)
 			}
 		}
 	}
-
-	//弾の数分まわす
-	for (int nCntBullet = 0; nCntBullet < pData->Player.nNumShot; nCntBullet++)
-	{
-		/*if (nCntBullet > sizeof(pData->Player.HitPos))
-		{
-			break;
-		}*/
-		//当たった場所を取得
-		D3DXVECTOR3 hitPos = pData->Player.HitPos[nCntBullet];
-
-		//当たったオブジェクトによって処理分け
-		if (pData->Player.type[nCntBullet] == CCommunicationData::HIT_TYPE::ENEMY)
-		{
-			//当たった位置にエフェクトを出す
-			CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
-			CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
-
-			//ヒットしたときのUIが生成されていたら
-			if (m_pBulletHitUi != nullptr)
-			{
-				//消す
-				m_pBulletHitUi->Uninit();
-				m_pBulletHitUi = nullptr;
-			}
-
-			//ヒットしたときのUIが生成されていなったら
-			if (m_pBulletHitUi == nullptr)
-			{
-				//ヒットしたときのUIの生成
-				m_pBulletHitUi = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
-												   { SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
-					                               (int)CObject::PRIORITY::UI);
-				m_pBulletHitUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hit_ui.png"));
-
-				//カウンターを0にする
-				m_nBulletHitUiCounter = 0;
-			}
-		}
-	}
-	//弾の撃った数を0にする
-	pData->Player.nNumShot = 0;
 }
 
 //================================================

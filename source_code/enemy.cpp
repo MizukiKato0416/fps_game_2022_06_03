@@ -237,10 +237,11 @@ void CEnemy::Move(void)
 	//死んでいなかったら
 	if (!data[m_my_number].GetCmmuData()->Player.bDeath)
 	{
+		m_posOld = m_pos;
+		m_rotOld = m_rot;
+
 		if (data[m_my_number].GetCmmuData()->bConnect == true)
 		{
-			m_posOld = m_pos;
-			m_rotOld = m_rot;
 			m_recvPos = data[m_my_number].GetCmmuData()->Player.Pos;
 			m_recvRot = data[m_my_number].GetCmmuData()->Player.Rot;
 
@@ -253,7 +254,9 @@ void CEnemy::Move(void)
 		}
 		else
 		{
-			m_pos = { 0.0f, 100.0f, 0.0f };
+			//m_pos = { 0.0f, 100.0f, 0.0f };
+			m_recvPos = m_posOld;
+			m_recvRot = m_rotOld;
 		}
 
 		//受け取った位置から元の位置までのヴェクトルを算出

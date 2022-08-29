@@ -11,7 +11,7 @@
 // マクロ定義
 //===========================================================
 #define CLASS_NAME		"AppClass"			// ウインドウのクラス名
-#define WINDOW_NAME		"FlyJump"			// ウインドウのキャプション名
+#define WINDOW_NAME		"Yuggdracil"		// ウインドウのキャプション名
 
 //===========================================================
 // プロトタイプ宣言
@@ -168,7 +168,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch(wParam)
 		{
 		case VK_ESCAPE:				// [ESC]キーが押された
-			DestroyWindow(hWnd);	// ウィンドウを破棄するよう指示する
+
+			//ゲーム中でなかったら
+			if (CManager::GetInstance()->GetMode() != CManager::MODE::GAME01)
+			{
+				DestroyWindow(hWnd);	// ウィンドウを破棄するよう指示する
+			}
 			break;
 		}
 		break;
