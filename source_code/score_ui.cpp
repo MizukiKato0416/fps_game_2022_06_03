@@ -12,6 +12,7 @@
 #include "renderer.h"
 #include "object2D.h"
 #include "counter.h"
+#include "letter.h"
 #include "networkmanager.h"
 
 //=============================================================================
@@ -160,22 +161,22 @@ void CScoreUi::Update(void)
 		if (m_ranking.size() == 0)
 		{
 			//プレイヤーのキル数と番号を入れる
-			m_ranking.push_back({ pData->Player.nNumber ,pData->Player.nKill });
+			m_ranking.push_back({ pData->Player.nNumber ,pData->Player.nKill ,pData->Player.aName[0]});
 
 			for (int nCntEnemy = 0; nCntEnemy < nDataSize; nCntEnemy++)
 			{
 				//敵のキル数と番号を入れる
-				m_ranking.push_back({ data[nCntEnemy].GetCmmuData()->Player.nNumber, data[nCntEnemy].GetCmmuData()->Player.nKill });
+				m_ranking.push_back({ data[nCntEnemy].GetCmmuData()->Player.nNumber, data[nCntEnemy].GetCmmuData()->Player.nKill  ,pData->Player.aName[0] });
 			}
 		}
 		else
 		{
 			//プレイヤーのキル数と番号を入れる
-			m_ranking[0] = { pData->Player.nNumber, pData->Player.nKill };
+			m_ranking[0] = { pData->Player.nNumber, pData->Player.nKill ,pData->Player.aName[0] };
 			for (int nCntEnemy = 0; nCntEnemy < nDataSize; nCntEnemy++)
 			{
 				//敵のキル数と番号を入れる
-				m_ranking[nCntEnemy + 1] = { data[nCntEnemy].GetCmmuData()->Player.nNumber, data[nCntEnemy].GetCmmuData()->Player.nKill };
+				m_ranking[nCntEnemy + 1] = { data[nCntEnemy].GetCmmuData()->Player.nNumber, data[nCntEnemy].GetCmmuData()->Player.nKill ,pData->Player.aName[0] };
 			}
 		}
 
@@ -197,14 +198,73 @@ void CScoreUi::Update(void)
 				}
 			}
 		}
+		string buf;
+		vector<wstring> conbrt_buf;
+		int buf_size;
 
 		//プレイヤーの番号から表示するデータを参照しないなら
 		if (!m_bSetPlayerNum)
 		{
 			//表示するキル数を設定
 			m_pKillCounter->SetCounterNum(m_ranking[m_nRank - 1].nKill);
+
+			int nRankSize = m_ranking.size();
+			for (int nCountData = 0; nCountData < nRankSize; nCountData++)
+			{
+				if (m_ranking[nCountData].nPlayerNum == m_ranking[m_nRank - 1].nPlayerNum - 1)
+				{
+					buf = m_ranking[nCountData].aName;
+				}
+			}
+
+			for (int nCntName = 0; nCntName < buf_size; nCntName++)
+			{
+
+				// SJIS → wstring
+				int iBufferSize = MultiByteToWideChar(CP_ACP,
+					0,
+					&buf[nCntName],
+					-1,
+					(wchar_t*)NULL,
+					0);
+
+				// バッファの取得
+				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
+
+				// SJIS → wstring
+				MultiByteToWideChar(CP_ACP,
+					0,
+					&buf[nCntName],
+					-1,
+					cpUCS2,
+					iBufferSize);
+
+				// stringの生成
+				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
+
+				// バッファの破棄
+				delete[] cpUCS2;
+
+				conbrt_buf.push_back(utextbuf);
+			}
+
+			buf_size = conbrt_buf.size();
+			for (int count_name = 0; count_name < buf_size; count_name++)
+			{
+				m_name_font.push_back(new CLetter);
+
+				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)), 0.0f));
+				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
+				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
+				m_name_font[m_count_letter]->SetFontSize(300);
+				m_name_font[m_count_letter]->SetFontWeight(500);
+				m_name_font[m_count_letter]->Init();
+				m_count_letter++;
+			}
+			conbrt_buf.clear();
+
 			//割り当てるUV座標の設定
-			m_pPlayerName->SetTex(m_ranking[m_nRank - 1].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
+			//m_pPlayerName->SetTex(m_ranking[m_nRank - 1].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
 			//表示する順位を指定
 			m_pRankCounter->SetCounterNum(m_nRank);
 		}
@@ -219,8 +279,64 @@ void CScoreUi::Update(void)
 					m_nRank = nCnt + 1;
 					//表示するキル数を設定
 					m_pKillCounter->SetCounterNum(m_ranking[nCnt].nKill);
+
+					int nRankSize = m_ranking.size();
+					for (int nCountData = 0; nCountData < nRankSize; nCountData++)
+					{
+						if (m_ranking[nCountData].nPlayerNum == m_ranking[m_nRank - 1].nPlayerNum - 1)
+						{
+							buf = m_ranking[nCountData].aName;
+						}
+					}
+
+					for (int nCntName = 0; nCntName < buf_size; nCntName++)
+					{
+
+						// SJIS → wstring
+						int iBufferSize = MultiByteToWideChar(CP_ACP,
+							0,
+							&buf[nCntName],
+							-1,
+							(wchar_t*)NULL,
+							0);
+
+						// バッファの取得
+						wchar_t* cpUCS2 = new wchar_t[iBufferSize];
+
+						// SJIS → wstring
+						MultiByteToWideChar(CP_ACP,
+							0,
+							&buf[nCntName],
+							-1,
+							cpUCS2,
+							iBufferSize);
+
+						// stringの生成
+						wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
+
+						// バッファの破棄
+						delete[] cpUCS2;
+
+						conbrt_buf.push_back(utextbuf);
+					}
+
+					buf_size = conbrt_buf.size();
+					for (int count_name = 0; count_name < buf_size; count_name++)
+					{
+						m_name_font.push_back(new CLetter);
+
+						m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)), 0.0f));
+						m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
+						m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
+						m_name_font[m_count_letter]->SetFontSize(300);
+						m_name_font[m_count_letter]->SetFontWeight(500);
+						m_name_font[m_count_letter]->Init();
+						m_count_letter++;
+					}
+					conbrt_buf.clear();
+
 					//割り当てるUV座標の設定
-					m_pPlayerName->SetTex(m_ranking[nCnt].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
+					//m_pPlayerName->SetTex(m_ranking[nCnt].nPlayerNum - 1, SCORE_UI_MAX_PLAYER_NUM);
 					//表示する順位を指定
 					m_pRankCounter->SetCounterNum(nCnt + 1);
 					break;
