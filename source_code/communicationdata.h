@@ -22,6 +22,7 @@
 #define MAX_COMMU_DATA (512)
 #define SEND_COUNTER (6)		//何フレームに一回サーバーから情報が送られてくるか
 #define WIN_COUNTER (10)
+#define NAME_NAX (15)
 
 //-------------------------------
 // Classの定義
@@ -67,6 +68,7 @@ public:
 		int nDeath;
 		float fMotionSpeed;	// モーションのスピード
 		char aMotion[MAX_ARRAY_DATA][MAX_MOTION_DATA] = {};	// モーションの種類
+		char aName[MAX_ARRAY_DATA][NAME_NAX] = {};	// 名前
 		bool bHit;	// 当たったか
 		bool bWin;
 		bool bDeath;		//死んだかどうか
