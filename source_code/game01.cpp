@@ -303,14 +303,10 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-	string buf = CManager::GetInstance()->GetPlayData()->GetName();
 	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	pClient->Init();
 	pClient->Connect();
-
-	memset(PlayerDataBuf->Player.aName[0], NULL, sizeof(PlayerDataBuf->Player.aName[0]));
-	memcpy(PlayerDataBuf->Player.aName[0], buf.c_str(), buf.size());
 
 	if (pClient->GetConnect() == true)
 	{

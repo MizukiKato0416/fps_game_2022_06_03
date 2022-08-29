@@ -51,10 +51,12 @@ public:
 private:
 	
 	void MouseSensi(void);		//マウス感度設定処理
-	void ViewAngle(void);		//視野角設定処理
+	void AdsSensi(void);		//視野角設定処理
+	void Default(void);			//デフォルトに戻す処理
 
 	COptionBar *m_apOptionBar[OPTION_BAR_NUM];		//バーのポインタ
 	CObject2D *m_pOptionFrame;						//設定画面のフレーム
+	CObject2D *m_pDefaultUi;						//デフォルトに戻すUIのポインタ
 	float m_aNum[OPTION_BAR_NUM];					//バーの値保存用
 	bool m_bOpen;									//設定が開かれているかどうか
 };
