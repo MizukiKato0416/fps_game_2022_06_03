@@ -13,6 +13,7 @@ class CMeshField;
 class CEnemy;
 class CObject2D;
 class CScoreUi;
+class COption;
 
 //================================================
 //マクロ定義
@@ -74,7 +75,7 @@ private:
 	CObject2D *m_pMapBg;				//マップ背景
 	CScoreUi *m_pScorUiTop;				//上のスコアUI
 	CScoreUi *m_pScorUiUnder;			//下のスコアUI
-
+	COption *m_pOption;					//設定画面
 };	
 
 #endif // !_GAME01_H_
