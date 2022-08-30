@@ -91,110 +91,36 @@ HRESULT CResult::Init(void)
 	if (pPlayerData->Player.bWin == true)
 	{
 		string buf = CManager::GetInstance()->GetPlayData()->GetName();
-		buf = buf + " WIN!";
+		buf = buf + "WIN!";
 		vector<wstring> conbrt_buf;
 		int buf_size = buf.size();
-		for (int nCntName = 0; nCntName < buf_size; nCntName++)
-		{
+		conbrt_buf = CLetter::Conbrt(buf);
 
-			// SJIS → wstring
-			int iBufferSize = MultiByteToWideChar(CP_ACP,
-				0,
-				&buf[nCntName],
-				-1,
-				(wchar_t*)NULL,
-				0);
-
-			// バッファの取得
-			wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-			// SJIS → wstring
-			MultiByteToWideChar(CP_ACP,
-				0,
-				&buf[nCntName],
-				-1,
-				cpUCS2,
-				iBufferSize);
-
-			// stringの生成
-			wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-			// バッファの破棄
-			delete[] cpUCS2;
-
-			conbrt_buf.push_back(utextbuf);
-		}
-
-		buf_size = conbrt_buf.size();
+		buf_size = conbrt_buf[0].size();
 		for (int count_name = 0; count_name < buf_size; count_name++)
 		{
-			m_name_font.push_back(new CLetter);
-
-			m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * m_count_letter), 0.0f + (100.0f * 2.0f), 0.0f));
-			m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-			m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-			m_name_font[m_count_letter]->SetFontSize(300);
-			m_name_font[m_count_letter]->SetFontWeight(500);
-			m_name_font[m_count_letter]->Init();
-			m_count_letter++;
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (100.0f * 2.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 		}
 	}
-	m_count_letter = 0;
+
 	for (int count_enemy = 0; count_enemy < max_enemy; count_enemy++)
 	{
 		CCommunicationData::COMMUNICATION_DATA *pEnemyData = EnemyData[count_enemy].GetCmmuData();
 		if (pEnemyData->Player.bWin == true)
 		{
 			string buf = pEnemyData->Player.aName[0];
-			buf = buf + " WIN!";
+			buf = buf + "WIN!";
 			vector<wstring> conbrt_buf;
 			int buf_size = buf.size();
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * m_count_letter), 0.0f + (100.0f * 2.0f), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (100.0f * 2.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 		}
 	}
-	m_count_letter = 0;
 
 	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
 	m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("p_scoreboard.png"));
@@ -222,49 +148,12 @@ HRESULT CResult::Init(void)
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
-
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 			conbrt_buf.clear();
 			break;
@@ -274,49 +163,12 @@ HRESULT CResult::Init(void)
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
-
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 			conbrt_buf.clear();
 			break;
@@ -326,49 +178,12 @@ HRESULT CResult::Init(void)
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
-
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 			conbrt_buf.clear();
 			break;
@@ -378,49 +193,12 @@ HRESULT CResult::Init(void)
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
-
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 			conbrt_buf.clear();
 			break;
@@ -429,55 +207,17 @@ HRESULT CResult::Init(void)
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
 			m_Countor[countor + 1]->SetCounterNum(pData[count_player]->Player.nDeath);
-			for (int nCntName = 0; nCntName < buf_size; nCntName++)
-			{
+			conbrt_buf = CLetter::Conbrt(buf);
 
-				// SJIS → wstring
-				int iBufferSize = MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					(wchar_t*)NULL,
-					0);
-
-				// バッファの取得
-				wchar_t* cpUCS2 = new wchar_t[iBufferSize];
-
-				// SJIS → wstring
-				MultiByteToWideChar(CP_ACP,
-					0,
-					&buf[nCntName],
-					-1,
-					cpUCS2,
-					iBufferSize);
-
-				// stringの生成
-				wstring utextbuf(cpUCS2, cpUCS2 + iBufferSize - 1);
-
-				// バッファの破棄
-				delete[] cpUCS2;
-
-				conbrt_buf.push_back(utextbuf);
-			}
-
-			buf_size = conbrt_buf.size();
+			buf_size = conbrt_buf[0].size();
 			for (int count_name = 0; count_name < buf_size; count_name++)
 			{
-				m_name_font.push_back(new CLetter);
-
-				m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f));
-				m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-				m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-				m_name_font[m_count_letter]->SetFontSize(300);
-				m_name_font[m_count_letter]->SetFontWeight(500);
-				m_name_font[m_count_letter]->Init();
-				m_count_letter++;
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)) + (difference_name + count_player), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
 			}
 			conbrt_buf.clear();
 			break;
 		}
 	}
-	m_count_letter = 0;
 
 	return S_OK;
 }

@@ -35,21 +35,24 @@ public:
 	virtual void Update(void);	// ポリゴンの更新
 	virtual void Draw(void);	// ポリゴンの描画
 	static void Load(void);	// フォントのロード
-	void SetFontType(string type) { m_FontType = type; }	// セッター
-	void SetFontSize(int nsize) { m_nFontSize = nsize; }	// セッター
-	void SetFontWeight(int nweight) { m_nFontWeight = nweight; }	// セッター
-	void SetText(wchar_t text) { m_Text = text; }	// セッター
-	void SetPos(D3DXVECTOR3 pos) { m_Pos = pos; }	// セッター
-	void SetSize(D3DXVECTOR3 size) { m_Size = size; }	// セッター
+	static CLetter*Create(D3DXVECTOR3 porigon_pos, D3DXVECTOR3 polygon_size, int font_size, int font_weight, wchar_t text);	// 生成処理
+	static vector<wstring> Conbrt(string buf);
+	void CreateTexture(void);	// テクスチャ生成
+	void SetFontType(string type) { m_font_type = type; }	// セッター
+	void SetFontSize(int nsize) { m_font_size = nsize; }	// セッター
+	void SetFontWeight(int nweight) { m_font_weight = nweight; }	// セッター
+	void SetText(wchar_t text) { m_text = text; CreateTexture(); }	// セッター
+	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }	// セッター
+	void SetSize(D3DXVECTOR3 size) { m_size = size; }	// セッター
 private:
-	LPDIRECT3DTEXTURE9		m_pTexture = NULL;		//テクスチャへのポインタ
-	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff = NULL;		//頂点バッファへのポインタ
-	D3DXVECTOR3				m_Pos;	// ポリゴンの原点
-	D3DXVECTOR3				m_Size;	// サイズ
-	string					m_FontType;	// テクスチャタイプ
-	wchar_t					m_Text;	// テキスト
-	int						m_nFontSize;	// 高さ(高さだけで幅も決まる)
-	int						m_nFontWeight;	// 太さ
+	LPDIRECT3DTEXTURE9		m_texture = NULL;		//テクスチャへのポインタ
+	LPDIRECT3DVERTEXBUFFER9 m_vtx_buff = NULL;		//頂点バッファへのポインタ
+	D3DXVECTOR3				m_pos;	// ポリゴンの原点
+	D3DXVECTOR3				m_size;	// サイズ
+	string					m_font_type;	// テクスチャタイプ
+	wchar_t					m_text;	// テキスト
+	int						m_font_size;	// 高さ(高さだけで幅も決まる)
+	int						m_font_weight;	// 太さ
 };
 
 #endif

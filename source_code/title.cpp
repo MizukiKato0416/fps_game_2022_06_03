@@ -112,44 +112,35 @@ HRESULT CTitle::Init(void)
 
 	for (int count_name = 0; count_name < NONAME_SIZE; count_name++)
 	{
-		m_name_font.push_back(new CLetter);
-
-		m_name_font[m_count_letter]->SetPos(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * m_count_letter), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f));
-		m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
 		switch (count_name)
 		{
 		case 0:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_N][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_N][0]));
 			m_name.push_back(m_letter_single[DIK_N][0]);
 			break;
 		case 1:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_O][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_O][0]));
 			m_name.push_back(m_letter_single[DIK_O][0]);
 			break;
 		case 2:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_N][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_N][0]));
 			m_name.push_back(m_letter_single[DIK_N][0]);
 			break;
 		case 3:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_A][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_A][0]));
 			m_name.push_back(m_letter_single[DIK_A][0]);
 			break;
 		case 4:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_M][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_M][0]));
 			m_name.push_back(m_letter_single[DIK_M][0]);
 			break;
 		case 5:
-			m_name_font[m_count_letter]->SetText(m_key_name[DIK_E][0]);
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * count_name), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[DIK_E][0]));
 			m_name.push_back(m_letter_single[DIK_E][0]);
 			break;
 		default:
 			break;
 		}
-		m_name_font[m_count_letter]->SetFontSize(300);
-		m_name_font[m_count_letter]->SetFontWeight(500);
-		m_name_font[m_count_letter]->Init();
-		m_count_letter++;
-		m_letter_limitl++;
 	}
 	CManager::GetInstance()->GetPlayData()->SetName(m_name);
 	//ShowCursor(FALSE);
@@ -301,16 +292,9 @@ void CTitle::PasWord(void)
 					int name_size = m_key_name[key_update.first].size();
 					for (int count_name = 0; count_name < name_size; count_name++)
 					{
-						m_name_font.push_back(new CLetter);
-
-						m_name_font[m_count_letter]->SetPos(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * m_count_letter), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f));
-						m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-						m_name_font[m_count_letter]->SetText(m_key_name[key_update.first][count_name]);
-						m_name_font[m_count_letter]->SetFontSize(300);
-						m_name_font[m_count_letter]->SetFontWeight(500);
-						m_name_font[m_count_letter]->Init();
-						m_count_letter++;
+						m_name_font.push_back(CLetter::Create(D3DXVECTOR3((((SCREEN_WIDTH - 300.0f) - (480.0f / 2.0f)) + 32.5f) + (30.0f * m_count_letter), (((0.0f + 95.f) - (50.0f / 2.0f)) + 25.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, m_key_name[key_update.first][count_name]));
 						m_name.push_back(m_letter_single[key_update.first][count_name]);
+						m_count_letter++;
 						m_letter_limitl++;
 					}
 				}
