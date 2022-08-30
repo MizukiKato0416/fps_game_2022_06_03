@@ -24,8 +24,10 @@ class CUi;
 #define MAX_PLAYER_MODEL					(5)										//モデルの数
 #define PLAYER_LIFE							(100)									//体力
 #define PLAYER_SIZE							(75.0f)									//プレイヤーのサイズ調整値
-#define PLAYER_CAMERA_V__MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
-#define PLAYER_CAMERA_V__MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V_MOUSE_SPEED_Y		(0.002f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_CAMERA_V_MOUSE_SPEED_XZ		(-0.002f)								//カメラの横移動スピード（マウスの時）
+#define PLAYER_ADS_CAMERA_V_MOUSE_SPEED_Y	(0.002f)								//カメラの横移動スピード（ADSの時）
+#define PLAYER_ADS_CAMERA_V_MOUSE_SPEED_XZ	(-0.002f)								//カメラの横移動スピード（ADSの時）
 
 //================================================
 //クラスの定義
@@ -44,29 +46,31 @@ public:
 	void Draw(void);
 	static CPlayer *Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &rot);
 
-	D3DXVECTOR3 GetRot(void) { return m_rot; }												//プレイヤーの向き取得処理
-	void SetRot(const D3DXVECTOR3 &rot) { m_rot = rot; }									//プレイヤーの向き設定処理
-	D3DXVECTOR3 GetOffsetPos(void) { return m_offsetPos; }									//プレイヤーのオフセット位置取得処理
-	void SetOffsetPos(const D3DXVECTOR3 &offsetPos) { m_offsetPos = offsetPos; }			//プレイヤーのオフセット位置設定処理
-	void SetMove(const D3DXVECTOR3 &move) { m_move = move; }								//移動量設定処理
-	D3DXVECTOR3 GetMove(void) { return m_move; }											//移動量取得処理
-	static void CPlayer::Collision(CObject *pSubjectObject, const float &fObjRadius);		//当たり判定処理
-	bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius);			//衝突判定のみの処理
-	D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }										//ワールドマトリックス取得処理
-	void SetObjParent(const bool bObjeParent) { m_bObjParent = bObjeParent; }				//オブジェクトとの親子関係設定処理
-	bool GetObjParent(void) { return m_bObjParent; }										//オブジェクトとの親子関係取得処理
-	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }								//ワールドマトリックス取得処理
-	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }							//ワールドマトリックス設定処理
-	CGunPlayer *GetGunPlayer(void);															//銃取得処理
-	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }								//アニメーションモデル取得処理
-	CModelCollision *GetModelCollision(void) { return m_pCollModel; }						//当たり判定用モデル取得処理
-	void SetAnimSpeed(const float &fAnimSpeed) { m_fAnimSpeed = fAnimSpeed; }				//アニメーションのスピード設定処理
-	float GetAnimSpeed(void) { return m_fAnimSpeed; }										//アニメーションのスピード取得処理
-	bool GetAds(void) { return m_bAds; }													//ADSしているかどうか取得処理
-	bool GetJump(void) { return m_bJump; }													//ジャンプしているかどうか取得処理
-	bool GetDeath(void) { return m_bDeath; }												//死んでいるかどうか取得処理
-	D3DXVECTOR2 GetCameraSpeed(void) { return m_cameraSpeed; }								//カメラスピード取得処理
-	void SetCameraSpeed(const D3DXVECTOR2 &cameraSpeed) { m_cameraSpeed = cameraSpeed; }	//カメラスピード設定処理
+	D3DXVECTOR3 GetRot(void) { return m_rot; }															//プレイヤーの向き取得処理
+	void SetRot(const D3DXVECTOR3 &rot) { m_rot = rot; }												//プレイヤーの向き設定処理
+	D3DXVECTOR3 GetOffsetPos(void) { return m_offsetPos; }												//プレイヤーのオフセット位置取得処理
+	void SetOffsetPos(const D3DXVECTOR3 &offsetPos) { m_offsetPos = offsetPos; }						//プレイヤーのオフセット位置設定処理
+	void SetMove(const D3DXVECTOR3 &move) { m_move = move; }											//移動量設定処理
+	D3DXVECTOR3 GetMove(void) { return m_move; }														//移動量取得処理
+	static void CPlayer::Collision(CObject *pSubjectObject, const float &fObjRadius);					//当たり判定処理
+	bool CPlayer::CollisionOnly(CObject *&pSubjectObject, const float &fObjRadius);						//衝突判定のみの処理
+	D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }													//ワールドマトリックス取得処理
+	void SetObjParent(const bool bObjeParent) { m_bObjParent = bObjeParent; }							//オブジェクトとの親子関係設定処理
+	bool GetObjParent(void) { return m_bObjParent; }													//オブジェクトとの親子関係取得処理
+	D3DXMATRIX *GetMtxParent(void) { return m_mtxWorldParent; }											//ワールドマトリックス取得処理
+	void SetMtxParent(D3DXMATRIX *mtx) { m_mtxWorldParent = mtx; }										//ワールドマトリックス設定処理
+	CGunPlayer *GetGunPlayer(void);																		//銃取得処理
+	CXanimModel *GetAnimModel(void) { return m_pAnimModel; }											//アニメーションモデル取得処理
+	CModelCollision *GetModelCollision(void) { return m_pCollModel; }									//当たり判定用モデル取得処理
+	void SetAnimSpeed(const float &fAnimSpeed) { m_fAnimSpeed = fAnimSpeed; }							//アニメーションのスピード設定処理
+	float GetAnimSpeed(void) { return m_fAnimSpeed; }													//アニメーションのスピード取得処理
+	bool GetAds(void) { return m_bAds; }																//ADSしているかどうか取得処理
+	bool GetJump(void) { return m_bJump; }																//ジャンプしているかどうか取得処理
+	bool GetDeath(void) { return m_bDeath; }															//死んでいるかどうか取得処理
+	D3DXVECTOR2 GetCameraSpeed(void) { return m_cameraSpeed; }											//カメラスピード取得処理
+	void SetCameraSpeed(const D3DXVECTOR2 &cameraSpeed) { m_cameraSpeed = cameraSpeed; }				//カメラスピード設定処理
+	D3DXVECTOR2 GetAdsCameraSpeed(void) { return m_adsCameraSpeed; }									//カメラスピード取得処理
+	void SetAdsCameraSpeed(const D3DXVECTOR2 &adsCameraSpeed) { m_adsCameraSpeed = adsCameraSpeed; }	//カメラスピード設定処理
 
 private:
 	//メンバ関数
@@ -127,6 +131,7 @@ private:
 	CObject2D *m_pBulletKillUi;						//キルしたときののUI
 	int m_nBulletHitUiCounter;						//弾がヒットしたときのUIを出す時間
 	D3DXVECTOR2 m_cameraSpeed;						//カメラのスピード
+	D3DXVECTOR2 m_adsCameraSpeed;					//ADS時のカメラのスピード
 };
 
 #endif // !_PLAYER_H_

@@ -12,6 +12,14 @@
 #include "renderer.h"
 #include "object2D.h"
 #include "input_mouse.h"
+#include "counter.h"
+
+//=============================================================================
+// マクロ定義
+//=============================================================================
+#define OPTION_BAR_COUNETR_POS		(25.0f)									//数値UI位置調節値
+#define OPTION_BAR_COUNETR_SIZE		(D3DXVECTOR3(20.0f, 30.0f, 0.0f))		//数値UIサイズ
+#define OPTION_BAR_COUNETR_NUM		(3)										//数値UI桁数
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -32,6 +40,8 @@ COptionBar::COptionBar(CObject::PRIORITY Priority) : CObject(Priority)
 	m_pCircle = nullptr;
 	m_pBar = nullptr;
 	m_bClick = false;
+	m_pCounter = nullptr;
+	m_bDefault = false;
 }
 
 //=============================================================================
@@ -50,11 +60,20 @@ HRESULT COptionBar::Init(void)
 	//変数初期化
 	m_bClick = false;
 	m_fNum = m_fDefault;
+	m_bDefault = false;
 
 	SetObjType(CObject::OBJTYPE::UI);
 
 	//バーの生成
 	m_pBar = CObject2D::Create(m_pos, m_barSize, (int)CObject::PRIORITY::UI);
+
+	//数値の生成
+	m_pCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + m_barSize.x / 2.0f + OPTION_BAR_COUNETR_POS, m_pos.y , 0.0f),
+		                          OPTION_BAR_COUNETR_SIZE,
+		                          OPTION_BAR_COUNETR_NUM, "Number.png");
+	//数値の設定
+	m_pCounter->SetCounterNum(int(m_fDefault));
+
 
 	//円の生成
 	m_pCircle = CObject2D::Create(m_pos, m_circleSize, (int)CObject::PRIORITY::UI);
@@ -94,6 +113,13 @@ void COptionBar::Uninit(void)
 		m_pBar = nullptr;
 	}
 
+	//数値の削除
+	if (m_pCounter != nullptr)
+	{
+		m_pCounter->Uninit();
+		m_pCounter = nullptr;
+	}
+
 	Release();
 }
 
@@ -112,9 +138,9 @@ void COptionBar::Update(void)
 		//マウスカーソルの位置取得
 		POINT mouse_pos;
 		GetCursorPos(&mouse_pos);
-
 		
 		HWND hWind = CManager::GetWindowHandle();
+
 		//RECT lprc = {};
 		//if (GetClientRect(hWind, &lprc))
 		//{
@@ -134,8 +160,6 @@ void COptionBar::Update(void)
 		//	// SWP_NOMOVE => 位置変更なし
 		//	SWP_NOMOVE);
 		//}
-
-		
 
 		ScreenToClient(hWind, &mouse_pos);
 		D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
@@ -204,6 +228,13 @@ void COptionBar::Update(void)
 			m_bClick = false;
 		}
 	}
+
+	//数値UIが生成されていたら
+	if (m_pCounter != nullptr)
+	{
+		//数値の設定
+		m_pCounter->SetCounterNum(int(m_fNum));
+	}
 }
 
 //=============================================================================
@@ -237,4 +268,23 @@ COptionBar *COptionBar::Create(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &barSiz
 		}
 	}
 	return pOptionBar;
+}
+
+//=============================================================================
+//現在の値設定処理
+//=============================================================================
+void COptionBar::SetNum(const float & fNum)
+{
+	m_fNum = fNum;
+
+	//最大値と最小値の差分を求める
+	float fDiffer = m_fMax - m_fMin;
+	//デフォルトの円の位置がどこにあるかを求めるためにバーに対してどこにあるのか比率を求める
+	float fDefaultRatio = (m_fNum - m_fMin) * 100.0f / fDiffer;
+	//円の位置取得
+	D3DXVECTOR3 circlePos = m_pCircle->GetPos();
+	//出した比率で場所を求める
+	circlePos.x = (m_pos.x - m_barSize.x / 2.0f) + (m_barSize.x * (fDefaultRatio / 100.0f));
+	//円の位置を設定
+	m_pCircle->SetPos(circlePos, m_pCircle->GetSize());
 }

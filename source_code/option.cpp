@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "object2D.h"
 #include "player.h"
+#include "input_mouse.h"
 
 //=============================================================================
 // マクロ定義
@@ -21,7 +22,10 @@
 #define OPTION_MOUSE_SENSI_MAX		(170.0f)							//マウスの感度をデフォルトから何パーセントまで上げれるようにするか
 #define OPTION_MOUSE_SENSI_DEFAULT	(100.0f)							//マウスの感度の最初の設定をデフォルトの何パーセントにするか
 #define OPTION_BAR_SIZE				(D3DXVECTOR3(600.0f, 5.0f, 0.0f))	//バーのサイズ
+#define OPTION_BAR_POS_01			(D3DXVECTOR3(710.0f, 285.0f, 0.0f))	//バーの位置
+#define OPTION_BAR_POS_02			(D3DXVECTOR3(710.0f, 355.0f, 0.0f))	//バーの位置
 #define OPTION_CIRCLE_SIZE			(D3DXVECTOR3(30.0f, 30.0f, 0.0f ))	//円のサイズ
+#define OPTION_SELECT_COLOR_ALPHA	(0.5f)								//選択で薄くなる時のα値
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -36,6 +40,7 @@ COption::COption(CObject::PRIORITY Priority) : CObject(Priority)
 	memset(m_aNum, 0.0f, sizeof(m_aNum[OPTION_BAR_NUM]));
 	m_pOptionFrame = nullptr;
 	m_bOpen = false;
+	m_pDefaultUi = nullptr;
 }
 
 //=============================================================================
@@ -55,8 +60,9 @@ HRESULT COption::Init(void)
 	m_bOpen = false;
 	memset(m_apOptionBar, NULL, sizeof(m_apOptionBar[OPTION_BAR_NUM]));
 	m_pOptionFrame = nullptr;
+	m_pDefaultUi = nullptr;
 	m_aNum[0] = OPTION_MOUSE_SENSI_DEFAULT;
-	m_aNum[1] = 100.0f;
+	m_aNum[1] = OPTION_MOUSE_SENSI_DEFAULT;
 
 	return S_OK;
 }
@@ -81,8 +87,12 @@ void COption::Update(void)
 		//マウス感度設定処理
 		MouseSensi();
 
-		//視野角設定処理
-		ViewAngle();
+		//ADS感度設定処理
+		AdsSensi();
+
+		//デフォルトに戻す処理
+		Default();
+
 	}
 }
 
@@ -129,15 +139,25 @@ void COption::Open(void)
 		m_pOptionFrame->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("game_option.png"));
 
 		//バーの生成
-		m_apOptionBar[0] = COptionBar::Create({ 710.0f, 285.0f, 0.0f }, OPTION_BAR_SIZE, OPTION_CIRCLE_SIZE,
-			                                  OPTION_MOUSE_SENSI_MIN, OPTION_MOUSE_SENSI_MAX, m_aNum[0]);
+		m_apOptionBar[0] = COptionBar::Create(OPTION_BAR_POS_01, OPTION_BAR_SIZE, OPTION_CIRCLE_SIZE,
+			                                  OPTION_MOUSE_SENSI_MIN, OPTION_MOUSE_SENSI_MAX, OPTION_MOUSE_SENSI_DEFAULT);
+		//初期値の設定
+		m_apOptionBar[0]->SetNum(m_aNum[0]);
 		//値の保存
 		m_aNum[0] = m_apOptionBar[0]->GetNum();
 
-		m_apOptionBar[1] = COptionBar::Create({ 710.0f, 355.0f, 0.0f }, OPTION_BAR_SIZE, OPTION_CIRCLE_SIZE,
-			                                  50.0f, 150.0f, m_aNum[1]);
+		//バーの生成
+		m_apOptionBar[1] = COptionBar::Create(OPTION_BAR_POS_02, OPTION_BAR_SIZE, OPTION_CIRCLE_SIZE,
+			                                  OPTION_MOUSE_SENSI_MIN, OPTION_MOUSE_SENSI_MAX, OPTION_MOUSE_SENSI_DEFAULT);
+		//初期値の設定
+		m_apOptionBar[1]->SetNum(m_aNum[1]);
 		//値の保存
 		m_aNum[1] = m_apOptionBar[1]->GetNum();
+
+		//デフォルトに戻すUIの生成
+		m_pDefaultUi = CObject2D::Create({ 300.0f, 650.0f, 0.0f }, { 414.0f, 76.0f, 0.0f },
+			                             (int)CObject::PRIORITY::UI);
+		m_pDefaultUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("default_ui.png"));
 	}
 }
 
@@ -168,6 +188,13 @@ void COption::Close(void)
 			m_pOptionFrame->Uninit();
 			m_pOptionFrame = nullptr;
 		}
+
+		//デフォルトに戻すUIの削除
+		if (m_pDefaultUi != nullptr)
+		{
+			m_pDefaultUi->Uninit();
+			m_pDefaultUi = nullptr;
+		}
 	}
 }
 
@@ -196,7 +223,7 @@ void COption::MouseSensi(void)
 
 				//現在の設定の値取得
 				float fNum = m_apOptionBar[0]->GetNum();
-				D3DXVECTOR2 cameraSpeed = { PLAYER_CAMERA_V__MOUSE_SPEED_XZ, PLAYER_CAMERA_V__MOUSE_SPEED_Y };
+				D3DXVECTOR2 cameraSpeed = { PLAYER_CAMERA_V_MOUSE_SPEED_XZ, PLAYER_CAMERA_V_MOUSE_SPEED_Y };
 
 				//値をスピードの反映
 				cameraSpeed *= fNum / 100.0f;
@@ -212,9 +239,101 @@ void COption::MouseSensi(void)
 }
 
 //=============================================================================
-//視野角設定処理
+//ADS感度設定処理
 //=============================================================================
-void COption::ViewAngle(void)
+void COption::AdsSensi(void)
 {
+	if (m_apOptionBar[1] != nullptr)
+	{
+		//オブジェクト情報を入れるポインタ
+		vector<CObject*> object;
 
+		//先頭のポインタを代入
+		object = CObject::GetObject(static_cast<int>(CObject::PRIORITY::PLAYER));
+		int nProprty_Size = object.size();
+
+		for (int nCnt = 0; nCnt < nProprty_Size; nCnt++)
+		{
+			//オブジェクトの種類がプレイヤーだったら
+			if (object[nCnt]->GetObjType() == CObject::OBJTYPE::PLAYER)
+			{
+				//プレイヤーにキャスト
+				CPlayer *pPlayerObj = nullptr;
+				pPlayerObj = (CPlayer*)object[nCnt];
+
+				//現在の設定の値取得
+				float fNum = m_apOptionBar[1]->GetNum();
+				D3DXVECTOR2 adsCameraSpeed = { PLAYER_ADS_CAMERA_V_MOUSE_SPEED_XZ, PLAYER_ADS_CAMERA_V_MOUSE_SPEED_Y };
+
+				//値をスピードの反映
+				adsCameraSpeed *= fNum / 100.0f;
+
+				//設定
+				pPlayerObj->SetAdsCameraSpeed(adsCameraSpeed);
+
+				//値の保存
+				m_aNum[1] = m_apOptionBar[1]->GetNum();
+			}
+		}
+	}
+}
+
+//=============================================================================
+//デフォルトに戻す処理
+//=============================================================================
+void COption::Default(void)
+{
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	//マウスカーソルの位置取得
+	POINT mouse_pos;
+	GetCursorPos(&mouse_pos);
+	HWND hWind = CManager::GetWindowHandle();
+	ScreenToClient(hWind, &mouse_pos);
+	D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
+
+	//デフォルトUIの位置とサイズ取得
+	D3DXVECTOR3 uiPos = m_pDefaultUi->GetPos();
+	D3DXVECTOR3 uiSize = m_pDefaultUi->GetSize();
+
+	//UIの中をにあったら
+	if (mousePos.x >= uiPos.x - uiSize.x / 2.0f && mousePos.x <= uiPos.x + uiSize.x / 2.0f &&
+		mousePos.y >= uiPos.y - uiSize.y / 2.0f && mousePos.y <= uiPos.y + uiSize.y / 2.0f)
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pDefaultUi->GetCol();
+		//薄くする
+		uiCol.a = OPTION_SELECT_COLOR_ALPHA;
+		//色設定
+		m_pDefaultUi->SetCol(uiCol);
+
+		//クリックしたら
+		if (pInputMouse->GetTrigger(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
+		{
+			//設定の値を全てデフォルトの状態にする
+			for (int nCntBar = 0; nCntBar < OPTION_BAR_NUM; nCntBar++)
+			{
+				if (m_apOptionBar[nCntBar] != nullptr)
+				{
+					//値をデフォルトに設定する
+					m_apOptionBar[nCntBar]->SetNum(m_apOptionBar[nCntBar]->GetDefaultNum());
+					//値の保存
+					m_aNum[nCntBar] = m_apOptionBar[nCntBar]->GetNum();
+					//デフォルトに戻す状態に設定する
+					m_apOptionBar[nCntBar]->SetDefault(true);
+				}
+			}
+		}
+	}
+	else
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pDefaultUi->GetCol();
+		//色を元に戻す
+		uiCol.a = 1.0f;
+		//色設定
+		m_pDefaultUi->SetCol(uiCol);
+	}
 }

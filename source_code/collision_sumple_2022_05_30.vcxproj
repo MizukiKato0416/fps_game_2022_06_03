@@ -181,6 +181,7 @@
     <ClCompile Include="input_mouse.cpp" />
     <ClCompile Include="input_pad_d.cpp" />
     <ClCompile Include="input_pad_x.cpp" />
+    <ClCompile Include="letter.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="LoadEffect.cpp" />
     <ClCompile Include="main.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="input_mouse.h" />
     <ClInclude Include="input_pad_d.h" />
     <ClInclude Include="input_pad_x.h" />
+    <ClInclude Include="letter.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="LoadEffect.h" />
     <ClInclude Include="main.h" />
