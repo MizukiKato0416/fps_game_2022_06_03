@@ -9,34 +9,18 @@
 //================================================
 CSound::PARAM CSound::m_aParam[(int)SOUND_LABEL::MAX] =
 {
-	{ "data/SOUND/SE/Airplane.wav", 0 },		//飛行機SE
-	{ "data/SOUND/SE/banana.wav", 0 },			//バナナSE
-	{ "data/SOUND/SE/cancel.wav", 0 },			//戻るのSE
-	{ "data/SOUND/SE/pause.wav", 0 },			//ポーズSE
-	{ "data/SOUND/SE/enter.wav", 0 },			//決定SE
-	{ "data/SOUND/SE/fan.wav", 0 },				//扇風機SE
-	{ "data/SOUND/SE/gage.wav", -1 },			//ゲージSE
-	{ "data/SOUND/SE/goal.wav", 0 },			//ゴールSE
-	{ "data/SOUND/SE/redbull.wav", 0 },			//レッドブルSE
-	{ "data/SOUND/SE/rocket.wav", 0 },			//ロケットSE
-	{ "data/SOUND/SE/star.wav", 0 },			//starringSE
-	{ "data/SOUND/SE/thorn.wav", 0 },			//とげSE
-	{ "data/SOUND/SE/trampoline.wav", 0 },		//トランポリンSE
-	{ "data/SOUND/SE/break.wav", 0 },			//ブレーキSE
-	{ "data/SOUND/SE/Jump.wav", 0 },			//ジャンプSE
-	{ "data/SOUND/SE/bad.wav", 0 },				//badSE
-	{ "data/SOUND/SE/good.wav", 0 },			//goodSE
-	{ "data/SOUND/SE/great.wav", 0 },			//greatSE
-	{ "data/SOUND/SE/perfect.wav", 0 },			//parfectSE
-	{ "data/SOUND/SE/error.wav", -1 },			//エラーSE
-	{ "data/SOUND/SE/kiyo_break.wav", 0 },		//キヨ　ブレーキ
-	{ "data/SOUND/SE/angry.wav", 0 },			//起こった
-	{ "data/SOUND/SE/dialog.wav", 0 },			//ダイアログ
-	{ "data/SOUND/BGM/endroll.wav", -1 },		//エンドロールBGM
-	{ "data/SOUND/BGM/result.wav", -1 },		//リザルトBGM
-	{ "data/SOUND/BGM/game.wav", -1 },			//ゲームBGM
-	{ "data/SOUND/BGM/title.wav", -1 },			//タイトルBGM
-	{ "data/SOUND/BGM/trophy.wav", -1 },		//トロフィーBGM
+	{ "data/SOUND/SE/bgm_game.wav", -1 },				//ゲームBGM
+	{ "data/SOUND/SE/bgm_game_lastspurt.wav", -1 },		//ラストスパートBGM
+	{ "data/SOUND/SE/bgm_result.wav", -1 },				//リザルトBGM
+	{ "data/SOUND/SE/bgm_title.wav", -1 },				//タイトルBGM
+	{ "data/SOUND/SE/game_reload.wav", 0 },				//リロードSE
+	{ "data/SOUND/SE/game_reloadover.wav", 0 },			//リロード完了SE
+	{ "data/SOUND/SE/se_game_hit.wav", 0 },				//ヒット時SE
+	{ "data/SOUND/SE/se_game_kill.wav", 0 },			//キルSE
+	{ "data/SOUND/SE/se_game_over.wav", 0 },			//ゲームオーバーSE
+	{ "data/SOUND/SE/se_game_shot.wav", -1 },			//ショットSE
+	{ "data/SOUND/SE/se_title_start.wav", 0 },			//スタート時のバキューンSE
+	{ "data/SOUND/SE/se_title_wind.wav", 0 },			//タイトルの風SE
 };
 
 //================================================
