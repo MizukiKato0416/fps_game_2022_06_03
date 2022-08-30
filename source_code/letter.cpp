@@ -41,7 +41,8 @@ HRESULT CLetter::Init(void)
 	HFONT hFont = CreateFontIndirect(&lf);
 
 	// デバイスにフォントを持たせないとGetGlyphOutline関数はエラーとなる
-	HDC hdc = GetDC(NULL);
+	HDC hdc = GetDC(CManager::GetWindowHandle());
+
 	HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
 
 	// フォントビットマップ取得
@@ -117,10 +118,10 @@ HRESULT CLetter::Init(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点情報を設定
-	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - (fontWidth / m_Size.x), m_Pos.y - (fontHeight / m_Size.y), 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + (fontWidth / m_Size.x), m_Pos.y - (fontHeight / m_Size.y), 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - (fontWidth / m_Size.x), m_Pos.y + (fontHeight / m_Size.y), 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + (fontWidth / m_Size.x), m_Pos.y + (fontHeight / m_Size.y), 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(m_Pos.x - m_Size.x, m_Pos.y - m_Size.y, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_Pos.x + m_Size.x, m_Pos.y - m_Size.y, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(m_Pos.x - m_Size.x, m_Pos.y + m_Size.y, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_Pos.x + m_Size.x, m_Pos.y + m_Size.y, 0.0f);
 
 	pVtx[0].rhw = 1.0f;
 	pVtx[1].rhw = 1.0f;

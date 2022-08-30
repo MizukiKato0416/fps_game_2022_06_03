@@ -66,7 +66,7 @@ private:
 	bool m_bSetPlayerNum;			//プレイヤーの番号から表示するデータを参照するかしないか
 	CObject2D *m_pRank;				//ランキングの数字の後の英語
 	vector<CLetter*> m_name_font;	// 名前フォント
-	int m_count_letter;				// テキストカウント
+	//int m_count_letter;				// テキストカウント
 };
 
 #endif

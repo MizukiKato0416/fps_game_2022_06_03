@@ -24,7 +24,8 @@
 #define SCORE_UI_RANK_DEFAULT_SIZE_Y			(25.0f)			//ランクのデフォルトサイズ
 #define SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_X	(40.0f)			//ランクのあとの英語のデフォルトサイズ
 #define SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_Y	(30.0f)			//ランクのあとの英語のデフォルトサイズ
-#define SCORE_UI_NAME_DEFAULT_SIZE_X			(160.0f)		//名前ののデフォルトサイズ
+#define SCORE_UI_NAME_DEFAULT_SIZE_X			(8.0f)			//名前のデフォルトサイズ
+#define SCORE_UI_NAME_DEFAULT_SIZE_Y			(12.0f)			//名前のデフォルトサイズ
 #define SCORE_UI_MAX_PLAYER_NUM					(4)				//プレイヤーの最大人数
 
 //=============================================================================
@@ -281,7 +282,7 @@ void CScoreUi::CreateLetter(const int &nRank)
 	int nRankSize = m_ranking.size();
 	for (int nCountData = 0; nCountData < nRankSize; nCountData++)
 	{
-		if (m_ranking[nCountData].nPlayerNum == m_ranking[nRank].nPlayerNum - 1)
+		if (m_ranking[nCountData].nPlayerNum == m_ranking[nRank].nPlayerNum)
 		{
 			buf = m_ranking[nCountData].aName;
 		}
@@ -329,6 +330,7 @@ void CScoreUi::CreateLetter(const int &nRank)
 			m_name_font[nCntName] = nullptr;
 		}
 	}
+	m_name_font.clear();
 	//m_count_letter = 0;
 
 	buf_size = conbrt_buf.size();
@@ -336,13 +338,13 @@ void CScoreUi::CreateLetter(const int &nRank)
 	{
 		m_name_font.push_back(new CLetter);
 
-		m_name_font[m_count_letter]->SetPos(D3DXVECTOR3(((SCREEN_WIDTH / 2) - (((15.0f + 15.0f) * buf_size) / 2) * 1.7f) + (30.0f * count_name), ((SCREEN_HEIGHT / 2) - (15.0f * 2.0f)), 0.0f));
-		m_name_font[m_count_letter]->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
-		m_name_font[m_count_letter]->SetText(conbrt_buf[0][count_name]);
-		m_name_font[m_count_letter]->SetFontSize(300);
-		m_name_font[m_count_letter]->SetFontWeight(500);
-		m_name_font[m_count_letter]->Init();
-		m_count_letter++;
+		m_name_font[count_name]->SetPos(D3DXVECTOR3(m_pos.x + (90.0f * m_scale.x) + (SCORE_UI_NAME_DEFAULT_SIZE_X * 2.0f * count_name), m_pos.y, 0.0f));
+		m_name_font[count_name]->SetSize(D3DXVECTOR3(SCORE_UI_NAME_DEFAULT_SIZE_X, SCORE_UI_NAME_DEFAULT_SIZE_Y, 0.0f));
+		m_name_font[count_name]->SetText(conbrt_buf[0][count_name]);
+		m_name_font[count_name]->SetFontSize(30);
+		m_name_font[count_name]->SetFontWeight(50);
+		m_name_font[count_name]->Init();
+		//m_count_letter++;
 	}
 	conbrt_buf.clear();
 }
