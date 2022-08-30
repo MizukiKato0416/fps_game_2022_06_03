@@ -72,6 +72,7 @@ HRESULT CLetter::Init(void)
 
 	// デバイスコンテキストとフォントハンドルはもういらないので解放
 	SelectObject(hdc, oldFont);
+	DeleteObject(hFont);
 	ReleaseDC(NULL, hdc);
 
 	// テクスチャ作成
