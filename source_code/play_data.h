@@ -36,8 +36,8 @@ public:
 	int GetTime(void) { return m_nTime; }						//時間の取得
 	vector<bool> GetFlag(void) { return m_trophy_flag; }		// セッター
 	void SetFlag(vector<bool> frag) { m_trophy_flag = frag; }	// セッター
-	string GetPasword(void) { return m_pasword; }		// ゲッダー
-	void SetPasword(string pas) { m_pasword = pas; }	// セッター
+	string GetName(void) { return m_name; }		// ゲッダー
+	void SetName(string pas) { m_name = pas; }	// セッター
 	int GetPlayNum(void) { return m_play_num; }			// ゲッダー
 	void AddPlayNum(int num) { if (m_play_num >= INT_MAX) m_play_num = INT_MAX; m_play_num += num; }	// 加算
 
@@ -47,7 +47,7 @@ private:
 	CScore *m_pScore;			//スコアのポインタ
 	int m_nTime;				//時間
 	vector<bool> m_trophy_flag;	// トロフィーのフラグ
-	string m_pasword;	// パスワード
+	string m_name;	// パスワード
 	int m_play_num;		// プレイ回数
 };
 

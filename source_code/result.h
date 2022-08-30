@@ -12,6 +12,7 @@
 //================================================
 class CObject2D;
 class CCounter;
+class CLetter;
 
 //================================================
 //クラスの定義
@@ -32,6 +33,11 @@ public:
 private:
 	vector<CObject2D*> m_Ui;
 	vector<CCounter*> m_Countor;
+	vector<CLetter*> m_name_font;// 名前フォント
+	vector<wstring> m_key_name;	// 名前1文字ずつ
+	vector<string> m_letter_single;	// 名前
+	int m_count_letter;	// テキストカウント
+	int m_letter_limitl;	// 文字制限
 	int m_nCount;
 };
 //================================================

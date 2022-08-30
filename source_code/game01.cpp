@@ -20,6 +20,9 @@
 #include "networkmanager.h"
 #include "score_ui.h"
 #include "option.h"
+#include "communicationdata.h"
+#include "networkmanager.h"
+#include "play_data.h"
 
 //================================================
 //ƒ}ƒNƒ’è‹`
@@ -300,13 +303,11 @@ bool CGame01::MapLimit(CObject* pObj)
 void CGame01::FirstContact(void)
 {
 	CTcpClient *pClient = CManager::GetInstance()->GetNetWorkmanager()->GetCommunication();
-
-	
+	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 
 	pClient->Init();
 	pClient->Connect();
 
-	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	if (pClient->GetConnect() == true)
 	{
 		CManager::GetInstance()->GetNetWorkmanager()->CreateThread();

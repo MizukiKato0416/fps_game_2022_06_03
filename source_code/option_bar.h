@@ -17,6 +17,7 @@
 // 前方宣言
 //*****************************************************************************
 class CObject2D;
+class CCounter;
 
 //*****************************************************************************
 // 構造体の定義
@@ -39,6 +40,14 @@ public:
 		                      const float &fMin, const float &fMax, const float &fDefault);	// 生成
 	//現在の値取得処理
 	float GetNum(void) { return m_fNum; }
+	//現在の値設定処理
+	void SetNum(const float &fNum);
+	//デフォルト値取得処理
+	float GetDefaultNum(void) { return m_fDefault; }
+	//デフォルトにするかどうか取得処理
+	bool GetDefault(void) { return m_bDefault; }
+	//デフォルトにするかどうか設定処理
+	void SetDefault(const bool &bDefault) { m_bDefault = bDefault; }
 
 private:
 	D3DXVECTOR3 m_pos;				//位置
@@ -51,6 +60,8 @@ private:
 	CObject2D *m_pCircle;			//動かせる円
 	CObject2D *m_pBar;				//バー
 	bool m_bClick;					//クリックしたかどうか
+	CCounter *m_pCounter;			//カウンターのポインタ
+	bool m_bDefault;				//デフォルト状態に戻すかどうか
 };
 
 #endif

@@ -6,6 +6,7 @@
 #define _GAME01_H_
 #include "object.h"
 #include "main.h"
+#include "option.h"
 
 //前方宣言
 class CPlayer;
@@ -13,7 +14,6 @@ class CMeshField;
 class CEnemy;
 class CObject2D;
 class CScoreUi;
-class COption;
 
 //================================================
 //マクロ定義
@@ -58,7 +58,10 @@ public:
 	void FirstContact(void);
 	//敵のモデル取得処理
 	vector<CEnemy*> GetEnemy(void);
-	void RespawnPlayer(void);			//プレイヤーリスポーン関数
+	//プレイヤーリスポーン関数
+	void RespawnPlayer(void);			
+	//設定画面取得処理
+	COption *GetOption(void) { return m_pOption; }
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理

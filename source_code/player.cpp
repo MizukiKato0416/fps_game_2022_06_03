@@ -31,6 +31,7 @@
 #include "fade.h"
 #include "bulletstate.h"
 #include "ui.h"
+#include "play_data.h"
 
 //================================================
 //マクロ定義
@@ -105,6 +106,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_pBulletKillUi = nullptr;
 	m_nBulletHitUiCounter = 0;
 	m_cameraSpeed = { 0.0f, 0.0f };
+	m_adsCameraSpeed = { 0.0f, 0.0f };
 }
 
 //================================================
@@ -150,8 +152,10 @@ HRESULT CPlayer::Init(void)
 	m_pBulletHitUi = nullptr;
 	m_pBulletKillUi = nullptr;
 	m_nBulletHitUiCounter = 0;
-	m_cameraSpeed.x = PLAYER_CAMERA_V__MOUSE_SPEED_XZ;
-	m_cameraSpeed.y = PLAYER_CAMERA_V__MOUSE_SPEED_Y;
+	m_cameraSpeed.x = PLAYER_CAMERA_V_MOUSE_SPEED_XZ;
+	m_cameraSpeed.y = PLAYER_CAMERA_V_MOUSE_SPEED_Y;
+	m_adsCameraSpeed.x = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_XZ;
+	m_adsCameraSpeed.y = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_Y;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -248,11 +252,15 @@ void CPlayer::Update(void)
 		//腰の処理
 		Chest();
 
-		//回転の慣性
-		Rotate();
+		//設定が開かれていなかったら
+		if (!CManager::GetInstance()->GetGame01()->GetOption()->GetOpen())
+		{
+			//回転の慣性
+			Rotate();
 
-		//移動処理
-		Move();
+			//移動処理
+			Move();
+		}
 
 		//重力
 		m_move.y -= PLAYER_GRAVITY;
@@ -319,9 +327,6 @@ void CPlayer::Update(void)
 		//位置取得
 		pos = GetPos();
 		m_pos = pos;
-
-		//影の当たり判定
-		//m_pShadow->Collision(m_pos, m_size.x * 20.0f);
 
 		//デバイスのポインタ
 		LPDIRECT3DDEVICE9 pDevice;
@@ -433,19 +438,23 @@ void CPlayer::Update(void)
 			m_pGunPlayer->GetModel()->SetDraw(false);
 		}
 
-		//射撃処理
-		Shot();
+		//設定が開かれていなかったら
+		if (!CManager::GetInstance()->GetGame01()->GetOption()->GetOpen())
+		{
+			//射撃処理
+			Shot();
+
+			//リロード処理
+			Reload();
+
+			//ADS処理
+			ADS();
+		}
 
 		//ヒット時UI処理
 		BulletHitUi();
 
-		//リロード処理
-		Reload();
-
 		m_pAnimModel->Update();
-
-		//ADS処理
-		ADS();
 
 		//当たったかどうか
 		HitBullet();
@@ -522,6 +531,9 @@ void CPlayer::Update(void)
 	pData->Player.ModelMatrix = m_mtxWorld;
 
 	//サーバーに送る
+	string buf = CManager::GetInstance()->GetPlayData()->GetName();
+	memset(pData->Player.aName[0], NULL, sizeof(pData->Player.aName[0]));
+	memcpy(pData->Player.aName[0], buf.c_str(), buf.size());
 	memcpy(&Send[0], pData, sizeof(CCommunicationData::COMMUNICATION_DATA));
 	CManager::GetInstance()->GetNetWorkmanager()->Send(&Send[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 	pData->Player.nFrameCount++;
@@ -743,16 +755,28 @@ void CPlayer::Rotate(void)
 			//カメラの向き取得
 			D3DXVECTOR3 cameraRot = pCamera->GetRotV();
 
+			//スピード格納用変数
+			D3DXVECTOR2 cameraSpeed = { 0.0f, 0.0f };
+
+			if (!m_bAds)
+			{
+				cameraSpeed = m_cameraSpeed;
+			}
+			else
+			{
+				cameraSpeed = m_adsCameraSpeed;
+			}
+
 			//================================================
 			//マウスによる視点移動処理
 			//================================================
 			if (mouseVelocity.x != 0.0f)
 			{
-				cameraRot.y += mouseVelocity.x * m_cameraSpeed.y;
+				cameraRot.y += mouseVelocity.x * cameraSpeed.y;
 			}
 			if (mouseVelocity.y != 0.0f)
 			{
-				cameraRot.x -= mouseVelocity.y * m_cameraSpeed.x;
+				cameraRot.x -= mouseVelocity.y * cameraSpeed.x;
 			}
 
 			pCamera->SetRotV(cameraRot);
