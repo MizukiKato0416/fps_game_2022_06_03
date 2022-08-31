@@ -9,16 +9,16 @@
 //================================================
 CSound::PARAM CSound::m_aParam[(int)SOUND_LABEL::MAX] =
 {
-	{ "data/SOUND/SE/bgm_game.wav", -1 },				//ゲームBGM
-	{ "data/SOUND/SE/bgm_game_lastspurt.wav", -1 },		//ラストスパートBGM
-	{ "data/SOUND/SE/bgm_result.wav", -1 },				//リザルトBGM
-	{ "data/SOUND/SE/bgm_title.wav", -1 },				//タイトルBGM
+	{ "data/SOUND/BGM/bgm_game.wav", -1 },				//ゲームBGM
+	{ "data/SOUND/BGM/bgm_game_lastspurt.wav", -1 },	//ラストスパートBGM
+	{ "data/SOUND/BGM/bgm_result.wav", -1 },			//リザルトBGM
+	{ "data/SOUND/BGM/bgm_title.wav", -1 },				//タイトルBGM
 	{ "data/SOUND/SE/game_reload.wav", 0 },				//リロードSE
 	{ "data/SOUND/SE/game_reloadover.wav", 0 },			//リロード完了SE
 	{ "data/SOUND/SE/se_game_hit.wav", 0 },				//ヒット時SE
 	{ "data/SOUND/SE/se_game_kill.wav", 0 },			//キルSE
 	{ "data/SOUND/SE/se_game_over.wav", 0 },			//ゲームオーバーSE
-	{ "data/SOUND/SE/se_game_shot.wav", -1 },			//ショットSE
+	{ "data/SOUND/SE/se_game_shot.wav", 0 },			//ショットSE
 	{ "data/SOUND/SE/se_title_start.wav", 0 },			//スタート時のバキューンSE
 	{ "data/SOUND/SE/se_title_wind.wav", 0 },			//タイトルの風SE
 };
@@ -154,6 +154,20 @@ HRESULT CSound::Init(void)
 		// ファイルをクローズ
 		CloseHandle(hFile);
 	}
+
+	//音量調整
+	ControllVoice(SOUND_LABEL::GAME_BGM,			0.3f);
+	ControllVoice(SOUND_LABEL::GAME_LAST_SPURT_BGM, 0.3f);
+	ControllVoice(SOUND_LABEL::RESULT_BGM,			0.8f);
+	ControllVoice(SOUND_LABEL::TITLE_BGM,			0.9f);
+	ControllVoice(SOUND_LABEL::RELOAD_SE,			8.0f);
+	ControllVoice(SOUND_LABEL::RELOAD_FIN_SE,		5.0f);
+	ControllVoice(SOUND_LABEL::HIT_SE,				3.0f);
+	ControllVoice(SOUND_LABEL::KILL_SE,				1.0f);
+	ControllVoice(SOUND_LABEL::GAME_OVER_SE,		0.6f);
+	ControllVoice(SOUND_LABEL::SHOT_SE,				4.0f);
+	ControllVoice(SOUND_LABEL::START_SHOT_SE,		0.2f);
+	ControllVoice(SOUND_LABEL::TITLE_WIND_SE,		1.0f);
 
 	return S_OK;
 }

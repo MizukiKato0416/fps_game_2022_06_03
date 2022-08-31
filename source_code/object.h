@@ -44,6 +44,7 @@ public:
 		UI,					// UI
 		MASK,				// マスク
 		BLOOD,				// 血
+		OPTION,				// 設定
 		FADE,				// フェード
 		MAX
 	};

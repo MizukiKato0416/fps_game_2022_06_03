@@ -13,11 +13,12 @@
 #include "play_data.h"
 #include "letter.h"
 #include "input_keyboard.h"
+#include "sound.h"
 
 //================================================
 //更新処理マクロ
 //===============================================
-#define DISPLAY_FADE (500)
+#define DISPLAY_FADE (600)
 
 //================================================
 //デフォルトコンストラクタ
@@ -84,6 +85,9 @@ CResult::~CResult()
 //================================================
 HRESULT CResult::Init(void)
 {
+	//音を鳴らす
+	CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::RESULT_BGM);
+
 	CCommunicationData::COMMUNICATION_DATA *pPlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
 	int max_enemy = EnemyData.size();
@@ -227,6 +231,9 @@ HRESULT CResult::Init(void)
 //================================================
 void CResult::Uninit(void)
 {	
+	//音を止める
+	CManager::GetInstance()->GetSound()->Stop(CSound::SOUND_LABEL::RESULT_BGM);
+
 	//オブジェクトの破棄
 	Release();
 
@@ -243,8 +250,12 @@ void CResult::Uninit(void)
 //================================================
 void CResult::Update(void)
 {
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
 	m_nCount++;
-	if (m_nCount >= DISPLAY_FADE)
+	if (m_nCount >= DISPLAY_FADE || pInputKeyboard->GetTrigger(DIK_RETURN))
 	{
 		//フェード取得処理
 		CFade *pFade;

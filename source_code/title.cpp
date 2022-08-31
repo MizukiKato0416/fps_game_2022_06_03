@@ -17,18 +17,22 @@
 #include "play_data.h"
 #include "letter.h"
 #include "communicationdata.h"
+#include "sound.h"
 
 //=============================================================================
 // マクロ定義
 //=============================================================================
 #define TITLE_BULLET_HOLE_UI_SIZE		(100.0f)		//弾痕UIのサイズ
 #define NONAME_SIZE (6)
+#define TITLE_BGM_PLAY_COUNT			(180)			//タイトルBGMを鳴らし始めるまでのカウント
 
 //=============================================================================
 // デフォルトコンストラクタ
 //=============================================================================
 CTitle::CTitle(CObject::PRIORITY Priority):CObject(Priority)
 {
+	m_nCounter = 0;
+
 	FILE *file;
 
 	file = fopen("data/keyconfig.txt", "r");
@@ -89,6 +93,12 @@ CTitle::~CTitle()
 //=============================================================================
 HRESULT CTitle::Init(void)
 {
+	//変数初期化
+	m_nCounter = 0;
+
+	//音を鳴らす
+	CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::TITLE_WIND_SE);
+
 	vector<string> txt_data;	// テキストファイルの保存バッファ
 	vector<CFileLoad::TITLE_ALLOCATION_DATA> title;	// ステージ情報
 
@@ -153,6 +163,10 @@ HRESULT CTitle::Init(void)
 //=============================================================================
 void CTitle::Uninit(void)
 {
+	//音を止める
+	CManager::GetInstance()->GetSound()->Stop(CSound::SOUND_LABEL::TITLE_BGM);
+	CManager::GetInstance()->GetSound()->Stop(CSound::SOUND_LABEL::TITLE_WIND_SE);
+
 	//オブジェクトの破棄
 	Release();
 }
@@ -162,6 +176,20 @@ void CTitle::Uninit(void)
 //=============================================================================
 void CTitle::Update(void)
 {
+	//既定の値以下なら
+	if(m_nCounter <= TITLE_BGM_PLAY_COUNT)
+	{
+		//カウンターを加算
+		m_nCounter++;
+
+		//既定の値になったら
+		if (m_nCounter == TITLE_BGM_PLAY_COUNT)
+		{
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::TITLE_BGM);
+		}
+	}
+
 	POINT mouse_pos;
 	GetCursorPos(&mouse_pos);
 	ScreenToClient(CManager::GetWindowHandle(), &mouse_pos);
@@ -183,7 +211,7 @@ void CTitle::Update(void)
 				(pointor_pos.y - pointor_size.y) <= (m_ui[count_ui]->GetPos().y + (m_ui[count_ui]->GetSize().y / 2)))
 			{
 				col.a = 0.5f;
-				if (mouse->GetPress(mouse->MOUSE_TYPE_LEFT) == true)
+				if (mouse->GetTrigger(mouse->MOUSE_TYPE_LEFT) == true)
 				{
 					CFade *fade = CManager::GetInstance()->GetFade();
 
@@ -196,6 +224,9 @@ void CTitle::Update(void)
 						                                         { TITLE_BULLET_HOLE_UI_SIZE, TITLE_BULLET_HOLE_UI_SIZE, 0.0f },
 							                                     (int)CObject::PRIORITY::UI);
 						pObject2D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hole_ui.png"));
+
+						//音を鳴らす
+						CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SHOT_SE);
 					}
 				}
 			}
