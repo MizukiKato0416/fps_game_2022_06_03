@@ -21,6 +21,8 @@ CSound::PARAM CSound::m_aParam[(int)SOUND_LABEL::MAX] =
 	{ "data/SOUND/SE/se_game_shot.wav", 0 },			//ショットSE
 	{ "data/SOUND/SE/se_title_start.wav", 0 },			//スタート時のバキューンSE
 	{ "data/SOUND/SE/se_title_wind.wav", 0 },			//タイトルの風SE
+	{ "data/SOUND/SE/se_count_down.wav", 0 },			//カウントダウンSE
+	{ "data/SOUND/SE/se_finish.wav", 0 },				//フィニッシュSE
 };
 
 //================================================

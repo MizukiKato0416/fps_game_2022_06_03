@@ -40,6 +40,8 @@ public:
 		SHOT_SE,				//ショットSE
 		START_SHOT_SE,			//スタート時のバキューンSE
 		TITLE_WIND_SE,			//タイトルの風SE
+		COUNT_DOWN_SE,			//カウントダウンSE
+		FINISH_SE,				//フィニッシュSE
 		MAX,
 	};
 

@@ -283,8 +283,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 
 			//位置取得
 			pos = GetPos();
@@ -300,8 +304,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 
 			//位置取得
 			pos = GetPos();
@@ -319,8 +327,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 		}
 		else if (nHit == 2)
 		{//下からあたったとき

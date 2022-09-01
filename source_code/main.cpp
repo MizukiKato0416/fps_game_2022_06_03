@@ -6,6 +6,7 @@
 //=============================================================================
 #include "main.h"
 #include "manager.h"
+#include "sound.h"
 
 //===========================================================
 // マクロ定義
@@ -123,6 +124,44 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 			if((dwCurrentTime - dwExecLastTime) >= (1000 / FPS))
 			{// 1/60秒経過
 				dwExecLastTime = dwCurrentTime;	// 現在の時間を保存
+
+				//新しいウィンドウハンドル
+				HWND newhWind;
+				//ウィンドウのサイズ情報を入れる変数
+				RECT lprc = {};
+				//ウィンドウのサイズを取得
+				if (GetClientRect(hWnd, &lprc))
+				{
+					//ウィンドウのサイズが規定から変更されていたら
+					if (lprc.right != SCREEN_WIDTH || lprc.bottom != SCREEN_HEIGHT)
+					{
+						//ウィンドウを新しく生成する
+						newhWind = CreateWindow(CLASS_NAME,
+							                    WINDOW_NAME,
+							                    WS_OVERLAPPEDWINDOW,
+							                    CW_USEDEFAULT,
+							                    CW_USEDEFAULT,
+							                    (rect.right - rect.left),
+							                    (rect.bottom - rect.top),
+							                    NULL,
+							                    NULL,
+							                    hInstance,
+							                    NULL);
+
+						// ウインドウの表示
+						ShowWindow(newhWind, nCmdShow);
+						UpdateWindow(newhWind);
+
+						//ウィンドウの削除
+						//DestroyWindow(hWnd);
+						//上書き
+						//hWnd = newhWind;
+						//マネージャーに設定
+						CManager::GetInstance()->SetWindowHandle(hWnd);
+						//音を鳴らす
+						CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+					}
+				}
 
 				// 更新処理
 				CManager::GetInstance()->Update();

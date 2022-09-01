@@ -69,6 +69,7 @@ private:
 	void LastSpurt(void);							//ラストスパート処理
 	void Option(void);								//設定画面処理
 	void GameOver(void);							//ゲーム終了処理
+	void Start(void);								//スタートまでの処理
 		
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
@@ -86,6 +87,9 @@ private:
 	bool m_bLastSpurt;					//ラストスパートするかどうか
 	bool m_bGameOver;					//ゲームが終了したかどうか
 	int m_nResultCounter;				//リザルトに行くまでのカウンター
+	bool m_bStart;						//スタートするかどうか
+	int m_nStartCounter;				//スタートするまでのカウンター
+	CObject2D *m_pCountDownUi;			//カウントダウンUIのポインタ
 };	
 
 #endif // !_GAME01_H_
