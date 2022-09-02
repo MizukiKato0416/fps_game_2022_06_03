@@ -1381,6 +1381,9 @@ void CPlayer::Respawn(void)
 			m_nInvincibleCounter = 0;
 		}
 	}
+
+	//ƒf[ƒ^‚ÉŠi”[
+	pData->Player.bRespawn = m_bDeath;
 }
 
 //================================================

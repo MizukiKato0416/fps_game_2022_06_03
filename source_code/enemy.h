@@ -57,6 +57,7 @@ private:
 	int m_my_number;		// 自分の配列
 	int m_nLife;			//ライフ
 	CShadow *m_pShadow;		//影のポインタ
+	bool m_bRespawnOld;		//前のフレームリスポーン状態かどうか
 };
 
 #endif

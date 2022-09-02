@@ -43,6 +43,7 @@ CEnemy::CEnemy(CObject::PRIORITY Priority) : CObject(Priority)
 	m_my_number = m_all_count;
 	m_all_count++;
 	m_pShadow = nullptr;
+	m_bRespawnOld = false;
 }
 
 //=============================================================================
@@ -58,6 +59,8 @@ CEnemy::~CEnemy()
 //=============================================================================
 HRESULT CEnemy::Init(void)
 {
+	//変数初期化
+	m_bRespawnOld = false;
 	m_posOld = m_pos;
 	m_recvPos = m_pos;
 
@@ -234,16 +237,77 @@ void CEnemy::Move(void)
 	string now_motion;
 	string commu_motion = data[m_my_number].GetCmmuData()->Player.aMotion[0];
 
-	//死んでいなかったら
-	if (!data[m_my_number].GetCmmuData()->Player.bDeath)
+	//リスポーン中でなかったら且つ前のフレームリスポーン中じゃなかったら
+	if (!data[m_my_number].GetCmmuData()->Player.bRespawn)
 	{
-		m_posOld = m_pos;
-		m_rotOld = m_rot;
-
-		if (data[m_my_number].GetCmmuData()->bConnect == true)
+		if (!m_bRespawnOld)
 		{
-			m_recvPos = data[m_my_number].GetCmmuData()->Player.Pos;
-			m_recvRot = data[m_my_number].GetCmmuData()->Player.Rot;
+			//リスポーンしていない状態にする
+			m_bRespawnOld = false;
+
+			m_posOld = m_pos;
+			m_rotOld = m_rot;
+
+			if (data[m_my_number].GetCmmuData()->bConnect == true)
+			{
+				m_recvPos = data[m_my_number].GetCmmuData()->Player.Pos;
+				m_recvRot = data[m_my_number].GetCmmuData()->Player.Rot;
+
+				now_motion = m_model->GetAnimation();
+				m_model->ChangeSpeed(data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
+				if (now_motion != commu_motion && data[m_my_number].GetCmmuData()->bConnect == true)
+				{
+					m_model->ChangeAnimation(commu_motion, data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
+				}
+			}
+			else
+			{
+				m_recvPos = m_posOld;
+				m_recvRot = m_rotOld;
+			}
+
+			//受け取った位置から元の位置までのヴェクトルを算出
+			D3DXVECTOR3 posVec = m_recvPos - m_posOld;
+			D3DXVECTOR3 rotVec = { 0.0f, 0.0f, 0.0f };
+
+			//現在の向きごとにそれぞれ向きを変える量を計算
+			if (m_rotOld.y < 0.0f && -m_rotOld.y + m_recvRot.y > D3DX_PI)
+			{
+				rotVec.y = (-D3DX_PI - m_rotOld.y) + -(D3DX_PI - m_recvRot.y);
+			}
+			else if (m_rotOld.y >= D3DX_PI / 2.0f && m_rotOld.y - m_recvRot.y > D3DX_PI)
+			{
+				rotVec.y = (D3DX_PI - m_rotOld.y) - (-D3DX_PI - m_recvRot.y);
+			}
+			else
+			{
+				rotVec.y = (m_recvRot.y - m_rotOld.y);
+			}
+
+			//ベクトルを既定の数で割る
+			posVec /= (float)SEND_COUNTER;
+			rotVec /= (float)SEND_COUNTER;
+			//現在位置からベクトル分位置を移動
+			m_pos += posVec;
+			m_rot += rotVec;
+
+			//πより大きくなったら-2πする
+			if (m_rot.y > D3DX_PI)
+			{
+				m_rot.y -= D3DX_PI * 2.0f;
+			}
+			else if (m_rot.y < -D3DX_PI)
+			{	//-πより小さくなったら+2πする
+				m_rot.y += D3DX_PI * 2.0f;
+			}
+		}
+		else
+		{//前のフレームリスポーン中なら
+			//位置を設定
+			m_pos = data[m_my_number].GetCmmuData()->Player.Pos;
+			m_rot = data[m_my_number].GetCmmuData()->Player.Rot;
+			m_posOld = m_pos;
+			m_rotOld = m_rot;
 
 			now_motion = m_model->GetAnimation();
 			m_model->ChangeSpeed(data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
@@ -251,47 +315,28 @@ void CEnemy::Move(void)
 			{
 				m_model->ChangeAnimation(commu_motion, data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
 			}
+
+			//リスポーン状態でなくする
+			m_bRespawnOld = false;
 		}
-		else
+	}
+	else
+	{//リスポーン中なら
+
+		//位置を設定
+		m_pos = data[m_my_number].GetCmmuData()->Player.Pos;
+		m_rot = data[m_my_number].GetCmmuData()->Player.Rot;
+		m_posOld = m_pos;
+		m_rotOld = m_rot;
+
+		now_motion = m_model->GetAnimation();
+		m_model->ChangeSpeed(data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
+		if (now_motion != commu_motion && data[m_my_number].GetCmmuData()->bConnect == true)
 		{
-			//m_pos = { 0.0f, 100.0f, 0.0f };
-			m_recvPos = m_posOld;
-			m_recvRot = m_rotOld;
+			m_model->ChangeAnimation(commu_motion, data[m_my_number].GetCmmuData()->Player.fMotionSpeed);
 		}
 
-		//受け取った位置から元の位置までのヴェクトルを算出
-		D3DXVECTOR3 posVec = m_recvPos - m_posOld;
-		D3DXVECTOR3 rotVec = { 0.0f, 0.0f, 0.0f };
-
-		//現在の向きごとにそれぞれ向きを変える量を計算
-		if (m_rotOld.y < 0.0f && -m_rotOld.y + m_recvRot.y > D3DX_PI)
-		{
-			rotVec.y = (-D3DX_PI - m_rotOld.y) + -(D3DX_PI - m_recvRot.y);
-		}
-		else if (m_rotOld.y >= D3DX_PI / 2.0f && m_rotOld.y - m_recvRot.y > D3DX_PI)
-		{
-			rotVec.y = (D3DX_PI - m_rotOld.y) - (-D3DX_PI - m_recvRot.y);
-		}
-		else
-		{
-			rotVec.y = (m_recvRot.y - m_rotOld.y);
-		}
-
-		//ベクトルを既定の数で割る
-		posVec /= (float)SEND_COUNTER;
-		rotVec /= (float)SEND_COUNTER;
-		//現在位置からベクトル分位置を移動
-		m_pos += posVec;
-		m_rot += rotVec;
-
-		//πより大きくなったら-2πする
-		if (m_rot.y > D3DX_PI)
-		{
-			m_rot.y -= D3DX_PI * 2.0f;
-		}
-		else if (m_rot.y < -D3DX_PI)
-		{	//-πより小さくなったら+2πする
-			m_rot.y += D3DX_PI * 2.0f;
-		}
+		//リスポーン状態にする
+		m_bRespawnOld = true;
 	}
 }
