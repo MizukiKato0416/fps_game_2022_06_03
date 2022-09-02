@@ -28,34 +28,20 @@ public:
 	//サウンドファイル
 	enum class SOUND_LABEL
 	{
-		AIRPLANE_SE = 0,		//飛行機SE
-		BANANA_SE,				//バナナSE
-		CANSEL_SE,				//戻るのSE
-		PAUSE_BUTTON_SE,		//ポーズSE
-		DECISION_SE,			//決定SE
-		FAN_SE,					//扇風機SE
-		GAGE_SE,				//ゲージSE
-		GOAL_SE,				//ゴールSE
-		REDBULL_SE,				//レッドブルSE
-		ROCKET_SE,				//ロケットSE
-		STAR_RING_SE,			//starringSE
-		THORN_SE,				//とげSE
-		TRAMPOLINE_SE,			//トランポリンSE
-		BREAK_SE,				//ブレーキSE
-		JUMP_SE,				//ジャンプSE
-		BAD_SE,					//badSE
-		GOOD_SE,				//goodSE
-		GREAT_SE,				//greatSE
-		PARFECT_SE,				//parfectSE
-		ERROR_SE,				//エラー
-		KIYO_BREAK_SE,			//キヨ　ブレーキ
-		ANGRY_SE,				//起こったとき
-		DIALOG_SE,				//ダイアログ
-		ENDROOL_BGM,			//エンドロールBGM
+		GAME_BGM = 0,			//ゲームBGM
+		GAME_LAST_SPURT_BGM,	//ラストスパートBGM
 		RESULT_BGM,				//リザルトBGM
-		GAME_BGM,				//ゲームBGM
 		TITLE_BGM,				//タイトルBGM
-		TROPHY_BGM,				//トロフィーBGM
+		RELOAD_SE,				//リロードSE
+		RELOAD_FIN_SE,			//リロード完了SE
+		HIT_SE,					//ヒット時SE
+		KILL_SE,				//キルSE
+		GAME_OVER_SE,			//ゲームオーバーSE
+		SHOT_SE,				//ショットSE
+		START_SHOT_SE,			//スタート時のバキューンSE
+		TITLE_WIND_SE,			//タイトルの風SE
+		COUNT_DOWN_SE,			//カウントダウンSE
+		FINISH_SE,				//フィニッシュSE
 		MAX,
 	};
 

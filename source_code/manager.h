@@ -69,6 +69,7 @@ public:
 	static CPlayData *GetPlayData(void);										//プレイデータ取得処理
 	static CSound *GetSound(void) { return m_pSound; }							//サウンド取得処理
 	static HWND GetWindowHandle(void) { return m_hWnd; }						//hwnd取得処理
+	static void SetWindowHandle(HWND hWind) { m_hWnd = hWind; }					//hwnd設定処理
 	static CNetWorkManager *GetNetWorkmanager(void) { return m_pNetWorkManager; }//ネットワークマネージャー取得処理
 
 private:

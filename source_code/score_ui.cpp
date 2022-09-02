@@ -322,7 +322,6 @@ void CScoreUi::CreateLetter(const int &nRank)
 	//•¶Žš‚Ì”jŠü
 	int nSize = m_name_font.size();
 	for (int nCntName = 0; nCntName < nSize; nCntName++)
-
 	{
 		if (m_name_font[nCntName] != nullptr)
 		{
@@ -331,7 +330,6 @@ void CScoreUi::CreateLetter(const int &nRank)
 		}
 	}
 	m_name_font.clear();
-	//m_count_letter = 0;
 
 	buf_size = conbrt_buf.size();
 	for (int count_name = 0; count_name < buf_size; count_name++)
@@ -344,7 +342,6 @@ void CScoreUi::CreateLetter(const int &nRank)
 		m_name_font[count_name]->SetFontSize(30);
 		m_name_font[count_name]->SetFontWeight(50);
 		m_name_font[count_name]->Init();
-		//m_count_letter++;
 	}
 	conbrt_buf.clear();
 }

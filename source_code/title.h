@@ -46,6 +46,7 @@ private:
 	int m_count_letter;	// テキストカウント
 	int m_letter_limitl;	// 文字制限
 	bool m_name_drop;	// 名前打ち込み
+	int m_nCounter;			//経過フレームカウント用
 };
 
 #endif // !_TITLE_H_

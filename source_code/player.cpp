@@ -32,6 +32,8 @@
 #include "bulletstate.h"
 #include "ui.h"
 #include "play_data.h"
+#include "sound.h"
+
 
 //================================================
 //マクロ定義
@@ -107,6 +109,7 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_nBulletHitUiCounter = 0;
 	m_cameraSpeed = { 0.0f, 0.0f };
 	m_adsCameraSpeed = { 0.0f, 0.0f };
+	m_bStop = false;
 }
 
 //================================================
@@ -156,6 +159,7 @@ HRESULT CPlayer::Init(void)
 	m_cameraSpeed.y = PLAYER_CAMERA_V_MOUSE_SPEED_Y;
 	m_adsCameraSpeed.x = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_XZ;
 	m_adsCameraSpeed.y = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_Y;
+	m_bStop = false;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -252,8 +256,8 @@ void CPlayer::Update(void)
 		//腰の処理
 		Chest();
 
-		//設定が開かれていなかったら
-		if (!CManager::GetInstance()->GetGame01()->GetOption()->GetOpen())
+		//止められていなかったら
+		if (!m_bStop)
 		{
 			//回転の慣性
 			Rotate();
@@ -279,8 +283,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 
 			//位置取得
 			pos = GetPos();
@@ -296,8 +304,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 
 			//位置取得
 			pos = GetPos();
@@ -315,8 +327,12 @@ void CPlayer::Update(void)
 			//ジャンプをしていない状態にする
 			m_bJump = false;
 
-			//ジャンプ処理
-			Jump();
+			//止められていなかったら
+			if (!m_bStop)
+			{
+				//ジャンプ処理
+				Jump();
+			}
 		}
 		else if (nHit == 2)
 		{//下からあたったとき
@@ -438,8 +454,8 @@ void CPlayer::Update(void)
 			m_pGunPlayer->GetModel()->SetDraw(false);
 		}
 
-		//設定が開かれていなかったら
-		if (!CManager::GetInstance()->GetGame01()->GetOption()->GetOpen())
+		//止められていなかったら
+		if (!m_bStop)
 		{
 			//射撃処理
 			Shot();
@@ -468,49 +484,6 @@ void CPlayer::Update(void)
 
 	//リスポーン処理
 	Respawn();
-
-	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-	int enemy = data.size();
-	bool win = false;
-
-	for (int count = 0; count < enemy; count++)
-	{
-		if (data[count].GetCmmuData()->Player.bWin == true ||
-			pData->Player.bWin == true)
-		{
-			win = true;
-			break;
-		}
-	}
-
-	//勝ったら
-	if (win == true)
-	{
-		//フェード取得処理
-		CFade *pFade;
-		pFade = CManager::GetInstance()->GetFade();
-
-		if (pFade->GetFade() == CFade::FADE_NONE)
-		{
-			//マトリックスを取得
-			//D3DXMATRIX *handR = nullptr;
-			//handR = m_pAnimModel->GetMatrix("handR");
-
-			//newしたので消す
-			//delete handR;
-			//handR = nullptr;
-
-			if (m_pAnimModel != nullptr)
-			{
-				//モデルを消す
-				m_pAnimModel->Uninit();
-				m_pAnimModel = nullptr;
-			}
-			
-			//リザルトに行く
-			pFade->SetFade(CManager::MODE::RESULT);
-		}
-	}
 
 	//マガジンの数が既定の値以下になったら
 	if (m_nMagazineNum <= PLAYER_MAGAZIN_CHANGE_COL_NUM)
@@ -840,6 +813,9 @@ void CPlayer::Shot(void)
 			CPresetEffect::SetEffect3D(5, hitPos, m_pos, {});
 			CPresetEffect::SetEffect3D(6, hitPos, m_pos, {});
 
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::HIT_SE);
+
 			//ヒットしたときのUIが生成されていたら
 			if (m_pBulletHitUi != nullptr)
 			{
@@ -941,12 +917,15 @@ void CPlayer::Shot(void)
 				m_nCounter = PLAYER_SHOT_COUNTER;
 
 				CBullet *pBullet;	// 弾のポインタ
-									//弾の生成
+				//弾の生成
 				pBullet = CBullet::Create();
 
 				//弾倉を1減らす
 				m_nMagazineNum--;
 				m_pBulletState->SetBulletNow(m_nMagazineNum);
+
+				//音を鳴らす
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::SHOT_SE);
 
 				//cameraのポインタ配列1番目のアドレス取得
 				CCamera **pCameraAddress = CManager::GetInstance()->GetCamera();
@@ -982,6 +961,8 @@ void CPlayer::Shot(void)
 			{
 				//リロード中にする
 				m_bReload = true;
+				//音を鳴らす
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::RELOAD_SE);
 			}
 		}
 	}
@@ -1420,6 +1401,8 @@ void CPlayer::Reload(void)
 		m_bReload = true;
 		//UIに弾倉数を設定
 		m_pBulletState->SetBulletNow(m_nMagazineNum);
+		//音を鳴らす
+		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::RELOAD_SE);
 	}
 
 	//リロード中なら
@@ -1450,6 +1433,8 @@ void CPlayer::Reload(void)
 			m_pBulletState->SetBulletNow(m_nMagazineNum);
 			//リロード中でなくする
 			m_bReload = false;
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::RELOAD_FIN_SE);
 		}
 	}
 	else if(!m_bReload)

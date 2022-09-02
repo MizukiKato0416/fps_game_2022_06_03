@@ -23,6 +23,7 @@
 #include "communicationdata.h"
 #include "networkmanager.h"
 #include "play_data.h"
+#include "sound.h"
 
 //================================================
 //マクロ定義
@@ -38,6 +39,14 @@
 #define GAME01_PLAYER_RESPAWN_POS_07	(D3DXVECTOR3(-1000.0f, 160.0f, 1700.0f))	//リスポーンの場所
 #define GAME01_SCORE_UI_POS_00			(D3DXVECTOR3(0.0f, 666.0f, 0.0f))			//スコアUIの位置
 #define GAME01_SCORE_UI_POS_01			(D3DXVECTOR3(0.0f, 700.0f, 0.0f))			//スコアUIの位置
+#define GAME01_LAST_SPURT_KILL_NUM		(1)											//ラストスパート状態にするときの残りキル数
+#define GAME01_RESULT_COUNT				(180)										//リザルトに行くまでのカウント
+#define GAME01_GAME_OVER_UI_SIZE		(D3DXVECTOR3(500.0f, 200.0f, 0.0f))			//ゲーム終了時のUIのサイズ
+#define GAME01_START_COUNTER			(240)										//スタートするまでのカウンター
+#define GAME01_COUNT_DOWN_UI_3			(60)										//スタートまでのカウントダウンUIを出すタイミング
+#define GAME01_COUNT_DOWN_UI_2			(120)										//スタートまでのカウントダウンUIを出すタイミング
+#define GAME01_COUNT_DOWN_UI_1			(180)										//スタートまでのカウントダウンUIを出すタイミング
+#define GAME01_COUNT_DOWN_UI_SIZE		(D3DXVECTOR3(148.0f, 183.0f, 0.0f))			//スタートまでのカウントダウンUIのサイズ
 
 //================================================
 //静的メンバ変数宣言
@@ -57,6 +66,12 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_pScorUiTop = nullptr;
 	m_pScorUiUnder = nullptr;
 	m_pOption = nullptr;
+	m_bLastSpurt = false;
+	m_bGameOver = false;
+	m_nResultCounter = 0;
+	m_bStart = false;
+	m_nStartCounter = 0;
+	m_pCountDownUi = nullptr;
 }
 
 //================================================
@@ -77,9 +92,18 @@ CGame01::~CGame01()
 //================================================
 HRESULT CGame01::Init(void)
 {
+	//音を鳴らす
+	CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::GAME_BGM);
+
 	//変数初期化
 	m_respawnPos = PlayerRespawnPos::NONE;
 	m_pOption = nullptr;
+	m_bLastSpurt = false;
+	m_bGameOver = false;
+	m_nResultCounter = 0;
+	m_bStart = false;
+	m_nStartCounter = 0;
+	m_pCountDownUi = nullptr;
 
 	FirstContact();
 
@@ -110,6 +134,11 @@ HRESULT CGame01::Init(void)
 //================================================
 void CGame01::Uninit(void)
 {
+	//音を止める
+	CManager::GetInstance()->GetSound()->Stop(CSound::SOUND_LABEL::GAME_BGM);
+	//音を止める
+	CManager::GetInstance()->GetSound()->Stop(CSound::SOUND_LABEL::GAME_LAST_SPURT_BGM);
+
 	//オブジェクトの破棄
 	Release();
 }
@@ -125,6 +154,9 @@ void CGame01::Update(void)
 	//pos.y = SCREEN_HEIGHT / 2;
 
 	//SetCursorPos(pos.x, pos.y);
+
+	//設定画面の処理
+	Option();
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
 	{
@@ -169,48 +201,30 @@ void CGame01::Update(void)
 			//スコアUIの生成
 			m_pScorUiTop = CScoreUi::Create(GAME01_SCORE_UI_POS_00, { 1.0f, 1.0f, 1.0f });
 			m_pScorUiUnder = CScoreUi::Create(GAME01_SCORE_UI_POS_01, { 1.0f, 1.0f, 1.0f });
-
-			//一位のスコアを表示
-			m_pScorUiTop->SetRank(1);
 		}
 
-		//プレイヤーのデータ取得
-		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+		//スタートまでの処理
+		Start();
 
-		//一位が自分だったら
-		if (m_pScorUiUnder->GetRankData(0).nKill == PlayerDataBuf->Player.nKill)
+		//スタートしていたら
+		if (m_bStart)
 		{
-			//上のUIは1位を表示するようにする
-			m_pScorUiTop->SetRank(1);
+			//スコアUIの処理
+			ScoreUi();
 
-			//下のUIが自分の順位を表示する設定になっているなら
-			if (m_pScorUiUnder->GetPlayerNum())
-			{
-				//指定した順位を表示できる状態にする
-				m_pScorUiUnder->SetPlayerNum(false);
-			}
-			
-			//下のUIは2位を表示するようにする
-			m_pScorUiUnder->SetRank(2);
-		}
-		else
-		{//一位が自分じゃなかったら
-			//上のUIは1位を表示するようにする
-			m_pScorUiTop->SetRank(1);
-			//下のUIが自分の順位を表示する設定になっていないなら
-			if (!m_pScorUiUnder->GetPlayerNum())
-			{
-				//自分の順位をい表示する状態にする
-				m_pScorUiUnder->SetPlayerNum(true);
-			}
+			//ラストスパートの処理
+			LastSpurt();
+
+			//ゲーム終了処理
+			GameOver();
 		}
 	}
 
+#ifdef _DEBUG
 	//キーボード取得処理
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
-#ifdef _DEBUG
 	//Enterキーを押したら
 	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
 	{
@@ -225,26 +239,6 @@ void CGame01::Update(void)
 	}
 
 #endif // !_DEBUG
-
-	//ESCキーを押したら
-	if (pInputKeyboard->GetTrigger(DIK_ESCAPE) == true)
-	{
-		//設定画面を生成しているなら
-		if (m_pOption != nullptr)
-		{
-			//設定画面を開いていないなら
-			if (!m_pOption->GetOpen())
-			{
-				//設定画面を開く
-				m_pOption->Open();
-			}
-			else
-			{
-				//設定画面を閉じる
-				m_pOption->Close();
-			}
-		}
-	}
 }
 
 //================================================
@@ -463,5 +457,274 @@ void CGame01::LoadModelTxt(const string &Pas)
 	for (int count_stage = 0; count_stage < stage_element; count_stage++)
 	{
 		CModelSingle::Create(stage[count_stage].pos, stage[count_stage].rot, stage[count_stage].pas, NULL, stage[count_stage].coll);
+	}
+}
+
+//================================================
+//スコアUIの処理
+//================================================
+void CGame01::ScoreUi(void)
+{
+	//プレイヤーのデータ取得
+	CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+	//一位が自分だったら
+	if (m_pScorUiUnder->GetRankData(0).nKill == PlayerDataBuf->Player.nKill)
+	{
+		//上のUIは1位を表示するようにする
+		m_pScorUiTop->SetRank(1);
+
+		//下のUIが自分の順位を表示する設定になっているなら
+		if (m_pScorUiUnder->GetPlayerNum())
+		{
+			//指定した順位を表示できる状態にする
+			m_pScorUiUnder->SetPlayerNum(false);
+		}
+
+		//下のUIは2位を表示するようにする
+		m_pScorUiUnder->SetRank(2);
+	}
+	else
+	{//一位が自分じゃなかったら
+	 //上のUIは1位を表示するようにする
+		m_pScorUiTop->SetRank(1);
+		//下のUIが自分の順位を表示する設定になっていないなら
+		if (!m_pScorUiUnder->GetPlayerNum())
+		{
+			//自分の順位をい表示する状態にする
+			m_pScorUiUnder->SetPlayerNum(true);
+		}
+	}
+}
+
+//================================================
+//ラストスパートの処理
+//================================================
+void CGame01::LastSpurt(void)
+{
+	//ラストスパート状態でないとき
+	if (!m_bLastSpurt)
+	{
+		//プレイヤーのデータ取得
+		CCommunicationData::COMMUNICATION_DATA *PlayerDataBuf = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+		//敵のデータ取得
+		vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+
+		//プレイヤーの残りキル数がの規定の数以下になっていたら
+		if (WIN_COUNTER - PlayerDataBuf->Player.nKill <= GAME01_LAST_SPURT_KILL_NUM)
+		{
+			//ラストスパート状態にする
+			m_bLastSpurt = true;
+		}
+		else
+		{//プレイヤーの残りキル数がの規定の数以下になっていなかったら
+
+			int nEnemyNum = data.size();
+			for (int nCntEnemy = 0; nCntEnemy < nEnemyNum; nCntEnemy++)
+			{
+				//誰かのキル数が規定の数以下になっていたら
+				if (WIN_COUNTER - data[nCntEnemy].GetCmmuData()->Player.nKill <= GAME01_LAST_SPURT_KILL_NUM)
+				{
+					//ラストスパート状態にする
+					m_bLastSpurt = true;
+					break;
+				}
+			}
+		}
+		
+		//ラストスパート状態なら
+		if (m_bLastSpurt)
+		{
+			//音を止める
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::GAME_BGM);
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::GAME_LAST_SPURT_BGM);
+		}
+	}
+}
+
+//================================================
+//設定画面処理
+//================================================
+void CGame01::Option(void)
+{
+	//キーボード取得処理
+	CInputKeyboard *pInputKeyboard;
+	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+
+	//ESCキーを押したら
+	if (pInputKeyboard->GetTrigger(DIK_ESCAPE) == true)
+	{
+		//設定画面を生成しているなら
+		if (m_pOption != nullptr)
+		{
+			//設定画面を開いていないなら
+			if (!m_pOption->GetOpen())
+			{
+				//設定画面を開く
+				m_pOption->Open();
+				//プレイヤーの動きを止める
+				m_pPlayer->SetStop(true);
+			}
+			else
+			{
+				//設定画面を閉じる
+				m_pOption->Close();
+				//プレイヤーの動きを戻す
+				m_pPlayer->SetStop(false);
+			}
+		}
+	}
+}
+
+//================================================
+//ゲーム終了処理
+//================================================
+void CGame01::GameOver(void)
+{
+	//ゲームが終了していなかったら
+	if (!m_bGameOver)
+	{
+		//プレイヤーのデータ取得
+		CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+		//敵のデータ取得
+		vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+		int enemy = data.size();
+
+		for (int count = 0; count < enemy; count++)
+		{
+			if (data[count].GetCmmuData()->Player.bWin == true ||
+				pData->Player.bWin == true)
+			{
+				m_bGameOver = true;
+
+				//音を止める
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::GAME_LAST_SPURT_BGM);
+				//音を鳴らす
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::GAME_OVER_SE);
+
+				//プレイヤーの動きを止める
+				m_pPlayer->SetStop(true);
+
+				//LOSEかWINを出す
+				CObject2D *pObject2D = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+														 GAME01_GAME_OVER_UI_SIZE,
+														 (int)CObject::PRIORITY::UI);
+
+				//自分が勝ったら
+				if (pData->Player.bWin)
+				{
+					//WINテクスチャを設定
+					pObject2D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("win.png"));
+				}
+				else
+				{//他の人が勝ったら
+					//LOSEテクスチャを設定
+					pObject2D->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("lose.png"));
+				}
+				break;
+			}
+		}
+	}
+
+
+	//終了したら
+	if (m_bGameOver)
+	{
+		//カウンターを加算
+		m_nResultCounter++;
+
+		//既定の値より大きくなったら
+		if (m_nResultCounter > GAME01_RESULT_COUNT)
+		{
+			//フェード取得処理
+			CFade *pFade;
+			pFade = CManager::GetInstance()->GetFade();
+
+			if (pFade->GetFade() == CFade::FADE_NONE)
+			{
+				//リザルトに行く
+				pFade->SetFade(CManager::MODE::RESULT);
+			}
+		}
+	}
+}
+
+//================================================
+//スタートまでの処理
+//================================================
+void CGame01::Start(void)
+{
+	//スタートしていなかったら
+	if (!m_bStart)
+	{
+		//カウンターを加算
+		m_nStartCounter++;
+
+		//プレイヤーが動ける状態なら
+		if (!m_pPlayer->GetStop())
+		{
+			//止まる状態にする
+			m_pPlayer->SetStop(true);
+		}
+
+		//既定の値より大きくなったら
+		if (m_nStartCounter > GAME01_START_COUNTER)
+		{
+			//0にする
+			m_nStartCounter = 0;
+
+			//スタートする状態にする
+			m_bStart = true;
+
+			//プレイヤーが動けない状態なら
+			if (m_pPlayer->GetStop())
+			{
+				//動ける状態にする
+				m_pPlayer->SetStop(false);
+			}
+
+			//カウントダウン用UIが生成されていたら
+			if (m_pCountDownUi != nullptr)
+			{
+				//消す
+				m_pCountDownUi->Uninit();
+				m_pCountDownUi = nullptr;
+			}
+		}
+		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_3)
+		{//既定の値になったら
+			//カウントダウン用UIが生成されていなかったら
+			if (m_pCountDownUi == nullptr)
+			{
+				//UIを生成する
+				m_pCountDownUi = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+												   GAME01_COUNT_DOWN_UI_SIZE,
+												   (int)CObject::PRIORITY::UI);
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("3.png"));
+			}
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+		}
+		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_2)
+		{//既定の値になったら
+			//カウントダウン用UIが生成されていたら
+			if (m_pCountDownUi != nullptr)
+			{
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("2.png"));
+			}
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+		}
+		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_1)
+		{//既定の値になったら
+			//カウントダウン用UIが生成されていたら
+			if (m_pCountDownUi != nullptr)
+			{
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("1.png"));
+			}
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+		}
 	}
 }
