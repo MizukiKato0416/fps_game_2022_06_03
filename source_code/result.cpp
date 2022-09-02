@@ -141,13 +141,14 @@ HRESULT CResult::Init(void)
 	for (int count_player = 0, countor = 0; count_player < MAX_PLAYER + 1; count_player++, countor += 2)
 	{
 		difference_name += 75.0f;
-		string buf = pData[count_player]->Player.aName[0];
+		string buf;
 		vector<wstring> conbrt_buf;
-		int buf_size = buf.size();
+		int buf_size;
 		switch (pData[count_player]->Player.nNumber)
 		{
 		case 1:
 			difference = 5.0f;
+			buf = pData[count_player]->Player.aName[0];
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
@@ -163,6 +164,7 @@ HRESULT CResult::Init(void)
 			break;
 		case 2:
 			difference = 6.0f;
+			buf = pData[count_player]->Player.aName[0];
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
@@ -178,6 +180,7 @@ HRESULT CResult::Init(void)
 			break;
 		case 3:
 			difference = 7.0f;
+			buf = pData[count_player]->Player.aName[0];
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
@@ -193,6 +196,7 @@ HRESULT CResult::Init(void)
 			break;
 		case 4:
 			difference = 8.0f;
+			buf = pData[count_player]->Player.aName[0];
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
@@ -207,6 +211,7 @@ HRESULT CResult::Init(void)
 			conbrt_buf.clear();
 			break;
 		default:
+			buf = pData[count_player]->Player.aName[0];
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "kill_num.png"));
 			m_Countor[countor]->SetCounterNum(pData[count_player]->Player.nKill);
 			m_Countor.push_back(CCounter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - 100.0f) + (200.0f + 65.0f), 0.0f + (83.5f * difference), 0.0f), D3DXVECTOR3(25.0f, 32.5f, 0.0f), 2, "death_num.png"));
