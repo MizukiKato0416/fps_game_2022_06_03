@@ -22,9 +22,13 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define TITLE_BULLET_HOLE_UI_SIZE		(100.0f)		//弾痕UIのサイズ
+#define TITLE_BULLET_HOLE_UI_SIZE		(100.0f)										//弾痕UIのサイズ
 #define NONAME_SIZE (6)
-#define TITLE_BGM_PLAY_COUNT			(180)			//タイトルBGMを鳴らし始めるまでのカウント
+#define TITLE_BGM_PLAY_COUNT			(180)											//タイトルBGMを鳴らし始めるまでのカウント
+#define TITLE_LOGO_INIT_POS				(D3DXVECTOR3(300.0f, -100.0f, 0.0f))			//タイトルロゴの初期位置
+#define TITLE_LOGO_SIZE					(D3DXVECTOR3(500.0f, 300.0f, 0.0f))				//タイトルロゴのサイズ
+#define TITLE_LOGO_LAST_POS_Y			(200.0f)										//タイトルロゴの最終位置Y
+#define TITLE_LOGO_MOVE					(5.0f)											//タイトルロゴの移動量
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -32,6 +36,7 @@
 CTitle::CTitle(CObject::PRIORITY Priority):CObject(Priority)
 {
 	m_nCounter = 0;
+	m_pTitleLogo = nullptr;
 
 	FILE *file;
 
@@ -153,6 +158,11 @@ HRESULT CTitle::Init(void)
 		}
 	}
 	CManager::GetInstance()->GetPlayData()->SetName(m_name);
+
+	//タイトルロゴの生成
+	m_pTitleLogo = CObject2D::Create(TITLE_LOGO_INIT_POS, TITLE_LOGO_SIZE, (int)CObject::PRIORITY::UI);
+	//m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+
 	//ShowCursor(FALSE);
 
 	return S_OK;
@@ -359,5 +369,35 @@ void CTitle::PasWord(void)
 	else
 	{
 		m_name_box->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+}
+
+//=============================================================================
+//ロゴの処理
+//=============================================================================
+void CTitle::Logo(void)
+{
+	//タイトルロゴが生成されていたら
+	if (m_pTitleLogo != nullptr)
+	{
+		//位置を取得
+		D3DXVECTOR3 pos = m_pTitleLogo->GetPos();
+
+		//既定の値より小さいとき
+		if (pos.y < TITLE_LOGO_LAST_POS_Y)
+		{
+			//既定の値分動かす
+			pos.y += TITLE_LOGO_MOVE;
+
+			//既定の値より大きくなったら
+			if (pos.y > TITLE_LOGO_LAST_POS_Y)
+			{
+				//既定の値にする
+				pos.y = TITLE_LOGO_LAST_POS_Y;
+			}
+
+			//位置設定
+			m_pTitleLogo->SetPos(pos, m_pTitleLogo->GetSize());
+		}
 	}
 }
