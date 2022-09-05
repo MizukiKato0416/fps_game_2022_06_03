@@ -14,11 +14,16 @@
 #include "letter.h"
 #include "input_keyboard.h"
 #include "sound.h"
+#include "kill_rate_ui.h"
 
 //================================================
 //更新処理マクロ
 //===============================================
 #define DISPLAY_FADE (600)
+#define RESULT_SCORE_UI_FRAME_SIZE		 (D3DXVECTOR3(570.0f, 498.0f, 0.0f))		//スコアUIを載せるフレームのUIのサイズ
+#define RESULT_SCORE_UI_FRAME_POS		 (250)										//スコアUIを載せるフレームのUIの位置調整値
+#define RESULT_KILL_DEATH_UI_FRAME_SIZE	 (D3DXVECTOR3(131.0f, 47.0f, 0.0f))			//K/D UIのサイズ
+#define RESULT_KILL_DEATH_UI_FRAME_POS	 (D3DXVECTOR3(820.0f, 180.0f, 0.0f))		//K/D UIの位置
 
 //================================================
 //デフォルトコンストラクタ
@@ -126,7 +131,47 @@ HRESULT CResult::Init(void)
 		}
 	}
 
-	m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
+	//背景を生成
+	CObject2D *pBg = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+									   D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
+									   (int)CObject::PRIORITY::UI);
+	pBg->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("result.png"));
+
+	//フレームUIを生成
+	CObject2D *pScoreFrame = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+											   RESULT_SCORE_UI_FRAME_SIZE,
+											   (int)CObject::PRIORITY::UI);
+	pScoreFrame->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("result_score_frame.png"));
+
+	//K/D UIを生成
+	CObject2D *pKillDeatfUi = CObject2D::Create(RESULT_KILL_DEATH_UI_FRAME_POS,
+											    RESULT_KILL_DEATH_UI_FRAME_SIZE,
+											    (int)CObject::PRIORITY::UI);
+	pKillDeatfUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("kill_death.png"));
+
+	//キルレUIをプレイヤーの数分生成 
+	vector<CKillRateUi*> pKillRateUi;
+	pKillRateUi.clear();
+
+	//敵のデータ取得
+	vector<CCommunicationData> data = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	int nDataSize = data.size();
+
+	//プレイヤーの数分分回す
+	for (int nCntPlayer = 0; nCntPlayer < nDataSize + 1; nCntPlayer++)
+	{
+		//キルレUIの生成 
+		pKillRateUi.push_back(CKillRateUi::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f - KILL_RATE_UI_FRAME_DEFAULT_SIZE_X / 2.0f,
+	                                                          RESULT_SCORE_UI_FRAME_POS + (KILL_RATE_UI_FRAME_DEFAULT_SIZE_Y * nCntPlayer),
+	                                                          0.0f),
+															  { 1.0f, 1.0f, 1.0f }));
+		//表示するランキングの設定
+		//上から順にキル数の多い順番にする
+		pKillRateUi[nCntPlayer]->SetRank(nCntPlayer + 1);
+	}
+	
+
+	/*m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
 	m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("p_scoreboard.png"));
 
 	CCommunicationData::COMMUNICATION_DATA *pData[MAX_PLAYER + 1];
@@ -226,7 +271,7 @@ HRESULT CResult::Init(void)
 			conbrt_buf.clear();
 			break;
 		}
-	}
+	}*/
 
 	return S_OK;
 }
@@ -269,6 +314,9 @@ void CResult::Update(void)
 		if (pFade->GetFade() == CFade::FADE_NONE)
 		{
 			pFade->SetFade(CManager::MODE::TITLE);
+
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::DECIDE_SE);
 		}
 	}
 }

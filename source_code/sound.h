@@ -42,6 +42,8 @@ public:
 		TITLE_WIND_SE,			//タイトルの風SE
 		COUNT_DOWN_SE,			//カウントダウンSE
 		FINISH_SE,				//フィニッシュSE
+		START_SE,				//スタートSE
+		DECIDE_SE,				//決定SE
 		MAX,
 	};
 

@@ -23,6 +23,8 @@ CSound::PARAM CSound::m_aParam[(int)SOUND_LABEL::MAX] =
 	{ "data/SOUND/SE/se_title_wind.wav", 0 },			//タイトルの風SE
 	{ "data/SOUND/SE/se_count_down.wav", 0 },			//カウントダウンSE
 	{ "data/SOUND/SE/se_finish.wav", 0 },				//フィニッシュSE
+	{ "data/SOUND/SE/se_start.wav", 0 },				//スタートSE
+	{ "data/SOUND/SE/se_decide.wav", 0 },				//決定SE
 };
 
 //================================================

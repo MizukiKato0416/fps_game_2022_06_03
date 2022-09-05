@@ -671,6 +671,9 @@ void CGame01::Start(void)
 		//Šù’è‚Ì’l‚æ‚è‘å‚«‚­‚È‚Á‚½‚ç
 		if (m_nStartCounter > GAME01_START_COUNTER)
 		{
+			//‰¹‚ð–Â‚ç‚·
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SE);
+
 			//0‚É‚·‚é
 			m_nStartCounter = 0;
 
