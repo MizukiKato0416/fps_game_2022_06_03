@@ -126,6 +126,57 @@ HRESULT CGame01::Init(void)
 	//設定画面を生成する
 	m_pOption = COption::Create();
 
+
+	//プレイヤーのデータ取得
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+	//リスポーンの場所保存用変数
+	D3DXVECTOR3 respawnPos = { 0.0f, 0.0f, 0.0f };
+
+	//リスポーン位置を数字で指定
+	m_respawnPos = (PlayerRespawnPos)pData->Player.nNumber;
+
+	//設定した数値によってリスポーン場所を変える
+	switch (m_respawnPos)
+	{
+	case CGame01::PlayerRespawnPos::POS_00:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_00;
+		break;
+	case CGame01::PlayerRespawnPos::POS_01:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_01;
+		break;
+	case CGame01::PlayerRespawnPos::POS_02:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_02;
+		break;
+	case CGame01::PlayerRespawnPos::POS_03:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_03;
+		break;
+	case CGame01::PlayerRespawnPos::POS_04:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_04;
+		break;
+	case CGame01::PlayerRespawnPos::POS_05:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_05;
+		break;
+	case CGame01::PlayerRespawnPos::POS_06:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_06;
+		break;
+	case CGame01::PlayerRespawnPos::POS_07:
+		respawnPos = GAME01_PLAYER_RESPAWN_POS_07;
+		break;
+	default:
+		break;
+	}
+
+	//データに設定
+	pData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
+
+	//プレイヤーが生成されていたら
+	if (m_pPlayer != nullptr)
+	{
+		//プレイヤーの位置を設定
+		m_pPlayer->SetPos(respawnPos);
+	}
+
 	return S_OK;
 }
 
@@ -148,15 +199,19 @@ void CGame01::Uninit(void)
 //================================================
 void CGame01::Update(void)
 {
-	//POINT pos;
-
-	//pos.x = SCREEN_WIDTH / 2;
-	//pos.y = SCREEN_HEIGHT / 2;
-
-	//SetCursorPos(pos.x, pos.y);
-
 	//設定画面の処理
 	Option();
+
+	//設定が開いてなかったら
+	if (!m_pOption->GetOpen())
+	{
+		//POINT pos;
+
+		//pos.x = SCREEN_WIDTH / 2;
+		//pos.y = SCREEN_HEIGHT / 2;
+
+		//SetCursorPos(pos.x, pos.y);
+	}
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
 	{
@@ -196,7 +251,7 @@ void CGame01::Update(void)
 			m_now_loding = nullptr;
 
 			//リスポーン
-			RespawnPlayer();
+			//RespawnPlayer();
 
 			//スコアUIの生成
 			m_pScorUiTop = CScoreUi::Create(GAME01_SCORE_UI_POS_00, { 1.0f, 1.0f, 1.0f });
@@ -418,21 +473,44 @@ void CGame01::RespawnPlayer(void)
 			//敵が接続されていたら
 			if (data[nCntEnemy].GetCmmuData()->bConnect)
 			{
-				//敵の位置とかぶっていなかったら
-				if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
+				//リスポーン地点と敵との距離を求める
+				D3DXVECTOR3 posDiffer = data[nCntEnemy].GetCmmuData()->Player.Pos - respawnPos;
+				//y軸は計算に含めない
+				posDiffer.y = 0.0f;
+
+				//長さを求める
+				float fDiffer = D3DXVec3Length(&posDiffer);
+
+				//敵が既定の値より近くにいなかったら
+				if (fDiffer > 500.0f)
 				{
 					//データ取得
 					CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 					PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
 					nCntTrue++;
 				}
+
+
+				////敵の位置とかぶっていなかったら
+				//if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
+				//{
+				//	//データ取得
+				//	CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+				//	PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
+				//	nCntTrue++;
+				//}
 			}
 		}
 
-		if (nCntTrue == nEnemyNum)
+		//全ての敵に対して条件をクリアしていたら
+		if (nCntTrue >= nEnemyNum)
 		{
+			//リスポーン関数を抜ける
 			break;
 		}
+
+		//条件をクリアできなかったらカウンターをリセットする
+		nCntTrue = 0;
 	}
 
 	//プレイヤーが生成されていたら
@@ -565,6 +643,9 @@ void CGame01::Option(void)
 				m_pOption->Open();
 				//プレイヤーの動きを止める
 				m_pPlayer->SetStop(true);
+
+				//カーソルを見えるようにする
+				//ShowCursor(TRUE);
 			}
 			else
 			{
@@ -572,6 +653,9 @@ void CGame01::Option(void)
 				m_pOption->Close();
 				//プレイヤーの動きを戻す
 				m_pPlayer->SetStop(false);
+
+				//カーソルを見えないようにする
+				//ShowCursor(FALSE);
 			}
 		}
 	}

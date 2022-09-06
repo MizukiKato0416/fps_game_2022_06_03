@@ -169,7 +169,6 @@ HRESULT CResult::Init(void)
 		//上から順にキル数の多い順番にする
 		pKillRateUi[nCntPlayer]->SetRank(nCntPlayer + 1);
 	}
-	
 
 	/*m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
 	m_Ui[0]->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("p_scoreboard.png"));
@@ -313,6 +312,7 @@ void CResult::Update(void)
 
 		if (pFade->GetFade() == CFade::FADE_NONE)
 		{
+			//タイトルに遷移する
 			pFade->SetFade(CManager::MODE::TITLE);
 
 			//音を鳴らす

@@ -25,10 +25,10 @@
 #define TITLE_BULLET_HOLE_UI_SIZE		(100.0f)										//弾痕UIのサイズ
 #define NONAME_SIZE (6)
 #define TITLE_BGM_PLAY_COUNT			(180)											//タイトルBGMを鳴らし始めるまでのカウント
-#define TITLE_LOGO_INIT_POS				(D3DXVECTOR3(300.0f, -100.0f, 0.0f))			//タイトルロゴの初期位置
-#define TITLE_LOGO_SIZE					(D3DXVECTOR3(500.0f, 300.0f, 0.0f))				//タイトルロゴのサイズ
-#define TITLE_LOGO_LAST_POS_Y			(200.0f)										//タイトルロゴの最終位置Y
-#define TITLE_LOGO_MOVE					(5.0f)											//タイトルロゴの移動量
+#define TITLE_LOGO_INIT_POS				(D3DXVECTOR3(300.0f, -200.0f, 0.0f))			//タイトルロゴの初期位置
+#define TITLE_LOGO_SIZE					(D3DXVECTOR3(500.0f, 200.0f, 0.0f))				//タイトルロゴのサイズ
+#define TITLE_LOGO_LAST_POS_Y			(120.0f)										//タイトルロゴの最終位置Y
+#define TITLE_LOGO_MOVE					(2.0f)											//タイトルロゴの移動量
 
 //=============================================================================
 // デフォルトコンストラクタ
@@ -248,6 +248,9 @@ void CTitle::Update(void)
 		}
 	}
 	PasWord();
+
+	//ロゴの処理
+	Logo();
 }
 
 //=============================================================================
