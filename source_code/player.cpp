@@ -110,6 +110,8 @@ CPlayer::CPlayer(CObject::PRIORITY Priority):CObject(Priority)
 	m_cameraSpeed = { 0.0f, 0.0f };
 	m_adsCameraSpeed = { 0.0f, 0.0f };
 	m_bStop = false;
+	m_nKillOld = 0;
+	m_bKill = false;
 }
 
 //================================================
@@ -160,6 +162,8 @@ HRESULT CPlayer::Init(void)
 	m_adsCameraSpeed.x = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_XZ;
 	m_adsCameraSpeed.y = PLAYER_ADS_CAMERA_V_MOUSE_SPEED_Y;
 	m_bStop = false;
+	m_nKillOld = 0;
+	m_bKill = false;
 
 	//銃モデルの生成
 	m_pGunPlayer = CGunPlayer::Create({0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f}, { 0.0f, 1.6f, 12.0f }, "asult_gun_inv2.x");
@@ -466,6 +470,9 @@ void CPlayer::Update(void)
 			//ADS処理
 			ADS();
 		}
+
+		//キル時処理
+		Kill();
 
 		//ヒット時UI処理
 		BulletHitUi();
@@ -822,6 +829,13 @@ void CPlayer::Shot(void)
 				//消す
 				m_pBulletHitUi->Uninit();
 				m_pBulletHitUi = nullptr;
+
+				//キルをしている状態なら
+				if (m_bKill)
+				{
+					//キルをしていない状態にする
+					m_bKill = false;
+				}
 			}
 
 			//ヒットしたときのUIが生成されていなったら
@@ -829,8 +843,8 @@ void CPlayer::Shot(void)
 			{
 				//ヒットしたときのUIの生成
 				m_pBulletHitUi = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
-				{ SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
-					(int)CObject::PRIORITY::UI);
+				                                   { SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
+					                               (int)CObject::PRIORITY::UI);
 				m_pBulletHitUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hit_ui.png"));
 
 				//カウンターを0にする
@@ -1501,8 +1515,8 @@ void CPlayer::Blood(void)
 //================================================
 void CPlayer::BulletHitUi(void)
 {
-	//ヒット時のUIが生成されていたら
-	if (m_pBulletHitUi != nullptr)
+	//ヒット時のUIが生成されていたら且つキルをした状態でなかったら
+	if (m_pBulletHitUi != nullptr && !m_bKill)
 	{
 		//カウンターを加算
 		m_nBulletHitUiCounter++;
@@ -1531,6 +1545,106 @@ void CPlayer::BulletHitUi(void)
 			}
 		}
 	}
+
+
+	//UIが生成されていたら且つキルした状態なら
+	if (m_pBulletHitUi != nullptr && m_bKill)
+	{
+		//カウンターを加算
+		m_nBulletHitUiCounter++;
+
+		//サイズを取得
+		D3DXVECTOR3 size = m_pBulletHitUi->GetSize();
+
+		//既定の値より大きくなったら
+		if (m_nBulletHitUiCounter > 5)
+		{
+			//小さくする
+			size *= 0.9f;
+		}
+		else
+		{//既定の値以下だったら
+			//大きくする
+			size *= 1.1f;
+		}
+
+		//サイズを設定
+		m_pBulletHitUi->SetPos(m_pBulletHitUi->GetPos(), size);
+
+
+		//既定の値より大きくなったら
+		if (m_nBulletHitUiCounter > PLAYER_BULLET_HIT_UI_COUNT)
+		{
+			//カラー取得
+			D3DXCOLOR col = m_pBulletHitUi->GetCol();
+			//α値を減らす
+			col.a -= PLAYER_BULLET_HIT_UI_ALPHA;
+
+			//見えなくなったら
+			if (col.a <= 0.0f)
+			{
+				//0にする
+				m_nBulletHitUiCounter = 0;
+				//消す
+				m_pBulletHitUi->Uninit();
+				m_pBulletHitUi = nullptr;
+			}
+			else
+			{//見えているなら
+			 //色を設定
+				m_pBulletHitUi->SetCol(col);
+			}
+		}
+	}
+}
+
+//================================================
+//キルに関する処理
+//================================================
+void CPlayer::Kill(void)
+{
+	// 通信データ取得処理
+	CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+	//今のキル数が1フレーム前のキル数と違っていたら
+	if (m_nKillOld != pData->Player.nKill)
+	{
+		//音を鳴らす
+		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::KILL_SE);
+
+		//キルしていた状態でないなら
+		if (!m_bKill)
+		{
+			//キルをした状態にする
+			m_bKill = true;
+
+			//ヒットUI生成されていたら
+			if (m_pBulletHitUi != nullptr)
+			{
+				//消す
+				m_pBulletHitUi->Uninit();
+				m_pBulletHitUi = nullptr;
+			}
+
+			//ヒットしたときのUIが生成されていなったら
+			if (m_pBulletHitUi == nullptr)
+			{
+				//ヒットしたときのUIの生成
+				m_pBulletHitUi = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f },
+				                                   { SCREEN_WIDTH * PLAYER_BULLET_HIT_UI_SIZE, SCREEN_HEIGHT * PLAYER_BULLET_HIT_UI_SIZE, 0.0f },
+					                               (int)CObject::PRIORITY::UI);
+				m_pBulletHitUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("bullet_hit_ui.png"));
+				//カラーを設定
+				m_pBulletHitUi->SetCol(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+				//カウンターを0にする
+				m_nBulletHitUiCounter = 0;
+			}
+		}
+	}
+
+	//キル数を上書き
+	m_nKillOld = pData->Player.nKill;
 }
 
 //================================================

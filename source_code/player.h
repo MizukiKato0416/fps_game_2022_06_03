@@ -88,6 +88,7 @@ private:
 	void HealLife(void);							//ライフ回復処理
 	void Blood(void);								//血の処理
 	void BulletHitUi(void);							//弾がヒットしたときの処理
+	void Kill(void);								//キルに関する処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -135,6 +136,8 @@ private:
 	D3DXVECTOR2 m_cameraSpeed;						//カメラのスピード
 	D3DXVECTOR2 m_adsCameraSpeed;					//ADS時のカメラのスピード
 	bool m_bStop;									//動きを止めるかどうか
+	int m_nKillOld;									//1フレーム前のキル数	
+	bool m_bKill;									//キルをしたかどうか
 };
 
 #endif // !_PLAYER_H_
