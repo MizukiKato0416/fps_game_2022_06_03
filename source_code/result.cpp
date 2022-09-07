@@ -93,44 +93,6 @@ HRESULT CResult::Init(void)
 	//‰¹‚ð–Â‚ç‚·
 	CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::RESULT_BGM);
 
-	CCommunicationData::COMMUNICATION_DATA *pPlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
-	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
-	int max_enemy = EnemyData.size();
-
-	if (pPlayerData->Player.bWin == true)
-	{
-		string buf = CManager::GetInstance()->GetPlayData()->GetName();
-		buf = buf + "WIN!";
-		vector<wstring> conbrt_buf;
-		int buf_size = buf.size();
-		conbrt_buf = CLetter::Conbrt(buf);
-
-		buf_size = conbrt_buf[0].size();
-		for (int count_name = 0; count_name < buf_size; count_name++)
-		{
-			m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (100.0f * 2.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
-		}
-	}
-
-	for (int count_enemy = 0; count_enemy < max_enemy; count_enemy++)
-	{
-		CCommunicationData::COMMUNICATION_DATA *pEnemyData = EnemyData[count_enemy].GetCmmuData();
-		if (pEnemyData->Player.bWin == true)
-		{
-			string buf = pEnemyData->Player.aName[0];
-			buf = buf + "WIN!";
-			vector<wstring> conbrt_buf;
-			int buf_size = buf.size();
-			conbrt_buf = CLetter::Conbrt(buf);
-
-			buf_size = conbrt_buf[0].size();
-			for (int count_name = 0; count_name < buf_size; count_name++)
-			{
-				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (100.0f * 2.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
-			}
-		}
-	}
-
 	//”wŒi‚ð¶¬
 	CObject2D *pBg = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
 									   D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f),
@@ -168,6 +130,44 @@ HRESULT CResult::Init(void)
 		//•\Ž¦‚·‚éƒ‰ƒ“ƒLƒ“ƒO‚ÌÝ’è
 		//ã‚©‚ç‡‚ÉƒLƒ‹”‚Ì‘½‚¢‡”Ô‚É‚·‚é
 		pKillRateUi[nCntPlayer]->SetRank(nCntPlayer + 1);
+	}
+
+	CCommunicationData::COMMUNICATION_DATA *pPlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+	vector<CCommunicationData> EnemyData = CManager::GetInstance()->GetNetWorkmanager()->GetEnemyData();
+	int max_enemy = EnemyData.size();
+
+	if (pPlayerData->Player.bWin == true)
+	{
+		string buf = CManager::GetInstance()->GetPlayData()->GetName();
+		buf = buf + "WIN!";
+		vector<wstring> conbrt_buf;
+		int buf_size = buf.size();
+		conbrt_buf = CLetter::Conbrt(buf);
+
+		buf_size = conbrt_buf[0].size();
+		for (int count_name = 0; count_name < buf_size; count_name++)
+		{
+			m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (80.0f * 1.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
+		}
+	}
+
+	for (int count_enemy = 0; count_enemy < max_enemy; count_enemy++)
+	{
+		CCommunicationData::COMMUNICATION_DATA *pEnemyData = EnemyData[count_enemy].GetCmmuData();
+		if (pEnemyData->Player.bWin == true)
+		{
+			string buf = pEnemyData->Player.aName[0];
+			buf = buf + "WIN!";
+			vector<wstring> conbrt_buf;
+			int buf_size = buf.size();
+			conbrt_buf = CLetter::Conbrt(buf);
+
+			buf_size = conbrt_buf[0].size();
+			for (int count_name = 0; count_name < buf_size; count_name++)
+			{
+				m_name_font.push_back(CLetter::Create(D3DXVECTOR3(((SCREEN_WIDTH / 2) - ((15.0f + 10.0f) * buf_size) / 2) + (30.0f * count_name), 0.0f + (80.0f * 1.0f), 0.0f), D3DXVECTOR3(15.0f, 15.0f, 0.0f), 300, 500, conbrt_buf[0][count_name]));
+			}
+		}
 	}
 
 	/*m_Ui.push_back(CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2, (SCREEN_WIDTH / 2) - 150.0f, 0.0f), D3DXVECTOR3(549.0f * 0.8f, 486.0f * 0.8f, 0.0f), (int)CObject::PRIORITY::UI));
