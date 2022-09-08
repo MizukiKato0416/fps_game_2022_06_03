@@ -89,6 +89,7 @@ private:
 	int m_nResultCounter;				//リザルトに行くまでのカウンター
 	bool m_bStart;						//スタートするかどうか
 	int m_nStartCounter;				//スタートするまでのカウンター
+	int m_nCountDownOld;				//1フレーム前のスタートまでのカウントダウン
 	CObject2D *m_pCountDownUi;			//カウントダウンUIのポインタ
 };	
 

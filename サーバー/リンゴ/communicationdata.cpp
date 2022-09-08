@@ -10,6 +10,11 @@
 #include "communicationdata.h"
 
 //-------------------------------
+// マクロ定義
+//-------------------------------
+#define COUNTDOWN_INIT_NUM		(4)	//カウントダウン用の初期値
+
+//-------------------------------
 // デフォルトコンストラクタ
 //-------------------------------
 CCommunicationData::CCommunicationData()
@@ -36,6 +41,7 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.bRespawn = false;
 	m_CommuData.Player.nNumShot = 0;
 	m_CommuData.Player.nRespawnPos = 0;
+	m_CommuData.Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	m_CommuData.Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.hitPlayerPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.type = CCommunicationData::HIT_TYPE::NONE;
@@ -86,6 +92,7 @@ void CCommunicationData::Init(void)
 	m_CommuData.Player.bDeath = false;
 	m_CommuData.Player.nNumShot = 0;
 	m_CommuData.Player.nRespawnPos = 0;
+	m_CommuData.Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	m_CommuData.Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.hitPlayerPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.type = CCommunicationData::HIT_TYPE::NONE;

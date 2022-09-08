@@ -72,6 +72,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_bStart = false;
 	m_nStartCounter = 0;
 	m_pCountDownUi = nullptr;
+	m_nCountDownOld = 0;
 }
 
 //================================================
@@ -104,6 +105,7 @@ HRESULT CGame01::Init(void)
 	m_bStart = false;
 	m_nStartCounter = 0;
 	m_pCountDownUi = nullptr;
+	m_nCountDownOld = COUNTDOWN_INIT_NUM;
 
 	FirstContact();
 
@@ -693,7 +695,7 @@ void CGame01::GameOver(void)
 				//LOSEかWINを出す
 				CObject2D *pObject2D = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
 														 GAME01_GAME_OVER_UI_SIZE,
-														 (int)CObject::PRIORITY::UI);
+														 (int)CObject::PRIORITY::WIN_LOSE);
 
 				//自分が勝ったら
 				if (pData->Player.bWin)
@@ -739,12 +741,86 @@ void CGame01::GameOver(void)
 //================================================
 void CGame01::Start(void)
 {
+	////スタートしていなかったら
+	//if (!m_bStart)
+	//{
+	//	//カウンターを加算
+	//	m_nStartCounter++;
+
+	//	//プレイヤーが動ける状態なら
+	//	if (!m_pPlayer->GetStop())
+	//	{
+	//		//止まる状態にする
+	//		m_pPlayer->SetStop(true);
+	//	}
+
+	//	//既定の値より大きくなったら
+	//	if (m_nStartCounter > GAME01_START_COUNTER)
+	//	{
+	//		//音を鳴らす
+	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SE);
+
+	//		//0にする
+	//		m_nStartCounter = 0;
+
+	//		//スタートする状態にする
+	//		m_bStart = true;
+
+	//		//プレイヤーが動けない状態なら
+	//		if (m_pPlayer->GetStop())
+	//		{
+	//			//動ける状態にする
+	//			m_pPlayer->SetStop(false);
+	//		}
+
+	//		//カウントダウン用UIが生成されていたら
+	//		if (m_pCountDownUi != nullptr)
+	//		{
+	//			//消す
+	//			m_pCountDownUi->Uninit();
+	//			m_pCountDownUi = nullptr;
+	//		}
+	//	}
+	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_3)
+	//	{//既定の値になったら
+	//		//カウントダウン用UIが生成されていなかったら
+	//		if (m_pCountDownUi == nullptr)
+	//		{
+	//			//UIを生成する
+	//			m_pCountDownUi = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+	//											   GAME01_COUNT_DOWN_UI_SIZE,
+	//											   (int)CObject::PRIORITY::UI);
+	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("3.png"));
+	//		}
+	//		//音を鳴らす
+	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+	//	}
+	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_2)
+	//	{//既定の値になったら
+	//		//カウントダウン用UIが生成されていたら
+	//		if (m_pCountDownUi != nullptr)
+	//		{
+	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("2.png"));
+	//		}
+	//		//音を鳴らす
+	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+	//	}
+	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_1)
+	//	{//既定の値になったら
+	//		//カウントダウン用UIが生成されていたら
+	//		if (m_pCountDownUi != nullptr)
+	//		{
+	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("1.png"));
+	//		}
+	//		//音を鳴らす
+	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+	//	}
+	//}
+
+	
 	//スタートしていなかったら
 	if (!m_bStart)
 	{
-		//カウンターを加算
-		m_nStartCounter++;
-
 		//プレイヤーが動ける状態なら
 		if (!m_pPlayer->GetStop())
 		{
@@ -752,18 +828,47 @@ void CGame01::Start(void)
 			m_pPlayer->SetStop(true);
 		}
 
-		//既定の値より大きくなったら
-		if (m_nStartCounter > GAME01_START_COUNTER)
+		//プレイヤーのデータ取得
+		CCommunicationData::COMMUNICATION_DATA *pData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
+
+		//カウントダウンが3の時
+		if (pData->Player.nStartCountDown == 3)
 		{
+			//カウントダウン用UIが生成されていなかったら
+			if (m_pCountDownUi == nullptr)
+			{
+				//UIを生成する
+				m_pCountDownUi = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
+												   GAME01_COUNT_DOWN_UI_SIZE,
+												   (int)CObject::PRIORITY::UI);
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("3.png"));
+
+				//音を鳴らす
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+			}
+		}
+		else if (pData->Player.nStartCountDown == 2 && m_nCountDownOld != pData->Player.nStartCountDown)
+		{//カウントダウンが2の時且つ1フレーム前のカウントダウンが２でないとき
+			//カウントダウン用UIが生成されていたら
+			if (m_pCountDownUi != nullptr)
+			{
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("2.png"));
+			}
 			//音を鳴らす
-			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SE);
-
-			//0にする
-			m_nStartCounter = 0;
-
-			//スタートする状態にする
-			m_bStart = true;
-
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+		}
+		else if (pData->Player.nStartCountDown == 1 && m_nCountDownOld != pData->Player.nStartCountDown)
+		{//カウントダウンが1の時且つ1フレーム前のカウントダウンが1でないとき
+			//カウントダウン用UIが生成されていたら
+			if (m_pCountDownUi != nullptr)
+			{
+				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("1.png"));
+			}
+			//音を鳴らす
+			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
+		}
+		else if (pData->Player.nStartCountDown == 0)
+		{//カウントダウンが0の時
 			//プレイヤーが動けない状態なら
 			if (m_pPlayer->GetStop())
 			{
@@ -777,41 +882,17 @@ void CGame01::Start(void)
 				//消す
 				m_pCountDownUi->Uninit();
 				m_pCountDownUi = nullptr;
+
+				//音を鳴らす
+				CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SE);
+				//スタートする状態にする
+				m_bStart = true;
+
 			}
 		}
-		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_3)
-		{//既定の値になったら
-			//カウントダウン用UIが生成されていなかったら
-			if (m_pCountDownUi == nullptr)
-			{
-				//UIを生成する
-				m_pCountDownUi = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
-												   GAME01_COUNT_DOWN_UI_SIZE,
-												   (int)CObject::PRIORITY::UI);
-				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("3.png"));
-			}
-			//音を鳴らす
-			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-		}
-		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_2)
-		{//既定の値になったら
-			//カウントダウン用UIが生成されていたら
-			if (m_pCountDownUi != nullptr)
-			{
-				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("2.png"));
-			}
-			//音を鳴らす
-			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-		}
-		else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_1)
-		{//既定の値になったら
-			//カウントダウン用UIが生成されていたら
-			if (m_pCountDownUi != nullptr)
-			{
-				m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("1.png"));
-			}
-			//音を鳴らす
-			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-		}
+
+		//保存
+		m_nCountDownOld = pData->Player.nStartCountDown;
 	}
+	
 }

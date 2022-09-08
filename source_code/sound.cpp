@@ -167,7 +167,7 @@ HRESULT CSound::Init(void)
 	ControllVoice(SOUND_LABEL::RELOAD_SE,			8.0f);
 	ControllVoice(SOUND_LABEL::RELOAD_FIN_SE,		5.0f);
 	ControllVoice(SOUND_LABEL::HIT_SE,				3.0f);
-	ControllVoice(SOUND_LABEL::KILL_SE,				2.4f);
+	ControllVoice(SOUND_LABEL::KILL_SE,				2.0f);
 	ControllVoice(SOUND_LABEL::GAME_OVER_SE,		0.6f);
 	ControllVoice(SOUND_LABEL::SHOT_SE,				4.0f);
 	ControllVoice(SOUND_LABEL::START_SHOT_SE,		0.2f);

@@ -510,6 +510,11 @@ void CPlayer::Update(void)
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pData->Player.ModelMatrix = m_mtxWorld;
 
+	//全員繋がっていなかったら且つ止まっていたら
+	if (!CManager::GetInstance()->GetGame01()->GetAllConnect() && m_bStop)
+	{
+		pData->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
+	}
 	//サーバーに送る
 	string buf = CManager::GetInstance()->GetPlayData()->GetName();
 	memset(pData->Player.aName[0], NULL, sizeof(pData->Player.aName[0]));
