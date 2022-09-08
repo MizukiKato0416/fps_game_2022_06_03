@@ -1588,6 +1588,9 @@ void CPlayer::BulletHitUi(void)
 				//Á‚·
 				m_pBulletHitUi->Uninit();
 				m_pBulletHitUi = nullptr;
+
+				//ƒLƒ‹‚µ‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
+				m_bKill = false;
 			}
 			else
 			{//Œ©‚¦‚Ä‚¢‚é‚È‚ç
