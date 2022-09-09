@@ -100,6 +100,11 @@ void main(void)
 		}
 		*/
 
+		//変数初期化
+		g_bStart = false;
+		g_nCountStart = 0;
+
+
 		// ルームを増やす
 		g_room_count++;
 	}
@@ -187,7 +192,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		}
 
 		//保存用
-		int aCountDown[MAX_PLAYER] = { 0 };
+		int aCountDown[MAX_PLAYER + 1] = {};
 
 		//スタートしていなったら
 		if (!g_bStart)

@@ -510,8 +510,8 @@ void CPlayer::Update(void)
 	pData->Player.fMotionSpeed = m_fAnimSpeed;
 	pData->Player.ModelMatrix = m_mtxWorld;
 
-	//‘SˆõŒq‚ª‚Á‚Ä‚¢‚È‚©‚Á‚½‚çŠŽ‚ÂŽ~‚Ü‚Á‚Ä‚¢‚½‚ç
-	if (!CManager::GetInstance()->GetGame01()->GetAllConnect() && m_bStop)
+	//‘SˆõŒq‚ª‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç
+	if (!CManager::GetInstance()->GetGame01()->GetAllConnect())
 	{
 		pData->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	}
