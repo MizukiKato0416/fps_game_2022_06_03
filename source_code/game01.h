@@ -46,7 +46,7 @@ public:
 
 
 	CGame01(CObject::PRIORITY Priority = CObject::PRIORITY::NONE);		//コンストラクタ
-	~CGame01();									//デストラクタ
+	~CGame01();															//デストラクタ
 
 	//メンバ関数
 	HRESULT Init(void);
@@ -65,6 +65,11 @@ public:
 
 private:
 	void LoadModelTxt(const string &Pas);			//モデルロード処理
+	void ScoreUi(void);								//スコアUIの処理
+	void LastSpurt(void);							//ラストスパート処理
+	void Option(void);								//設定画面処理
+	void GameOver(void);							//ゲーム終了処理
+	void Start(void);								//スタートまでの処理
 		
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
@@ -79,6 +84,13 @@ private:
 	CScoreUi *m_pScorUiTop;				//上のスコアUI
 	CScoreUi *m_pScorUiUnder;			//下のスコアUI
 	COption *m_pOption;					//設定画面
+	bool m_bLastSpurt;					//ラストスパートするかどうか
+	bool m_bGameOver;					//ゲームが終了したかどうか
+	int m_nResultCounter;				//リザルトに行くまでのカウンター
+	bool m_bStart;						//スタートするかどうか
+	int m_nStartCounter;				//スタートするまでのカウンター
+	int m_nCountDownOld;				//1フレーム前のスタートまでのカウントダウン
+	CObject2D *m_pCountDownUi;			//カウントダウンUIのポインタ
 };	
 
 #endif // !_GAME01_H_

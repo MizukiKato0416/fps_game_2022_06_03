@@ -10,6 +10,11 @@
 #include "communicationdata.h"
 
 //-------------------------------
+// マクロ定義
+//-------------------------------
+#define COUNTDOWN_INIT_NUM		(4)	//カウントダウン用の初期値
+
+//-------------------------------
 // デフォルトコンストラクタ
 //-------------------------------
 CCommunicationData::CCommunicationData()
@@ -33,8 +38,10 @@ CCommunicationData::CCommunicationData()
 	m_CommuData.Player.bWin = false;
 	m_CommuData.Player.bDeath = false;
 	m_CommuData.Player.bInvincible = false;
+	m_CommuData.Player.bRespawn = false;
 	m_CommuData.Player.nNumShot = 0;
 	m_CommuData.Player.nRespawnPos = 0;
+	m_CommuData.Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	m_CommuData.Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.hitPlayerPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.type = CCommunicationData::HIT_TYPE::NONE;
@@ -77,6 +84,7 @@ void CCommunicationData::Init(void)
 	m_CommuData.Player.nKill = 0;
 	m_CommuData.Player.nDeath = 0;
 	m_CommuData.Player.bInvincible = false;
+	m_CommuData.Player.bRespawn = false;
 	m_CommuData.Player.fMotionSpeed = 0.0f;
 	memset(m_CommuData.Player.aMotion, 0, sizeof(m_CommuData.Player.aMotion));
 	m_CommuData.Player.bHit = false;
@@ -84,6 +92,7 @@ void CCommunicationData::Init(void)
 	m_CommuData.Player.bDeath = false;
 	m_CommuData.Player.nNumShot = 0;
 	m_CommuData.Player.nRespawnPos = 0;
+	m_CommuData.Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	m_CommuData.Bullet.hitPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.hitPlayerPos = { 0.0f, 0.0f, 0.0f };
 	m_CommuData.Bullet.type = CCommunicationData::HIT_TYPE::NONE;

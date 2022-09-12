@@ -20,9 +20,10 @@
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (1024)
-#define SEND_COUNTER (12)		//何フレームに一回サーバーから情報が送られてくるか
-#define WIN_COUNTER (10)
-#define NAME_NAX (15)
+#define SEND_COUNTER (6)		//何フレームに一回サーバーから情報が送られてくるか
+#define WIN_COUNTER (5)
+#define NAME_NAX (10)
+#define COUNTDOWN_INIT_NUM		(4)	//カウントダウン用の初期値
 
 //-------------------------------
 // Classの定義
@@ -73,8 +74,10 @@ public:
 		bool bWin;
 		bool bDeath;		//死んだかどうか
 		bool bInvincible;	//無敵かどうか
+		bool bRespawn;		//リスポーン中かどうか
 		HIT_TYPE type[SEND_COUNTER];	//何のオブジェクトに弾が当たったか
 		int nRespawnPos;			//リスポーンの場所
+		int nStartCountDown;			//スタートするまでのカウントダウン
 	} PLAYUER_DATA;
 
 	typedef struct

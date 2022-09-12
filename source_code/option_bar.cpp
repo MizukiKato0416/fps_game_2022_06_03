@@ -65,7 +65,7 @@ HRESULT COptionBar::Init(void)
 	SetObjType(CObject::OBJTYPE::UI);
 
 	//バーの生成
-	m_pBar = CObject2D::Create(m_pos, m_barSize, (int)CObject::PRIORITY::UI);
+	m_pBar = CObject2D::Create(m_pos, m_barSize, (int)CObject::PRIORITY::OPTION);
 
 	//数値の生成
 	m_pCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + m_barSize.x / 2.0f + OPTION_BAR_COUNETR_POS, m_pos.y , 0.0f),
@@ -73,10 +73,11 @@ HRESULT COptionBar::Init(void)
 		                          OPTION_BAR_COUNETR_NUM, "Number.png");
 	//数値の設定
 	m_pCounter->SetCounterNum(int(m_fDefault));
+	m_pCounter->SetPriority((int)CObject::PRIORITY::OPTION);
 
 
 	//円の生成
-	m_pCircle = CObject2D::Create(m_pos, m_circleSize, (int)CObject::PRIORITY::UI);
+	m_pCircle = CObject2D::Create(m_pos, m_circleSize, (int)CObject::PRIORITY::OPTION);
 	m_pCircle->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("circle.png"));
 
 	//円の位置保存用

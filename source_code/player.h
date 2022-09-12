@@ -71,6 +71,8 @@ public:
 	void SetCameraSpeed(const D3DXVECTOR2 &cameraSpeed) { m_cameraSpeed = cameraSpeed; }				//カメラスピード設定処理
 	D3DXVECTOR2 GetAdsCameraSpeed(void) { return m_adsCameraSpeed; }									//カメラスピード取得処理
 	void SetAdsCameraSpeed(const D3DXVECTOR2 &adsCameraSpeed) { m_adsCameraSpeed = adsCameraSpeed; }	//カメラスピード設定処理
+	bool GetStop(void) { return m_bStop; }																//止められているかどうか取得処理
+	void SetStop(const bool &bStop) { m_bStop = bStop; }												//止められているかどうか設定処理
 
 private:
 	//メンバ関数
@@ -86,6 +88,7 @@ private:
 	void HealLife(void);							//ライフ回復処理
 	void Blood(void);								//血の処理
 	void BulletHitUi(void);							//弾がヒットしたときの処理
+	void Kill(void);								//キルに関する処理
 
 	//メンバ変数
 	D3DXVECTOR3 m_pos;								//位置
@@ -132,6 +135,9 @@ private:
 	int m_nBulletHitUiCounter;						//弾がヒットしたときのUIを出す時間
 	D3DXVECTOR2 m_cameraSpeed;						//カメラのスピード
 	D3DXVECTOR2 m_adsCameraSpeed;					//ADS時のカメラのスピード
+	bool m_bStop;									//動きを止めるかどうか
+	int m_nKillOld;									//1フレーム前のキル数	
+	bool m_bKill;									//キルをしたかどうか
 };
 
 #endif // !_PLAYER_H_

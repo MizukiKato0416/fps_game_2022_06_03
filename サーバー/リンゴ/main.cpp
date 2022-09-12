@@ -18,9 +18,10 @@
 //------------------------
 // マクロ定義
 //------------------------
-#define TIME_OUT (50)	// タイムアウト
+#define TIME_OUT (50)					// タイムアウト
 #define PLAYER_COL_SIZE_Y (90.0f)		//当たり判定サイズ調整値
 #define PLAYER_COL_RADIUS (28.0f)		//当たり判定半径
+#define START_COUNTER		(100)		//カウントダウン用カウンター
 
 //------------------------
 // グローバル変数
@@ -32,6 +33,8 @@ LPD3DXMESH g_mesh;	// メッシュ
 vector<int> g_save_display_count[MAX_PLAYER + 1];	// フレームの保存
 string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
+int g_nCountStart;			//スタートするまでのカウンター
+bool g_bStart;				//スタートしているかどうか
 
 //------------------------
 // メイン関数
@@ -68,6 +71,39 @@ void main(void)
 
 		// 全ての人数分通信待ち
 		AllAcceptInit(g_listenner, g_room_count);
+
+		/*
+		DWORD dwCurrentTime;
+		DWORD dwExecLastTime;
+		// フレームカウント初期化
+		dwCurrentTime = 0;
+		dwExecLastTime = 0;
+
+		// サーバーを止めるまでループ
+		while (true)
+		{
+			// 部屋数表示
+			cout << "現在の部屋数 : " << g_room_count << endl;
+
+			dwCurrentTime = timeGetTime();	// 現在の時間を取得
+
+			if ((dwCurrentTime - dwExecLastTime) >= (1000 / 60))
+			{// 1/60秒経過
+				dwExecLastTime = dwCurrentTime;	// 現在の時間を保存
+
+												// 全ての人数分通信待ち
+				AllAcceptInit(g_listenner, g_room_count);
+			}
+
+			// ルームを増やす
+			g_room_count++;
+		}
+		*/
+
+		//変数初期化
+		g_bStart = false;
+		g_nCountStart = 0;
+
 
 		// ルームを増やす
 		g_room_count++;
@@ -155,6 +191,42 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			break;
 		}
 
+		//保存用
+		int aCountDown[MAX_PLAYER + 1] = {};
+
+		//スタートしていなったら
+		if (!g_bStart)
+		{
+			//スタートまでの処理
+			//カウンターを加算
+			g_nCountStart++;
+		}
+		// プレイヤー分回す
+		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
+		{
+			//カウントダウンが0より大きかったら
+			if (data[count_player]->Player.nStartCountDown > 0)
+			{
+				//指定フレームに一回
+				if (g_nCountStart % START_COUNTER == 0)
+				{
+					//カウントダウンする
+					data[count_player]->Player.nStartCountDown--;
+					//0にする
+					g_nCountStart = 0;
+
+					//カウントダウンが0だったら
+					if (data[count_player]->Player.nStartCountDown == 0)
+					{
+						//スタートしている状態にする
+						g_bStart = true;
+					}
+				}
+			}
+			//保存
+			aCountDown[count_player] = data[count_player]->Player.nStartCountDown;
+		}
+		
 
 		// プレイヤー分回す
 		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
@@ -169,6 +241,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[count_player].SetCmmuData(*data[count_player]);
+
+				//上書き
+				data[count_player]->Player.nStartCountDown = aCountDown[count_player];
 
 				// 弾を使ってたら
 				if (data[count_player]->Bullet.bUse == true)
@@ -501,6 +576,8 @@ void Init(void)
 	g_stop.clear();
 	g_room_count = 1;
 	g_listenner = nullptr;
+	g_nCountStart = 0;
+	g_bStart = false;
 }
 
 //------------------------

@@ -27,6 +27,10 @@
 #define SCORE_UI_NAME_DEFAULT_SIZE_X			(8.0f)			//名前のデフォルトサイズ
 #define SCORE_UI_NAME_DEFAULT_SIZE_Y			(12.0f)			//名前のデフォルトサイズ
 #define SCORE_UI_MAX_PLAYER_NUM					(4)				//プレイヤーの最大人数
+#define SCORE_UI_NAME_POS						(90.0f)			//名前の位置調整値
+#define SCORE_UI_KILL_POS						(268.0f)		//キルの位置調整値
+#define SCORE_UI_RANK_POS						(20.0f)			//ランクの位置調整値
+#define SCORE_UI_ENGLISH_POS					(45.0f)			//ランクの後の英語の位置調整値
 
 //=============================================================================
 // コンストラクタ
@@ -76,13 +80,13 @@ HRESULT CScoreUi::Init(void)
 	m_pos = pFrame->GetPos();
 
 	//順位UIの生成
-	m_pRankCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (20.0f * m_scale.x), m_pos.y , 0.0f),
+	m_pRankCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (SCORE_UI_RANK_POS * m_scale.x), m_pos.y , 0.0f),
 		                              D3DXVECTOR3(SCORE_UI_RANK_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
 		                              1, "Number.png");
 
 	
 	//順位の後の英語UIの生成
-	m_pRank = CObject2D::Create(D3DXVECTOR3(m_pos.x + (45.0f * m_scale.x), m_pos.y, 0.0f),
+	m_pRank = CObject2D::Create(D3DXVECTOR3(m_pos.x + (SCORE_UI_ENGLISH_POS * m_scale.x), m_pos.y, 0.0f),
 	                            D3DXVECTOR3(SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_ENGLISH_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
 		                        (int)CObject::PRIORITY::UI);
 	m_pRank->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("ranking.png"));
@@ -93,7 +97,7 @@ HRESULT CScoreUi::Init(void)
 	m_pRankCounter->SetCounterNum(m_nRank);
 
 	//キル数UIの生成
-	m_pKillCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (268.0f * m_scale.x), m_pos.y , 0.0f),
+	m_pKillCounter = CCounter::Create(D3DXVECTOR3(m_pos.x + (SCORE_UI_KILL_POS * m_scale.x), m_pos.y , 0.0f),
 		                              D3DXVECTOR3(SCORE_UI_RANK_DEFAULT_SIZE_X * m_scale.x, SCORE_UI_RANK_DEFAULT_SIZE_Y * m_scale.y, 0.0f),
 		                              2, "Number.png");
 	//表示するキル数を設定
@@ -322,7 +326,6 @@ void CScoreUi::CreateLetter(const int &nRank)
 	//文字の破棄
 	int nSize = m_name_font.size();
 	for (int nCntName = 0; nCntName < nSize; nCntName++)
-
 	{
 		if (m_name_font[nCntName] != nullptr)
 		{
@@ -331,20 +334,18 @@ void CScoreUi::CreateLetter(const int &nRank)
 		}
 	}
 	m_name_font.clear();
-	//m_count_letter = 0;
 
 	buf_size = conbrt_buf.size();
 	for (int count_name = 0; count_name < buf_size; count_name++)
 	{
 		m_name_font.push_back(new CLetter);
 
-		m_name_font[count_name]->SetPos(D3DXVECTOR3(m_pos.x + (90.0f * m_scale.x) + (SCORE_UI_NAME_DEFAULT_SIZE_X * 2.0f * count_name), m_pos.y, 0.0f));
+		m_name_font[count_name]->SetPos(D3DXVECTOR3(m_pos.x + (SCORE_UI_NAME_POS * m_scale.x) + (SCORE_UI_NAME_DEFAULT_SIZE_X * 2.0f * count_name), m_pos.y, 0.0f));
 		m_name_font[count_name]->SetSize(D3DXVECTOR3(SCORE_UI_NAME_DEFAULT_SIZE_X, SCORE_UI_NAME_DEFAULT_SIZE_Y, 0.0f));
 		m_name_font[count_name]->SetText(conbrt_buf[0][count_name]);
 		m_name_font[count_name]->SetFontSize(30);
 		m_name_font[count_name]->SetFontWeight(50);
 		m_name_font[count_name]->Init();
-		//m_count_letter++;
 	}
 	conbrt_buf.clear();
 }

@@ -135,7 +135,7 @@ void COption::Open(void)
 
 		//フレームの生成
 		m_pOptionFrame = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f },
-			                               (int)CObject::PRIORITY::UI);
+			                               (int)CObject::PRIORITY::OPTION);
 		m_pOptionFrame->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("game_option.png"));
 
 		//バーの生成
@@ -156,7 +156,7 @@ void COption::Open(void)
 
 		//デフォルトに戻すUIの生成
 		m_pDefaultUi = CObject2D::Create({ 300.0f, 650.0f, 0.0f }, { 414.0f, 76.0f, 0.0f },
-			                             (int)CObject::PRIORITY::UI);
+			                             (int)CObject::PRIORITY::OPTION);
 		m_pDefaultUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("default_ui.png"));
 	}
 }

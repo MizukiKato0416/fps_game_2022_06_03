@@ -35,6 +35,8 @@ public:
 	void PasWord(void);
 
 private:
+	void Logo(void);	//ロゴの処理
+
 	vector<CUi*> m_ui;	// UI
 	vector<string> m_type;	// テクスチャ名
 	vector<CLetter*> m_name_font;// 名前フォント
@@ -46,6 +48,8 @@ private:
 	int m_count_letter;	// テキストカウント
 	int m_letter_limitl;	// 文字制限
 	bool m_name_drop;	// 名前打ち込み
+	int m_nCounter;			//経過フレームカウント用
+	CObject2D *m_pTitleLogo;	//タイトルロゴのポインタ
 };
 
 #endif // !_TITLE_H_

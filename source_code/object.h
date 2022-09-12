@@ -44,6 +44,8 @@ public:
 		UI,					// UI
 		MASK,				// マスク
 		BLOOD,				// 血
+		WIN_LOSE,			// 勝ち負け結果
+		OPTION,				// 設定
 		FADE,				// フェード
 		MAX
 	};

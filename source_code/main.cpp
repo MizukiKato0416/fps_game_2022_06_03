@@ -6,6 +6,7 @@
 //=============================================================================
 #include "main.h"
 #include "manager.h"
+#include "input_keyboard.h"
 
 //===========================================================
 // マクロ定義
@@ -62,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 	// ウィンドウの作成
 	hWnd = CreateWindow(CLASS_NAME,
 						WINDOW_NAME,
-						WS_OVERLAPPEDWINDOW,
+						WS_OVERLAPPEDWINDOW /*& ~WS_THICKFRAME & ~WS_MAXIMIZEBOX*/,
 						CW_USEDEFAULT,
 						CW_USEDEFAULT,
 						(rect.right - rect.left),
