@@ -25,6 +25,7 @@
 #define SEND_COUNTER_FRAME (10)		//何フレームに一回サーバーから情報が送られてくるか
 #define WIN_COUNTER (5)
 #define NAME_NAX (10)
+#define COUNTDOWN_INIT_NUM		(4)	//カウントダウン用の初期値
 
 //-------------------------------
 // Classの定義

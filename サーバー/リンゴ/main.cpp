@@ -33,6 +33,7 @@ vector<int> g_save_display_count[MAX_PLAYER + 1];	// フレームの保存
 string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
 bool g_bStart;				//スタートしているかどうか
+bool g_bConectAllOnce;		//全員がつながったときに一度だけ通る
 
 //------------------------
 // メイン関数
@@ -73,7 +74,7 @@ void main(void)
 
 		//変数初期化
 		g_bStart = false;
-
+		g_bConectAllOnce = false;
 
 		// ルームを増やす
 		g_room_count++;
@@ -119,7 +120,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	// 情報の取得
 	for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
 	{
+		commu_data[count_playr].GetCmmuData()->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 		data[count_playr] = commu_data[count_playr].GetCmmuData();
+		data[count_playr]->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	}
 
 	// ソケットの入手
@@ -160,6 +163,19 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 	// レシーブでなんも来なかったら
 	while (recv > 0)
 	{
+		//まだ通っていないなら
+		if (!g_bConectAllOnce)
+		{
+			//プレイヤー分回す
+			for (int count_playr = 0; count_playr < MAX_PLAYER + 1; count_playr++)
+			{
+				data[count_playr]->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
+			}
+
+			//一度通ったことにする
+			g_bConectAllOnce = true;
+		}
+
 		// フレームカウント
 		g_display_count++;
 
@@ -792,6 +808,7 @@ void Init(void)
 	g_room_count = 1;
 	g_listenner = nullptr;
 	g_bStart = false;
+	g_bConectAllOnce = false;
 }
 
 //------------------------
