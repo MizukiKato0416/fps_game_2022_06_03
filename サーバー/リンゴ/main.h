@@ -50,5 +50,4 @@ bool calcRayInfCilinder(float lx, float ly, float lz, float vx, float vy, float 
 bool calcRayCapsule(float lx, float ly, float lz, float vx, float vy, float vz, float p1x, float p1y, float p1z, float p2x, float p2y, float p2z, float r, float &q1x, float &q1y, float &q1z, float &q2x, float &q2y, float &q2z);	// レイとカプセルの貫通点を算出
 float checkDot(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3);	// ∠P1P2P3の内積を算出
 
-
 #endif // !_MAIN_H_

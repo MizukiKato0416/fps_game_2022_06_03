@@ -26,8 +26,8 @@
 #define NONAME_SIZE (6)
 #define TITLE_BGM_PLAY_COUNT			(180)											//タイトルBGMを鳴らし始めるまでのカウント
 #define TITLE_LOGO_INIT_POS				(D3DXVECTOR3(300.0f, -200.0f, 0.0f))			//タイトルロゴの初期位置
-#define TITLE_LOGO_SIZE					(D3DXVECTOR3(500.0f, 200.0f, 0.0f))				//タイトルロゴのサイズ
-#define TITLE_LOGO_LAST_POS_Y			(120.0f)										//タイトルロゴの最終位置Y
+#define TITLE_LOGO_SIZE					(D3DXVECTOR3(550.0f, 300.0f, 0.0f))				//タイトルロゴのサイズ
+#define TITLE_LOGO_LAST_POS_Y			(160.0f)										//タイトルロゴの最終位置Y
 #define TITLE_LOGO_MOVE					(2.0f)											//タイトルロゴの移動量
 
 //=============================================================================
@@ -161,7 +161,7 @@ HRESULT CTitle::Init(void)
 
 	//タイトルロゴの生成
 	m_pTitleLogo = CObject2D::Create(TITLE_LOGO_INIT_POS, TITLE_LOGO_SIZE, (int)CObject::PRIORITY::UI);
-	//m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+	m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("title_logo.png"));
 
 	//ShowCursor(FALSE);
 

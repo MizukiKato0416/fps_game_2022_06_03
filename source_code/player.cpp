@@ -53,15 +53,15 @@
 #define PLAYER_DEATH_CAMERA_INIT_DIFFER		(50.0f)									//デスカメラの初期距離
 #define PLAYER_DEATH_CAMERA_ADD_DIFFER		(4.0f)									//デスカメラの距離加算値
 #define PLAYER_DEATH_CAMERA_MAX_DIFFER		(400.0f)								//デスカメラの距離最大値
-#define PLAYER_GUN_RECOIL_X					(((rand() % 24 + -12) / 1000.0f))		//リコイルX
-#define PLAYER_GUN_RECOIL_Y					(0.03f)									//リコイルY
+#define PLAYER_GUN_RECOIL_X					(((rand() % 30 + -15) / 1000.0f))		//リコイルX
+#define PLAYER_GUN_RECOIL_Y					(0.05f)									//リコイルY
 #define PLAYER_GUN_MAGAZINE_NUM				(35)									//弾倉の数
 #define PLAYER_GUN_RELOAD_TIME				(180)									//リロードにかかる時間
 #define PLAYER_HEAL_LIFE_COUNT				(360)									//回復し始めるまでにかかる時間
 #define PLAYER_HEAL_LIFE_NUM				(2)										//1フレームあたりに回復させるライフ量
-#define PLAYER_DAMAGE_MASK_COUNT			(2)										//被弾した際にでるマスクを表示する時間
+#define PLAYER_DAMAGE_MASK_COUNT			(3)										//被弾した際にでるマスクを表示する時間
 #define PLAYER_DAMAGE_MASK_ALPHA			(0.2f)									//α値を減らす量
-#define PLAYER_MAGAZIN_CHANGE_COL_NUM		(10)									//弾倉表示の色を変え始める球数数
+#define PLAYER_MAGAZIN_CHANGE_COL_NUM		(10)									//弾倉表示の色を変え始める球数
 #define PLAYER_RETICLE_SIZE					(0.8f)									//腰うちレティクルのサイズ倍率
 #define PLAYER_BULLET_HIT_UI_COUNT			(5)										//ヒット時UIが消え始めるまでの時間
 #define PLAYER_BULLET_HIT_UI_SIZE			(1.0f)									//ヒット時UIのサイズ倍率

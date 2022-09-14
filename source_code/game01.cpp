@@ -47,7 +47,7 @@
 #define GAME01_COUNT_DOWN_UI_2			(120)										//スタートまでのカウントダウンUIを出すタイミング
 #define GAME01_COUNT_DOWN_UI_1			(180)										//スタートまでのカウントダウンUIを出すタイミング
 #define GAME01_COUNT_DOWN_UI_SIZE		(D3DXVECTOR3(148.0f, 183.0f, 0.0f))			//スタートまでのカウントダウンUIのサイズ
-
+#define GAME01_RESPAWN_ENEMY_DIFFER		(600.0f)									//リスポーンいちから敵までの距離
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -137,6 +137,24 @@ HRESULT CGame01::Init(void)
 
 	//リスポーン位置を数字で指定
 	m_respawnPos = (PlayerRespawnPos)pData->Player.nNumber;
+
+	switch (pData->Player.nNumber)
+	{
+	case 0:		//プレイヤー0なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_00));
+		break;
+	case 1:		//プレイヤー1なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_02));
+		break;
+	case 2:		//プレイヤー2なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_04));
+		break;
+	case 3:		//プレイヤー3なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_06));
+		break;
+	default:
+		break;
+	}
 
 	//設定した数値によってリスポーン場所を変える
 	switch (m_respawnPos)
@@ -484,14 +502,13 @@ void CGame01::RespawnPlayer(void)
 				float fDiffer = D3DXVec3Length(&posDiffer);
 
 				//敵が既定の値より近くにいなかったら
-				if (fDiffer > 500.0f)
+				if (fDiffer > GAME01_RESPAWN_ENEMY_DIFFER)
 				{
 					//データ取得
 					CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 					PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
 					nCntTrue++;
 				}
-
 
 				////敵の位置とかぶっていなかったら
 				//if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
