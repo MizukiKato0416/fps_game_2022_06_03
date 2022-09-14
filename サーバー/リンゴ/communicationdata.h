@@ -117,7 +117,7 @@ public:
 	//初期化
 	void Init(void);
 private:
-	COMMUNICATION_DATA m_CommuData;	// データ
+	COMMUNICATION_DATA m_CommuData;	// データa
 };
 
 #endif // _TCP_CLIENT_H_
