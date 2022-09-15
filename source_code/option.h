@@ -57,6 +57,7 @@ private:
 	COptionBar *m_apOptionBar[OPTION_BAR_NUM];		//バーのポインタ
 	CObject2D *m_pOptionFrame;						//設定画面のフレーム
 	CObject2D *m_pDefaultUi;						//デフォルトに戻すUIのポインタ
+	CObject2D *m_pTutorialUi;						//チュートリアルに行くUIのポインタ
 	float m_aNum[OPTION_BAR_NUM];					//バーの値保存用
 	bool m_bOpen;									//設定が開かれているかどうか
 };

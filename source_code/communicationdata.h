@@ -16,7 +16,7 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (1)
+#define MAX_PLAYER (2)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (1024)

@@ -63,6 +63,7 @@ HRESULT COption::Init(void)
 	m_pDefaultUi = nullptr;
 	m_aNum[0] = OPTION_MOUSE_SENSI_DEFAULT;
 	m_aNum[1] = OPTION_MOUSE_SENSI_DEFAULT;
+	m_pTutorialUi = nullptr;
 
 	return S_OK;
 }
