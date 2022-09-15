@@ -212,13 +212,13 @@ void CTitle::Update(void)
 
 	for (int count_ui = 0; count_ui < ui_size; count_ui++)
 	{
-		if (m_ui[count_ui]->GetTexName() == "signboard.png")
+		if (m_ui[count_ui]->GetTexName() == "signboard.png" || m_ui[count_ui]->GetTexName() == "signboard_tutorial.png")
 		{
 			D3DXCOLOR col = m_ui[count_ui]->GetCol();
-			if ((pointor_pos.x + pointor_size.x) >= (m_ui[count_ui]->GetPos().x - (m_ui[count_ui]->GetSize().x / 2)) &&
-				(pointor_pos.x - pointor_size.x) <= (m_ui[count_ui]->GetPos().x + (m_ui[count_ui]->GetSize().x / 2)) &&
-				(pointor_pos.y + pointor_size.y) >= (m_ui[count_ui]->GetPos().y - (m_ui[count_ui]->GetSize().y / 2)) &&
-				(pointor_pos.y - pointor_size.y) <= (m_ui[count_ui]->GetPos().y + (m_ui[count_ui]->GetSize().y / 2)))
+			if ((pointor_pos.x /*+ pointor_size.x*/) >= (m_ui[count_ui]->GetPos().x - (m_ui[count_ui]->GetSize().x / 2)) &&
+				(pointor_pos.x /*- pointor_size.x*/) <= (m_ui[count_ui]->GetPos().x + (m_ui[count_ui]->GetSize().x / 2)) &&
+				(pointor_pos.y /*+ pointor_size.y*/) >= (m_ui[count_ui]->GetPos().y - (m_ui[count_ui]->GetSize().y / 2)) &&
+				(pointor_pos.y /*- pointor_size.y*/) <= (m_ui[count_ui]->GetPos().y + (m_ui[count_ui]->GetSize().y / 2)))
 			{
 				col.a = 0.5f;
 				if (mouse->GetTrigger(mouse->MOUSE_TYPE_LEFT) == true)
@@ -227,8 +227,14 @@ void CTitle::Update(void)
 
 					if (fade->GetFade() == CFade::FADE_NONE)
 					{
-						fade->SetFade(CManager::MODE::GAME01);
-
+						if (m_ui[count_ui]->GetTexName() == "signboard.png")
+						{
+							fade->SetFade(CManager::MODE::GAME01);
+						}
+						else if (m_ui[count_ui]->GetTexName() == "signboard_tutorial.png")
+						{
+							fade->SetFade(CManager::MODE::TUTORIAL);
+						}
 						//íeç≠ÇÃUIÇèoÇ∑
 						CObject2D *pObject2D = CObject2D::Create({ (float)mouse_pos.x, (float)mouse_pos.y, 0.0f },
 						                                         { TITLE_BULLET_HOLE_UI_SIZE, TITLE_BULLET_HOLE_UI_SIZE, 0.0f },
