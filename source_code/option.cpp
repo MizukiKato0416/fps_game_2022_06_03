@@ -18,14 +18,19 @@
 //=============================================================================
 // マクロ定義
 //=============================================================================
-#define OPTION_MOUSE_SENSI_MIN		(30.0f)								//マウスの感度をデフォルトから何パーセントまで下げれるようにするか
-#define OPTION_MOUSE_SENSI_MAX		(170.0f)							//マウスの感度をデフォルトから何パーセントまで上げれるようにするか
-#define OPTION_MOUSE_SENSI_DEFAULT	(100.0f)							//マウスの感度の最初の設定をデフォルトの何パーセントにするか
-#define OPTION_BAR_SIZE				(D3DXVECTOR3(600.0f, 5.0f, 0.0f))	//バーのサイズ
-#define OPTION_BAR_POS_01			(D3DXVECTOR3(710.0f, 285.0f, 0.0f))	//バーの位置
-#define OPTION_BAR_POS_02			(D3DXVECTOR3(710.0f, 355.0f, 0.0f))	//バーの位置
-#define OPTION_CIRCLE_SIZE			(D3DXVECTOR3(30.0f, 30.0f, 0.0f ))	//円のサイズ
-#define OPTION_SELECT_COLOR_ALPHA	(0.5f)								//選択で薄くなる時のα値
+#define OPTION_MOUSE_SENSI_MIN			(30.0f)												//マウスの感度をデフォルトから何パーセントまで下げれるようにするか
+#define OPTION_MOUSE_SENSI_MAX			(170.0f)											//マウスの感度をデフォルトから何パーセントまで上げれるようにするか
+#define OPTION_MOUSE_SENSI_DEFAULT		(100.0f)											//マウスの感度の最初の設定をデフォルトの何パーセントにするか
+#define OPTION_BAR_SIZE					(D3DXVECTOR3(600.0f, 5.0f, 0.0f))					//バーのサイズ
+#define OPTION_BAR_POS_01				(D3DXVECTOR3(710.0f, 285.0f, 0.0f))					//バーの位置
+#define OPTION_BAR_POS_02				(D3DXVECTOR3(710.0f, 355.0f, 0.0f))					//バーの位置
+#define OPTION_CIRCLE_SIZE				(D3DXVECTOR3(30.0f, 30.0f, 0.0f ))					//円のサイズ
+#define OPTION_SELECT_COLOR_ALPHA		(0.5f)												//選択で薄くなる時のα値
+#define OPTION_DEFAULT_UI_POS			(D3DXVECTOR3(300.0f, 650.0f, 0.0f))					//デフォルトに戻すUIの位置
+#define OPTION_DEFAULT_UI_SIZE			(D3DXVECTOR3(414.0f, 76.0f, 0.0f))					//デフォルトに戻すUIのサイズ
+#define OPTION_TUTORIAL_UI_POS			(D3DXVECTOR3(SCREEN_WIDTH - 300.0f, 650.0f, 0.0f))	//操作説明を表示するUIの位置
+#define OPTION_CLOSE_TUTORIAL_UI_POS	(D3DXVECTOR3(SCREEN_WIDTH - 100.0f, 50.0f, 0.0f))	//操作説明消すUIの位置
+#define OPTION_CLOSE_TUTORIAL_UI_SIZE	(D3DXVECTOR3(53.0f, 51.0f, 0.0f))					//操作説明消すUIのサイズ
 
 //=============================================================================
 // 静的メンバ変数宣言
@@ -41,6 +46,9 @@ COption::COption(CObject::PRIORITY Priority) : CObject(Priority)
 	m_pOptionFrame = nullptr;
 	m_bOpen = false;
 	m_pDefaultUi = nullptr;
+	m_pTutorialUi = nullptr;
+	m_pTutorial = nullptr;
+	m_pCloseTutorialUi = nullptr;
 }
 
 //=============================================================================
@@ -64,6 +72,8 @@ HRESULT COption::Init(void)
 	m_aNum[0] = OPTION_MOUSE_SENSI_DEFAULT;
 	m_aNum[1] = OPTION_MOUSE_SENSI_DEFAULT;
 	m_pTutorialUi = nullptr;
+	m_pCloseTutorialUi = nullptr;
+	m_pTutorial = nullptr;
 
 	return S_OK;
 }
@@ -73,7 +83,9 @@ HRESULT COption::Init(void)
 //=============================================================================
 void COption::Uninit(void)
 {
+	//設定を閉じたときの処理
 	Close();
+
 	Release();
 }
 
@@ -85,15 +97,26 @@ void COption::Update(void)
 	//開いている状態だったら
 	if (m_bOpen)
 	{
-		//マウス感度設定処理
-		MouseSensi();
+		//チュートリアル画像が生成されていなかったら
+		if (m_pTutorial == nullptr && m_pCloseTutorialUi == nullptr)
+		{
+			//マウス感度設定処理
+			MouseSensi();
 
-		//ADS感度設定処理
-		AdsSensi();
+			//ADS感度設定処理
+			AdsSensi();
 
-		//デフォルトに戻す処理
-		Default();
+			//デフォルトに戻す処理
+			Default();
 
+			//チュートリアルに行く処理
+			Tutorial();
+		}
+		else
+		{//生成されていたら
+			//チュートリアルを消す処理
+			TutorialCancel();
+		}
 	}
 }
 
@@ -156,9 +179,14 @@ void COption::Open(void)
 		m_aNum[1] = m_apOptionBar[1]->GetNum();
 
 		//デフォルトに戻すUIの生成
-		m_pDefaultUi = CObject2D::Create({ 300.0f, 650.0f, 0.0f }, { 414.0f, 76.0f, 0.0f },
+		m_pDefaultUi = CObject2D::Create(OPTION_DEFAULT_UI_POS, OPTION_DEFAULT_UI_SIZE,
 			                             (int)CObject::PRIORITY::OPTION);
 		m_pDefaultUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("default_ui.png"));
+
+		//チュートリアルに行くUIの生成
+		m_pTutorialUi = CObject2D::Create(OPTION_TUTORIAL_UI_POS, OPTION_DEFAULT_UI_SIZE,
+			                              (int)CObject::PRIORITY::OPTION);
+		m_pTutorialUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("tutorial_ui.png"));
 	}
 }
 
@@ -195,6 +223,27 @@ void COption::Close(void)
 		{
 			m_pDefaultUi->Uninit();
 			m_pDefaultUi = nullptr;
+		}
+
+		//チュートリアルの削除
+		if (m_pTutorial != nullptr)
+		{
+			m_pTutorial->Uninit();
+			m_pTutorial = nullptr;
+		}
+
+		//チュートリアルを写すUIの削除
+		if (m_pTutorialUi != nullptr)
+		{
+			m_pTutorialUi->Uninit();
+			m_pTutorialUi = nullptr;
+		}
+
+		//チュートリアルを閉じるUIの削除
+		if (m_pCloseTutorialUi != nullptr)
+		{
+			m_pCloseTutorialUi->Uninit();
+			m_pCloseTutorialUi = nullptr;
 		}
 	}
 }
@@ -336,5 +385,129 @@ void COption::Default(void)
 		uiCol.a = 1.0f;
 		//色設定
 		m_pDefaultUi->SetCol(uiCol);
+	}
+}
+
+//=============================================================================
+//チュートリアルを写す処理
+//=============================================================================
+void COption::Tutorial(void)
+{
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	//マウスカーソルの位置取得
+	POINT mouse_pos;
+	GetCursorPos(&mouse_pos);
+	HWND hWind = CManager::GetWindowHandle();
+	ScreenToClient(hWind, &mouse_pos);
+	D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
+
+	//デフォルトUIの位置とサイズ取得
+	D3DXVECTOR3 uiPos = m_pTutorialUi->GetPos();
+	D3DXVECTOR3 uiSize = m_pTutorialUi->GetSize();
+
+	//UIの中をにあったら
+	if (mousePos.x >= uiPos.x - uiSize.x / 2.0f && mousePos.x <= uiPos.x + uiSize.x / 2.0f &&
+		mousePos.y >= uiPos.y - uiSize.y / 2.0f && mousePos.y <= uiPos.y + uiSize.y / 2.0f)
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pTutorialUi->GetCol();
+		//薄くする
+		uiCol.a = OPTION_SELECT_COLOR_ALPHA;
+		//色設定
+		m_pTutorialUi->SetCol(uiCol);
+
+		//クリックしたら
+		if (pInputMouse->GetTrigger(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
+		{
+			//チュートリアル画像が生成されてないなら
+			if (m_pTutorial == nullptr)
+			{
+				//チュートリアル画像を生成する
+				m_pTutorial = CObject2D::Create({ SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f },
+					                             (int)CObject::PRIORITY::OPTION);
+				m_pTutorial->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("tutorial.jpg"));
+			}
+
+			//チュートリアルキャンセルUIが生成されてないなら
+			if (m_pCloseTutorialUi == nullptr)
+			{
+				//チュートリアルキャンセルUIを生成する
+				m_pCloseTutorialUi = CObject2D::Create(OPTION_CLOSE_TUTORIAL_UI_POS, OPTION_CLOSE_TUTORIAL_UI_SIZE,
+					                                   (int)CObject::PRIORITY::OPTION);
+				m_pCloseTutorialUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("cancel_ui.png"));
+			}
+		}
+	}
+	else
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pTutorialUi->GetCol();
+		//色を元に戻す
+		uiCol.a = 1.0f;
+		//色設定
+		m_pTutorialUi->SetCol(uiCol);
+	}
+}
+
+//=============================================================================
+//チュートリアルを消すUIの処理
+//=============================================================================
+void COption::TutorialCancel(void)
+{
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
+	//マウスカーソルの位置取得
+	POINT mouse_pos;
+	GetCursorPos(&mouse_pos);
+	HWND hWind = CManager::GetWindowHandle();
+	ScreenToClient(hWind, &mouse_pos);
+	D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
+
+	//デフォルトUIの位置とサイズ取得
+	D3DXVECTOR3 uiPos = m_pCloseTutorialUi->GetPos();
+	D3DXVECTOR3 uiSize = m_pCloseTutorialUi->GetSize();
+
+	//UIの中をにあったら
+	if (mousePos.x >= uiPos.x - uiSize.x / 2.0f && mousePos.x <= uiPos.x + uiSize.x / 2.0f &&
+		mousePos.y >= uiPos.y - uiSize.y / 2.0f && mousePos.y <= uiPos.y + uiSize.y / 2.0f)
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pCloseTutorialUi->GetCol();
+		//薄くする
+		uiCol.a = OPTION_SELECT_COLOR_ALPHA;
+		//色設定
+		m_pCloseTutorialUi->SetCol(uiCol);
+
+		//クリックしたら
+		if (pInputMouse->GetTrigger(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT) == true)
+		{
+			//チュートリアルの削除
+			if (m_pTutorial != nullptr)
+			{
+				m_pTutorial->Uninit();
+				m_pTutorial = nullptr;
+			}
+
+			//チュートリアルを閉じるUIの削除
+			if (m_pCloseTutorialUi != nullptr)
+			{
+				m_pCloseTutorialUi->Uninit();
+				m_pCloseTutorialUi = nullptr;
+			}
+		}
+	}
+	else
+	{
+		//色取得
+		D3DXCOLOR uiCol = m_pCloseTutorialUi->GetCol();
+		//色を元に戻す
+		uiCol.a = 1.0f;
+		//色設定
+		m_pCloseTutorialUi->SetCol(uiCol);
 	}
 }
