@@ -4,8 +4,9 @@
 //===========================================
 #ifndef _SOUND_H_
 #define _SOUND_H_
-#include "main.h"
 #include <thread>
+#include "main.h"
+//#include <X3DAudio.h>
 
 //================================================
 //マクロ定義
@@ -49,6 +50,7 @@ public:
 
 	//メンバ関数
 	HRESULT Init(void);
+	//void UpdateVoice(SOUND_LABEL label);
 	void Uninit(void);
 	HRESULT Play(const SOUND_LABEL &label);
 	void Stop(const SOUND_LABEL &label);
@@ -69,7 +71,12 @@ private:
 
 	IXAudio2 *m_pXAudio2 = NULL;										// XAudio2オブジェクトへのインターフェイス
 	IXAudio2MasteringVoice *m_pMasteringVoice = NULL;					// マスターボイス
+	//IXAudio2SubmixVoice *m_pSubmixVoice = NULL;	// サブミックスボイス
 	IXAudio2SourceVoice *m_apSourceVoice[(int)SOUND_LABEL::MAX] = {};			// ソースボイス
+	//X3DAUDIO_HANDLE m_X3dInstance;	// D3DAudioインスタンス
+	//X3DAUDIO_LISTENER m_Listener;	// オーディオリスナー
+	//X3DAUDIO_EMITTER m_Emitter;	// エミッター
+	//X3DAUDIO_DSP_SETTINGS m_DspSettings;	// DSPSetting
 	BYTE *m_apDataAudio[(int)SOUND_LABEL::MAX] = {};							// オーディオデータ
 	DWORD m_asizeAudio[(int)SOUND_LABEL::MAX] = {};							// オーディオデータサイズ
 

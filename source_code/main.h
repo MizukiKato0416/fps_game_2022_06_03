@@ -29,6 +29,7 @@ using namespace std;
 #pragma comment(lib,"dinput8.lib")		//入力処理に必要
 #pragma comment(lib,"xinput.lib")		//pad入力処理に必要
 #pragma comment(lib, "winmm.lib")		//fps表示に必要
+#pragma comment(lib, "XAudio2.lib")		//3Dオーディオ
 
 //========================================================
 //マクロ定義

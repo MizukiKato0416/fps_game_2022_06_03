@@ -76,7 +76,28 @@ HRESULT CSound::Init(void)
 		CoUninitialize();
 		return E_FAIL;
 	}
+/*
+	// サブミックスボイスの生成
+	hr = m_pXAudio2->CreateSubmixVoice(&m_pSubmixVoice, 1, 44100, 0, 0, 0, 0);
+	if (FAILED(hr))
+	{
+		if (m_pXAudio2)
+		{
+			// XAudio2オブジェクトの開放
+			m_pXAudio2->Release();
+		}
 
+		// COMライブラリの終了処理
+		CoUninitialize();
+		return E_FAIL;
+	}
+
+	// サブミックス音声への参照
+	XAUDIO2_SEND_DESCRIPTOR Send = { 0, m_pSubmixVoice };
+	XAUDIO2_VOICE_SENDS *pSendList = new XAUDIO2_VOICE_SENDS;
+	pSendList->pSends = &Send;
+	pSendList->SendCount = 1;
+*/
 	// サウンドデータの初期化
 	for (int nCntSound = 0; nCntSound < (int)SOUND_LABEL::MAX; nCntSound++)
 	{
@@ -144,6 +165,7 @@ HRESULT CSound::Init(void)
 			return S_FALSE;
 		}
 
+		//m_pXAudio2->CreateSourceVoice(&m_apSourceVoice[nCntSound], &(wfx.Format), XAUDIO2_VOICE_USEFILTER, XAUDIO2_DEFAULT_FREQ_RATIO, NULL, pSendList, NULL);
 		m_pXAudio2->CreateSourceVoice(&m_apSourceVoice[nCntSound], &(wfx.Format));
 
 		// バッファの設定
@@ -160,6 +182,7 @@ HRESULT CSound::Init(void)
 	}
 
 	//音量調整
+	//m_pSubmixVoice->SetVolume(0.1f);
 	ControllVoice(SOUND_LABEL::GAME_BGM,			0.6f);
 	ControllVoice(SOUND_LABEL::GAME_LAST_SPURT_BGM, 0.6f);
 	ControllVoice(SOUND_LABEL::RESULT_BGM,			0.8f);
@@ -172,10 +195,84 @@ HRESULT CSound::Init(void)
 	ControllVoice(SOUND_LABEL::SHOT_SE,				4.0f);
 	ControllVoice(SOUND_LABEL::START_SHOT_SE,		0.2f);
 	ControllVoice(SOUND_LABEL::TITLE_WIND_SE,		1.0f);
+/*	
+	// Detailisの取得
+	XAUDIO2_VOICE_DETAILS Detailis;
+	m_pMasteringVoice->GetVoiceDetails(&Detailis);
+
+	// X3DAudioの初期化
+	X3DAudioInitialize(Detailis.InputChannels, X3DAUDIO_SPEED_OF_SOUND, m_X3dInstance);
+
+	// エミッター
+	m_Emitter.ChannelCount = 1;
+	m_Emitter.CurveDistanceScaler = m_Emitter.DopplerScaler = 1.0f;
+
+	// DSPSettingの初期化
+	FLOAT32 *matrix = new FLOAT32[Detailis.InputChannels];
+	m_DspSettings.SrcChannelCount = 1;
+	m_DspSettings.DstChannelCount = Detailis.InputChannels;
+	m_DspSettings.pMatrixCoefficients = matrix;
+
+	m_Emitter.OrientFront.x = -0.0f;
+	m_Emitter.OrientFront.y = -1.0f;
+	m_Emitter.OrientFront.z = 0.0f;
+	m_Emitter.OrientTop.x = 0.0f;
+	m_Emitter.OrientTop.y = 1.0f;
+	m_Emitter.OrientTop.z = 0.0f;
+	m_Emitter.Position.x = 100.0f;
+	m_Emitter.Position.y = 0.0f;
+	m_Emitter.Position.z = 0.0f;
+	m_Emitter.Velocity.x = 0.0f;
+	m_Emitter.Velocity.y = 0.0f;
+	m_Emitter.Velocity.z = 0.0f;
+
+	m_Listener.OrientFront.x = 0.0f;
+	m_Listener.OrientFront.y = 0.0f;
+	m_Listener.OrientFront.z = 0.0f;
+	m_Listener.OrientTop.x = 0.0f;
+	m_Listener.OrientTop.y = 1.0f;
+	m_Listener.OrientTop.z = 0.0f;
+	m_Listener.Position.x = 0.0f;
+	m_Listener.Position.y = 0.0f;
+	m_Listener.Position.z = 0.0f;
+	m_Listener.Velocity.x = 0.0f;
+	m_Listener.Velocity.y = 0.0f;
+	m_Listener.Velocity.z = 0.0f;
+*/
 
 	return S_OK;
 }
+/*
+//================================================
+//更新処理
+//================================================
+void CSound::UpdateVoice(SOUND_LABEL label)
+{
 
+	// Detailisの取得
+	XAUDIO2_VOICE_DETAILS Detailis;
+	m_pMasteringVoice->GetVoiceDetails(&Detailis);
+
+	// 正規化
+	D3DXVec3Normalize(static_cast<D3DXVECTOR3*>(&m_Emitter.OrientFront), static_cast<D3DXVECTOR3*>(&m_Emitter.OrientFront));
+
+	// パラメーターの設定
+	X3DAudioCalculate(m_X3dInstance, &m_Listener, &m_Emitter,
+					  X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB,
+					  &m_DspSettings);
+
+	// ソースに適応
+	m_apSourceVoice[static_cast<int>(label)]->SetOutputMatrix(m_pMasteringVoice, 1, Detailis.InputChannels, m_DspSettings.pMatrixCoefficients);
+	m_apSourceVoice[static_cast<int>(label)]->SetFrequencyRatio(m_DspSettings.DopplerFactor);
+
+	// サブミックス音声に適用
+	m_apSourceVoice[static_cast<int>(label)]->SetOutputMatrix(m_pSubmixVoice, 1, 1, &m_DspSettings.ReverbLevel);
+
+	// フィルターを適応
+	XAUDIO2_FILTER_PARAMETERS FilterParameters = { LowPassFilter, 2.0f * sinf(X3DAUDIO_PI / 6.0f * m_DspSettings.LPFDirectCoefficient), 1.0f };
+	m_apSourceVoice[static_cast<int>(label)]->SetFilterParameters(&FilterParameters);
+}
+*/
 //================================================
 //終了処理
 //================================================
