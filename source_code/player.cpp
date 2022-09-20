@@ -516,9 +516,8 @@ void CPlayer::Update(void)
 		pData->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	}
 
-
 	//サーバーに送る
-	if (pData->Player.nNumber > MAX_PLAYER)
+	if (pData->Player.nNumber > MAX_PLAYER + 1)
 	{
 		return;
 	}

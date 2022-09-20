@@ -34,6 +34,7 @@ string g_stop;	// 終了判定用sting
 CTcpListener* g_listenner;	// サーバー
 bool g_bStart;				//スタートしているかどうか
 bool g_bConectAllOnce;		//全員がつながったときに一度だけ通る
+bool g_aRecv[MAX_PLAYER + 1];	//受信したかどうか
 
 //------------------------
 // メイン関数
@@ -229,6 +230,9 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		// プレイヤー分回す
 		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 		{
+			//データの上書き
+			data[count_player] = commu_data[count_player].GetCmmuData();
+
 			// ソケットにsendされていたら
 			if (FD_ISSET(sock[count_player], &fds))
 			{
@@ -239,6 +243,14 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				recv = communication[count_player]->Recv(&recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				memcpy(data[count_player], &recv_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 				commu_data[count_player].SetCmmuData(*data[count_player]);
+
+				//送られた状態にする
+				g_aRecv[data[count_player]->Player.nNumber - 1] = true;
+
+				if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
+				{
+					continue;
+				}
 
 				//上書き
 				data[count_player]->Player.nStartCountDown = aCountDown[count_player];
@@ -418,69 +430,81 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			// プレイヤー分回す
 			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 			{
-				// プレイヤーにsendoする
-				if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
+				//送られた状態なら
+				if (data[count_player]->Player.nNumber <= MAX_PLAYER + 1)
 				{
-					if (data[count_player]->Player.nNumber > MAX_PLAYER)
+					// プレイヤーにsendoする
+					if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 					{
-						continue;
-					}
-
-					// メモリのコピー
-					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// sendする
-					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-				}
-				// 敵にsendoする
-				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
-				{
-					// 敵分回す
-					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
-					{
-						// そのプレイヤーじゃなかったら
-						if (countenemy != count_player)
+						if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
 						{
-							// メモリのコピー
-							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-							// sendする
-							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							continue;
 						}
+
+						// メモリのコピー
+						memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+						// sendする
+						communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 					}
-				}
-				// 敵にsendoする
-				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
-				{
-					if (data[count_player]->Player.nNumber > MAX_PLAYER)
+					// 敵にsendoする
+					else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
 					{
-						continue;
-					}
-
-					// メモリのコピー
-					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// sendする
-					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// 敵分回す
-					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
-					{
-						// そのプレイヤーじゃなかったら
-						if (countenemy != count_player)
+						// 敵分回す
+						for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
 						{
-							if (data[count_player]->Player.nNumber > MAX_PLAYER)
+							// そのプレイヤーじゃなかったら
+							if (countenemy != count_player)
 							{
-								continue;
+								if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
+								{
+									continue;
+								}
+
+								// メモリのコピー
+								memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+								// sendする
+								communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 							}
-
-							// メモリのコピー
-							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-							// sendする
-							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
 						}
 					}
+					// 敵にsendoする
+					else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
+					{
+						if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
+						{
+							continue;
+						}
+
+						// メモリのコピー
+						memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+						// sendする
+						communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+						// 敵分回す
+						for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
+						{
+							// そのプレイヤーじゃなかったら
+							if (countenemy != count_player)
+							{
+								if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
+								{
+									continue;
+								}
+
+								// メモリのコピー
+								memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
+
+								// sendする
+								communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
+							}
+						}
+					}
+
+					//送られていない状態にする
+					g_aRecv[data[count_player]->Player.nNumber - 1] = false;
 				}
 			}
 
@@ -831,6 +855,12 @@ void Init(void)
 	g_listenner = nullptr;
 	g_bStart = false;
 	g_bConectAllOnce = false;
+
+	// プレイヤー分回す
+	for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
+	{
+		g_aRecv[count_player] = false;
+	}
 }
 
 //------------------------
