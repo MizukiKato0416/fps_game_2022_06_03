@@ -515,7 +515,14 @@ void CPlayer::Update(void)
 	{
 		pData->Player.nStartCountDown = COUNTDOWN_INIT_NUM;
 	}
+
+
 	//サーバーに送る
+	if (pData->Player.nNumber > MAX_PLAYER)
+	{
+		return;
+	}
+
 	string buf = CManager::GetInstance()->GetPlayData()->GetName();
 	memset(pData->Player.aName[0], NULL, sizeof(pData->Player.aName[0]));
 	memcpy(pData->Player.aName[0], buf.c_str(), buf.size());

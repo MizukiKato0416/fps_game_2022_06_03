@@ -421,6 +421,11 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				// プレイヤーにsendoする
 				if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
 				{
+					if (data[count_player]->Player.nNumber > MAX_PLAYER)
+					{
+						continue;
+					}
+
 					// メモリのコピー
 					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
@@ -447,6 +452,11 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				// 敵にsendoする
 				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
 				{
+					if (data[count_player]->Player.nNumber > MAX_PLAYER)
+					{
+						continue;
+					}
+
 					// メモリのコピー
 					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
@@ -459,6 +469,11 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						// そのプレイヤーじゃなかったら
 						if (countenemy != count_player)
 						{
+							if (data[count_player]->Player.nNumber > MAX_PLAYER)
+							{
+								continue;
+							}
+
 							// メモリのコピー
 							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
 
