@@ -254,6 +254,13 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					data[count_player]->Player.HitPos[data[count_player]->Player.nNumShot] = data[count_player]->Bullet.hitPos;
 					//Œ‚‚Á‚½”‚ð1‘‚â‚·
 					data[count_player]->Player.nNumShot++;
+
+					//Šù’è‚Ì’l‚æ‚è‘å‚«‚­‚È‚Á‚½‚ç
+					if (data[count_player]->Player.nNumShot > SEND_COUNTER)
+					{
+						//Šù’è‚Ì’l‚É‚·‚é
+						data[count_player]->Player.nNumShot = SEND_COUNTER;
+					}
 				}
 			}
 
