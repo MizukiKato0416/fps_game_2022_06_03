@@ -182,6 +182,7 @@ HRESULT CSound::Init(void)
 	}
 
 	//‰¹—Ê’²®
+	//m_pSubmixVoice->SetVolume(0.1f);
 	ControllVoice(SOUND_LABEL::GAME_BGM,			0.6f);
 	ControllVoice(SOUND_LABEL::GAME_LAST_SPURT_BGM, 0.6f);
 	ControllVoice(SOUND_LABEL::RESULT_BGM,			0.8f);
