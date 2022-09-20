@@ -34,7 +34,7 @@ CTcpClient::~CTcpClient()
 void CTcpClient::WSASInit(void)
 {
 	WSADATA  wsaData;
-	int nErr = WSAStartup(WINSOCK_VERSION, &wsaData);
+	WSAStartup(WINSOCK_VERSION, &wsaData);
 }
 
 //-------------------------------

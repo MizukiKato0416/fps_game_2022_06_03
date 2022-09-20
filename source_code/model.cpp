@@ -441,8 +441,6 @@ void CModel::SetMtx(void)
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	D3DXMATRIX mtxRot, mtxTrans;				//計算用マトリックス
-	D3DMATERIAL9 matDef;						//現在のマテリアル保存用
-	D3DXMATERIAL *pMat;							//マテリアルデータへのポインタ
 	D3DXMATRIX mtxParent;						//親のマトリックス
 
 	D3DXMatrixIdentity(&m_mtxWorld);			//ワールドマトリックスの初期化
