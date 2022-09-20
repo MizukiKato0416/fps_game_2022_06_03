@@ -163,7 +163,7 @@ HRESULT CTitle::Init(void)
 	m_pTitleLogo = CObject2D::Create(TITLE_LOGO_INIT_POS, TITLE_LOGO_SIZE, (int)CObject::PRIORITY::UI);
 	m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("title_logo.png"));
 
-	//ShowCursor(FALSE);
+	ShowCursor(FALSE);
 
 	return S_OK;
 }

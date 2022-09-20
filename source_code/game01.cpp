@@ -225,12 +225,12 @@ void CGame01::Update(void)
 	//設定が開いてなかったら
 	if (!m_pOption->GetOpen())
 	{
-		//POINT pos;
+		POINT pos;
 
-		//pos.x = SCREEN_WIDTH / 2;
-		//pos.y = SCREEN_HEIGHT / 2;
+		pos.x = SCREEN_WIDTH / 2;
+		pos.y = SCREEN_HEIGHT / 2;
 
-		//SetCursorPos(pos.x, pos.y);
+		SetCursorPos(pos.x, pos.y);
 	}
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
@@ -664,7 +664,7 @@ void CGame01::Option(void)
 				m_pPlayer->SetStop(true);
 
 				//カーソルを見えるようにする
-				//ShowCursor(TRUE);
+				ShowCursor(TRUE);
 			}
 			else
 			{
@@ -674,7 +674,7 @@ void CGame01::Option(void)
 				m_pPlayer->SetStop(false);
 
 				//カーソルを見えないようにする
-				//ShowCursor(FALSE);
+				ShowCursor(FALSE);
 			}
 		}
 	}
