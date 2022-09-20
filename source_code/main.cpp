@@ -74,7 +74,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 						NULL);
 
 	//初期化処理(ウィンドウを生成してから行う)(DirectX本体の生成を行う)
-	if (FAILED(CManager::GetInstance()->Init(hInstance, hWnd, TRUE)))
+	if (FAILED(CManager::GetInstance()->Init(hInstance, hWnd, FALSE)))
 	{
 		return -1;
 	}
