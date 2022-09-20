@@ -23,6 +23,7 @@
 #include "tcp_client.h"
 #include "LoadEffect.h"
 #include  "networkmanager.h"
+#include  "tutorial.h"
 
 //================================================
 //静的メンバ変数宣言
@@ -37,6 +38,7 @@ CCamera* CManager::m_apCamera[MAX_CAMERA] = { nullptr };
 CLight *CManager::m_apLight[MAX_LIGHT] = { nullptr };
 CTexture *CManager::m_pTexture = nullptr;
 CXload *CManager::m_pXload = nullptr;
+CTutorial *CManager::m_pTutorial = nullptr;
 CTitle *CManager::m_pTitle = nullptr;
 CGame01 *CManager::m_pGame01 = nullptr;
 CResult *CManager::m_pResult = nullptr;
@@ -486,6 +488,14 @@ CTitle* CManager::GetTitle(void)
 }
 
 //=============================================================================
+// チュートリアル取得処理
+//=============================================================================
+CTutorial * CManager::GetTutorial(void)
+{
+	return nullptr;
+}
+
+//=============================================================================
 // game01取得処理
 //=============================================================================
 CGame01* CManager::GetGame01(void)
@@ -508,6 +518,27 @@ void CManager::SetMode(MODE mode)
 {
 	switch (m_mode)
 	{
+	case MODE::TUTORIAL:
+		if (m_pTutorial != nullptr)
+		{
+			//カメラの破棄
+			for (int nCntCamera = 0; nCntCamera < MAX_CAMERA; nCntCamera++)
+			{
+				if (m_apCamera[nCntCamera] != nullptr)
+				{
+					//終了処理
+					m_apCamera[nCntCamera]->Uninit();
+
+					//メモリの開放
+					delete m_apCamera[nCntCamera];
+					m_apCamera[nCntCamera] = nullptr;
+				}
+			}
+
+			m_pTutorial->Uninit();
+			m_pTutorial = nullptr;
+		}
+		break;
 	case MODE::TITLE:
 		if (m_pTitle != nullptr)
 		{
@@ -582,6 +613,26 @@ void CManager::SetMode(MODE mode)
 
 	switch (mode)
 	{
+	case MODE::TUTORIAL:
+		//タイトルクラスの生成
+		if (m_pTutorial == nullptr)
+		{
+			m_pTutorial = new CTutorial;
+			if (m_pTutorial != nullptr)
+			{
+				//メインカメラの生成
+				for (int nCntCamera = 0; nCntCamera < MAX_MAIN_CAMERA; nCntCamera++)
+				{
+					m_apCamera[nCntCamera] = CCamera::Create(CAMERA_INIT_POS, D3DXVECTOR3(CAMERA_INIT_ROT_X, D3DX_PI, 0.0f),
+					                                         (float)(SCREEN_WIDTH / MAX_MAIN_CAMERA * nCntCamera), 0.0f,
+					                                         (float)(SCREEN_WIDTH / MAX_MAIN_CAMERA), (float)SCREEN_HEIGHT);
+					m_apCamera[nCntCamera]->SetNum(nCntCamera);
+				}
+
+				m_pTutorial->Init();
+			}
+		}
+		break;
 	case MODE::TITLE:
 		//タイトルクラスの生成
 		if (m_pTitle == nullptr)

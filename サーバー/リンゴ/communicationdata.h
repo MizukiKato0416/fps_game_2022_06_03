@@ -17,13 +17,15 @@
 //-------------------------------
 // マクロ定義
 //-------------------------------
-#define MAX_PLAYER (1)
+#define MAX_PLAYER (2)
 #define MAX_MOTION_DATA (64)
 #define MAX_ARRAY_DATA (1)
 #define MAX_COMMU_DATA (1024)
-#define SEND_COUNTER (6)		//何フレームに一回サーバーから情報が送られてくるか
+#define SEND_COUNTER (6)		
+#define SEND_COUNTER_FRAME (10)		//何フレームに一回サーバーから情報が送られてくるか
 #define WIN_COUNTER (5)
 #define NAME_NAX (10)
+#define COUNTDOWN_INIT_NUM		(4)	//カウントダウン用の初期値
 
 //-------------------------------
 // Classの定義
@@ -116,7 +118,7 @@ public:
 	//初期化
 	void Init(void);
 private:
-	COMMUNICATION_DATA m_CommuData;	// データ
+	COMMUNICATION_DATA m_CommuData;	// データa
 };
 
 #endif // _TCP_CLIENT_H_

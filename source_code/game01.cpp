@@ -47,7 +47,7 @@
 #define GAME01_COUNT_DOWN_UI_2			(120)										//スタートまでのカウントダウンUIを出すタイミング
 #define GAME01_COUNT_DOWN_UI_1			(180)										//スタートまでのカウントダウンUIを出すタイミング
 #define GAME01_COUNT_DOWN_UI_SIZE		(D3DXVECTOR3(148.0f, 183.0f, 0.0f))			//スタートまでのカウントダウンUIのサイズ
-
+#define GAME01_RESPAWN_ENEMY_DIFFER		(600.0f)									//リスポーンいちから敵までの距離
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -137,6 +137,24 @@ HRESULT CGame01::Init(void)
 
 	//リスポーン位置を数字で指定
 	m_respawnPos = (PlayerRespawnPos)pData->Player.nNumber;
+
+	switch (pData->Player.nNumber)
+	{
+	case 0:		//プレイヤー0なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_00));
+		break;
+	case 1:		//プレイヤー1なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_02));
+		break;
+	case 2:		//プレイヤー2なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_04));
+		break;
+	case 3:		//プレイヤー3なら
+		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_06));
+		break;
+	default:
+		break;
+	}
 
 	//設定した数値によってリスポーン場所を変える
 	switch (m_respawnPos)
@@ -404,12 +422,12 @@ void CGame01::FirstContact(void)
 	//マップBGの生成
 	m_pMapBg = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f }, (int)CObject::PRIORITY::UI);
 	m_pMapBg->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("map_000.jpg"));
-	m_pMapBg->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+	m_pMapBg->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
-	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 250.0f, 0.0f }, (int)CObject::PRIORITY::UI);
+	m_now_loding = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 800.0f, 200.0f, 0.0f }, (int)CObject::PRIORITY::UI);
 	m_now_loding->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("matching.png"));
 	m_now_loding->SetTex(m_pattern_tex, 4);
-	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+	m_now_loding->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 //================================================
@@ -484,14 +502,13 @@ void CGame01::RespawnPlayer(void)
 				float fDiffer = D3DXVec3Length(&posDiffer);
 
 				//敵が既定の値より近くにいなかったら
-				if (fDiffer > 500.0f)
+				if (fDiffer > GAME01_RESPAWN_ENEMY_DIFFER)
 				{
 					//データ取得
 					CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
 					PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
 					nCntTrue++;
 				}
-
 
 				////敵の位置とかぶっていなかったら
 				//if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
@@ -740,84 +757,7 @@ void CGame01::GameOver(void)
 //スタートまでの処理
 //================================================
 void CGame01::Start(void)
-{
-	////スタートしていなかったら
-	//if (!m_bStart)
-	//{
-	//	//カウンターを加算
-	//	m_nStartCounter++;
-
-	//	//プレイヤーが動ける状態なら
-	//	if (!m_pPlayer->GetStop())
-	//	{
-	//		//止まる状態にする
-	//		m_pPlayer->SetStop(true);
-	//	}
-
-	//	//既定の値より大きくなったら
-	//	if (m_nStartCounter > GAME01_START_COUNTER)
-	//	{
-	//		//音を鳴らす
-	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::START_SE);
-
-	//		//0にする
-	//		m_nStartCounter = 0;
-
-	//		//スタートする状態にする
-	//		m_bStart = true;
-
-	//		//プレイヤーが動けない状態なら
-	//		if (m_pPlayer->GetStop())
-	//		{
-	//			//動ける状態にする
-	//			m_pPlayer->SetStop(false);
-	//		}
-
-	//		//カウントダウン用UIが生成されていたら
-	//		if (m_pCountDownUi != nullptr)
-	//		{
-	//			//消す
-	//			m_pCountDownUi->Uninit();
-	//			m_pCountDownUi = nullptr;
-	//		}
-	//	}
-	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_3)
-	//	{//既定の値になったら
-	//		//カウントダウン用UIが生成されていなかったら
-	//		if (m_pCountDownUi == nullptr)
-	//		{
-	//			//UIを生成する
-	//			m_pCountDownUi = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f),
-	//											   GAME01_COUNT_DOWN_UI_SIZE,
-	//											   (int)CObject::PRIORITY::UI);
-	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("3.png"));
-	//		}
-	//		//音を鳴らす
-	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-	//	}
-	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_2)
-	//	{//既定の値になったら
-	//		//カウントダウン用UIが生成されていたら
-	//		if (m_pCountDownUi != nullptr)
-	//		{
-	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("2.png"));
-	//		}
-	//		//音を鳴らす
-	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-	//	}
-	//	else if (m_nStartCounter == GAME01_COUNT_DOWN_UI_1)
-	//	{//既定の値になったら
-	//		//カウントダウン用UIが生成されていたら
-	//		if (m_pCountDownUi != nullptr)
-	//		{
-	//			m_pCountDownUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("1.png"));
-	//		}
-	//		//音を鳴らす
-	//		CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::COUNT_DOWN_SE);
-	//	}
-	//}
-
-	
+{	
 	//スタートしていなかったら
 	if (!m_bStart)
 	{

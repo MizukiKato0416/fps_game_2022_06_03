@@ -17,6 +17,7 @@ class CInputMouse;
 class CTexture;
 class CXload;
 class CTitle;
+class CTutorial;
 class CGame01;
 class CResult;
 class CFade;
@@ -39,6 +40,7 @@ public:
 	enum class MODE
 	{
 		TITLE = 0,		//タイトル
+		TUTORIAL,		//チュートリアル
 		GAME01,			//ゲーム01
 		RESULT,			//リザルト
 		MAX
@@ -61,6 +63,7 @@ public:
 	static CCamera** GetCamera(void);											//カメラ取得処理
 	static CXload *GetXload(void);												//xファイル読み込み取得処理
 	static CTitle *GetTitle(void);												//タイトル取得処理
+	static CTutorial *GetTutorial(void);											//チュートリアル取得処理
 	static CGame01 *GetGame01(void);											//ゲーム01取得処理
 	static CResult *GetResult(void);											//リザルト取得処理
 	static void SetMode(MODE mode);												//モード設定
@@ -88,6 +91,7 @@ private:
 	static CCamera* m_apCamera[MAX_CAMERA];				//カメラのポインタ
 	static CXload *m_pXload;							//xファイル読み込みのポインタ
 	static CTitle *m_pTitle;							//タイトルのポインタ
+	static CTutorial *m_pTutorial;						//チュートリアルのポインタ
 	static CGame01 *m_pGame01;							//ゲーム01のポインタ
 	static CResult *m_pResult;							//リザルトのポインタ
 	static MODE m_mode;									//モード

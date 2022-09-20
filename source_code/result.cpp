@@ -7,12 +7,12 @@
 #include "fade.h"
 #include "object2D.h"
 #include "communicationdata.h"
-#include "manager.h"
 #include "networkmanager.h"
 #include "counter.h"
 #include "play_data.h"
 #include "letter.h"
 #include "input_keyboard.h"
+#include "input_mouse.h"
 #include "sound.h"
 #include "kill_rate_ui.h"
 
@@ -303,8 +303,12 @@ void CResult::Update(void)
 	CInputKeyboard *pInputKeyboard;
 	pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
 
+	//マウス取得処理
+	CInputMouse *pInputMouse;
+	pInputMouse = CManager::GetInstance()->GetInputMouse();
+
 	m_nCount++;
-	if (m_nCount >= DISPLAY_FADE || pInputKeyboard->GetTrigger(DIK_RETURN))
+	if (m_nCount >= DISPLAY_FADE || pInputKeyboard->GetTrigger(DIK_RETURN) || pInputMouse->GetPress(CInputMouse::MOUSE_TYPE::MOUSE_TYPE_LEFT))
 	{
 		//フェード取得処理
 		CFade *pFade;

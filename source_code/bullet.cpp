@@ -27,7 +27,7 @@
 #define BULLET_SIZE_X				(200.0f)						//軌道のサイズ
 #define BULLET_SIZE_Y				(2.5f)							//軌道のサイズ
 #define BULLET_MAX_END_POS			(10000.0f)						//軌道の終点最大値
-#define BULLET_DAMAGE				(20)							//ダメージ
+#define BULLET_DAMAGE				(15)							//ダメージ
 #define BULLET_PLAYER_COL_SIZE_Y	(90.0f)							//当たり判定サイズ調整値
 #define BULLET_PLAYER_COL_RADIUS	(28.0f)							//当たり判定半径
 #define BULLET_RAND					(rand() % 280 + -140)			//拡散量

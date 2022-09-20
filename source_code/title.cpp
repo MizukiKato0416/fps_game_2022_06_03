@@ -26,8 +26,8 @@
 #define NONAME_SIZE (6)
 #define TITLE_BGM_PLAY_COUNT			(180)											//タイトルBGMを鳴らし始めるまでのカウント
 #define TITLE_LOGO_INIT_POS				(D3DXVECTOR3(300.0f, -200.0f, 0.0f))			//タイトルロゴの初期位置
-#define TITLE_LOGO_SIZE					(D3DXVECTOR3(500.0f, 200.0f, 0.0f))				//タイトルロゴのサイズ
-#define TITLE_LOGO_LAST_POS_Y			(120.0f)										//タイトルロゴの最終位置Y
+#define TITLE_LOGO_SIZE					(D3DXVECTOR3(550.0f, 300.0f, 0.0f))				//タイトルロゴのサイズ
+#define TITLE_LOGO_LAST_POS_Y			(160.0f)										//タイトルロゴの最終位置Y
 #define TITLE_LOGO_MOVE					(2.0f)											//タイトルロゴの移動量
 
 //=============================================================================
@@ -161,7 +161,7 @@ HRESULT CTitle::Init(void)
 
 	//タイトルロゴの生成
 	m_pTitleLogo = CObject2D::Create(TITLE_LOGO_INIT_POS, TITLE_LOGO_SIZE, (int)CObject::PRIORITY::UI);
-	//m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+	m_pTitleLogo->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("title_logo.png"));
 
 	//ShowCursor(FALSE);
 
@@ -213,13 +213,13 @@ void CTitle::Update(void)
 
 	for (int count_ui = 0; count_ui < ui_size; count_ui++)
 	{
-		if (m_ui[count_ui]->GetTexName() == "signboard.png")
+		if (m_ui[count_ui]->GetTexName() == "signboard.png" || m_ui[count_ui]->GetTexName() == "signboard_tutorial.png")
 		{
 			D3DXCOLOR col = m_ui[count_ui]->GetCol();
-			if ((pointor_pos.x + pointor_size.x) >= (m_ui[count_ui]->GetPos().x - (m_ui[count_ui]->GetSize().x / 2)) &&
-				(pointor_pos.x - pointor_size.x) <= (m_ui[count_ui]->GetPos().x + (m_ui[count_ui]->GetSize().x / 2)) &&
-				(pointor_pos.y + pointor_size.y) >= (m_ui[count_ui]->GetPos().y - (m_ui[count_ui]->GetSize().y / 2)) &&
-				(pointor_pos.y - pointor_size.y) <= (m_ui[count_ui]->GetPos().y + (m_ui[count_ui]->GetSize().y / 2)))
+			if ((pointor_pos.x /*+ pointor_size.x*/) >= (m_ui[count_ui]->GetPos().x - (m_ui[count_ui]->GetSize().x / 2)) &&
+				(pointor_pos.x /*- pointor_size.x*/) <= (m_ui[count_ui]->GetPos().x + (m_ui[count_ui]->GetSize().x / 2)) &&
+				(pointor_pos.y /*+ pointor_size.y*/) >= (m_ui[count_ui]->GetPos().y - (m_ui[count_ui]->GetSize().y / 2)) &&
+				(pointor_pos.y /*- pointor_size.y*/) <= (m_ui[count_ui]->GetPos().y + (m_ui[count_ui]->GetSize().y / 2)))
 			{
 				col.a = 0.5f;
 				if (mouse->GetTrigger(mouse->MOUSE_TYPE_LEFT) == true)
@@ -228,8 +228,14 @@ void CTitle::Update(void)
 
 					if (fade->GetFade() == CFade::FADE_NONE)
 					{
-						fade->SetFade(CManager::MODE::GAME01);
-
+						if (m_ui[count_ui]->GetTexName() == "signboard.png")
+						{
+							fade->SetFade(CManager::MODE::GAME01);
+						}
+						else if (m_ui[count_ui]->GetTexName() == "signboard_tutorial.png")
+						{
+							fade->SetFade(CManager::MODE::TUTORIAL);
+						}
 						//弾痕のUIを出す
 						CObject2D *pObject2D = CObject2D::Create({ (float)mouse_pos.x, (float)mouse_pos.y, 0.0f },
 						                                         { TITLE_BULLET_HOLE_UI_SIZE, TITLE_BULLET_HOLE_UI_SIZE, 0.0f },
