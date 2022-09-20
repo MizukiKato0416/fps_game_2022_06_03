@@ -183,6 +183,10 @@ void CNetWorkManager::Recv(void)
 							{
 								continue;
 							}
+							else if (pDataBuf->Player.nNumber > MAX_PLAYER)
+							{
+								continue;
+							}
 							else
 							{
 								if (player_data->Player.nNumber > pDataBuf->Player.nNumber)
