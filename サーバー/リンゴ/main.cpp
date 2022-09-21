@@ -231,7 +231,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 		{
 			//データの上書き
-			data[count_player] = commu_data[count_player].GetCmmuData();
+			//data[count_player] = commu_data[count_player].GetCmmuData();
 
 			// ソケットにsendされていたら
 			if (FD_ISSET(sock[count_player], &fds))
@@ -245,7 +245,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				commu_data[count_player].SetCmmuData(*data[count_player]);
 
 				//送られた状態にする
-				g_aRecv[data[count_player]->Player.nNumber - 1] = true;
+				g_aRecv[count_player] = true;
 
 				if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
 				{
@@ -431,7 +431,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 			{
 				//送られた状態なら
-				if (data[count_player]->Player.nNumber <= MAX_PLAYER + 1)
+				if(g_aRecv[count_player])
 				{
 					// プレイヤーにsendoする
 					if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
@@ -504,7 +504,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					}
 
 					//送られていない状態にする
-					g_aRecv[data[count_player]->Player.nNumber - 1] = false;
+					g_aRecv[count_player] = false;
 				}
 			}
 
@@ -540,244 +540,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				g_save_display_count[cout_player].clear();
 			}
 		}
-		
-
-		/*
-
-		// 指定した秒数に一回
-		if ((g_display_count % SEND_COUNTER) == 0)
-		{
-			// 初期化
-			D3DXVECTOR3 HitPos = { 0.0f, 0.0f, 0.0f };
-			D3DXVECTOR3 EndPos = { 0.0f, 0.0f, 0.0f };
-			save_differ = 100000.0f;
-			g_display_count = 0;
-			save_hit_enemy = -1;
-			hit = false;
-
-			// プレイヤー分回す
-			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
-			{
-				//死んだ情報が送られていたら
-				if (data[cout_player]->Player.bDeath &&
-					data[cout_player]->Bullet.nGiveDamagePlayerNum > 0 && data[cout_player]->Bullet.nGiveDamagePlayerNum <= MAX_PLAYER + 1)
-				{
-					//殺した敵のキル数を1増やす
-					data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill++;
-					data[cout_player]->Player.bDeath = false;
-					//キル数が既定の数だったら
-					if (data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.nKill >= WIN_COUNTER)
-					{
-						//勝ちじゃなかったら
-						if (!data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin)
-						{
-							//そのプレイヤーを勝ちにする
-							data[data[cout_player]->Bullet.nGiveDamagePlayerNum - 1]->Player.bWin = true;
-						}
-					}	
-				}
-
-				// プレイヤーの撃った弾の数
-				int cout_bullet = g_save_display_count[cout_player].size();
-
-				//何にもあたっていない弾の数
-				int nCntBullet = 0;
-
-				// 弾の数分のループ
-				for (int count_bullet = 0; count_bullet < cout_bullet; count_bullet++)
-				{
-					//距離を取得
-					save_differ = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Bullet.fDiffer;
-					// プレイヤー分回す
-					for (int cout_enemy = 0; cout_enemy < MAX_PLAYER + 1; cout_enemy++)
-					{
-						// サイズを取得
-						int frame_lag_size = frame_lag[cout_enemy].size();
-
-						// プレイヤーじゃなかったら且つ敵が無敵状態でなかったら
-						if (cout_player != cout_enemy && data[cout_enemy]->Player.bInvincible == false)
-						{
-							D3DXMATRIX modelMtx = frame_lag[cout_enemy][g_save_display_count[cout_player][count_bullet]].Player.ModelMatrix;
-							float differ = 0.0f;
-
-							// レイを飛ばす方向を算出
-							D3DXVECTOR3 ray_vec = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamR - frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-
-							// ベクトルを正規化
-							D3DXVec3Normalize(&ray_vec, &ray_vec);
-
-							D3DXVECTOR3 posV = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.CamV;
-							D3DXVECTOR3 posPlayer = frame_lag[cout_player][g_save_display_count[cout_player][count_bullet]].Player.Pos;
-
-							// レイとカプセルの当たり判定
-							if (calcRayCapsule(posV.x, posV.y, posV.z,
-								ray_vec.x, ray_vec.y, ray_vec.z,
-								modelMtx._41, modelMtx._42, modelMtx._43,
-								modelMtx._41, modelMtx._42 + PLAYER_COL_SIZE_Y, modelMtx._43,
-								PLAYER_COL_RADIUS,
-								HitPos.x, HitPos.y, HitPos.z,
-								EndPos.x, EndPos.y, EndPos.z))
-							{
-								D3DXVECTOR3 hitVec = HitPos - posV;
-								// ベクトルを正規化
-								D3DXVec3Normalize(&hitVec, &hitVec);
-
-
-								if ((ray_vec.x > 0.0f && hitVec.x < 0.0f || ray_vec.x < 0.0f && hitVec.x > 0.0f) &&
-									(ray_vec.y > 0.0f && hitVec.y < 0.0f || ray_vec.y < 0.0f && hitVec.y > 0.0f) &&
-									(ray_vec.z > 0.0f && hitVec.z < 0.0f || ray_vec.z < 0.0f && hitVec.z > 0.0f))
-								{
-									//当たっていない
-								}
-								else
-								{//当たってる
-								 // 当たった場所までの距離を算出
-									D3DXVECTOR3 differVec = HitPos - posV;
-									differ = D3DXVec3Length(&differVec);
-
-									if (save_differ > differ)
-									{
-										// 距離を保存
-										save_differ = differ;
-
-										//ダメージを保存
-										data[cout_enemy]->Player.nHitDamage += data[cout_player]->Bullet.nDamage;
-										// 敵の番号保存
-										save_hit_enemy = cout_enemy;
-
-										// 当たった
-										hit = true;
-
-										//当たった場所を保存
-										data[cout_player]->Player.HitPos[count_bullet] = HitPos;
-										//プレイヤーにデータを送信する状態にする
-										data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-										//プレイヤーに当たった状態にする
-										data[cout_enemy]->Player.bHit = true;
-										//当たったオブジェクトを敵に設定する
-										data[cout_player]->Player.type[count_bullet] = CCommunicationData::HIT_TYPE::ENEMY;
-										//当たった敵をプレイヤーにデータを送信する状態にする
-										data[cout_enemy]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-										//このプレイヤーがダメージを与えた敵がもつダメージを与えたプレイヤーの番号をこのプレイヤーに設定
-										data[cout_enemy]->Bullet.nGiveDamagePlayerNum = data[cout_player]->Player.nNumber;
-										//このプレイヤーがダメージを与えた敵がもつ撃ってきた位置をこのプレイヤーの位置に設定する
-										data[cout_enemy]->Bullet.hitPlayerPos = data[cout_player]->Player.Pos;
-									}
-								}
-							}
-						}
-
-					}
-					//何にもあたっていなかったら
-					if (data[cout_player]->Player.type[count_bullet] == CCommunicationData::HIT_TYPE::NONE)
-					{
-						//当たっていない弾の数を＋する
-						nCntBullet++;
-					}
-				}
-
-				// 当たってなかつたら
-				if (data[cout_player]->Player.bHit != true && nCntBullet == cout_bullet)
-				{
-					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-				}
-				else
-				{
-					//プレイヤーにデータを送信する状態にする
-					data[cout_player]->SendType = CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER;
-					//弾の数を保存
-					data[cout_player]->Player.nNumShot = cout_bullet;
-				}
-			}
-
-			// プレイヤー分回す
-			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
-			{
-				// プレイヤーにsendoする
-				if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
-				{
-					// メモリのコピー
-					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// sendする
-					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-				}
-				// 敵にsendoする
-				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY)
-				{
-					// 敵分回す
-					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
-					{
-						// そのプレイヤーじゃなかったら
-						if (countenemy != count_player)
-						{
-							// メモリのコピー
-							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-							// sendする
-							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-						}
-					}
-				}
-				// 敵にsendoする
-				else if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_ENEMY_AND_PLAYER)
-				{
-					// メモリのコピー
-					memcpy(&send_data[0], data[count_player], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// sendする
-					communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-					// 敵分回す
-					for (int countenemy = 0; countenemy < MAX_PLAYER + 1; countenemy++)
-					{
-						// そのプレイヤーじゃなかったら
-						if (countenemy != count_player)
-						{
-							// メモリのコピー
-							memcpy(&send_data[0], data[countenemy], sizeof(CCommunicationData::COMMUNICATION_DATA));
-
-							// sendする
-							communication[count_player]->Send(&send_data[0], sizeof(CCommunicationData::COMMUNICATION_DATA));
-						}
-					}
-				}
-			}
-
-			// スクリーン消去
-			system("cls");
-
-			cout << "=======================================================" << endl;
-			cout << "ルーム : " << room_num << endl;
-			// プレイヤー分回す
-			for (int nCntSend = 0; nCntSend < MAX_PLAYER + 1; nCntSend++)
-			{
-				cout << "Player : " << nCntSend << "->プレイヤーの番号" << data[nCntSend]->Player.nNumber << endl;
-				cout << "Player : " << nCntSend << "->プレイヤーの位置" << data[nCntSend]->Player.Pos.x << " : " << data[nCntSend]->Player.Pos.y << " : " << data[nCntSend]->Player.Pos.z << endl;
-				cout << "Player : " << nCntSend << "->プレイヤーの回転" << data[nCntSend]->Player.Rot.x << " : " << data[nCntSend]->Player.Rot.y << " : " << data[nCntSend]->Player.Rot.z << endl;
-				cout << "Player : " << nCntSend << "->プレイヤー当たり判定フラグ" << data[nCntSend]->Player.bHit << endl;
-				cout << "Player : " << nCntSend << "->プレイヤーへのダメージ" << data[nCntSend]->Player.nHitDamage << endl;
-				cout << "Player : " << nCntSend << "->当たった物への距離" << data[nCntSend]->Bullet.fDiffer << endl;
-				cout << "Player : " << nCntSend << "->どれに当たったか" << (int)data[nCntSend]->Bullet.type << endl;
-				cout << "Player : " << nCntSend << "->弾を使ってるか" << data[nCntSend]->Bullet.bUse << endl;
-				cout << "Player : " << nCntSend << "->キル数" << data[nCntSend]->Player.nKill << endl;
-				cout << "Player : " << nCntSend << "->デス数" << data[nCntSend]->Player.nDeath << endl;
-				cout << "Player : " << nCntSend << "->サーバーからクライアントへのsendタイプ" << (int)data[nCntSend]->SendType << endl;
-				cout << "Player : " << nCntSend << "->通信が確立されてるか" << data[nCntSend]->bConnect << endl;
-			}
-			cout << "=======================================================" << endl;
-
-			// 当たってない
-			g_is_collision = false;
-
-			for (int cout_player = 0; cout_player < MAX_PLAYER + 1; cout_player++)
-			{
-				frame_lag[cout_player].clear();
-				g_save_display_count[cout_player].clear();
-			}
-			
-		}
-		*/
+	
 	}
 
 	// 部屋数を減らす
