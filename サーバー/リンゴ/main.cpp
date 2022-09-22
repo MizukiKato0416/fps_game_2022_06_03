@@ -231,7 +231,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 		for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 		{
 			//データの上書き
-			//data[count_player] = commu_data[count_player].GetCmmuData();
+			data[count_player] = commu_data[count_player].GetCmmuData();
 
 			// ソケットにsendされていたら
 			if (FD_ISSET(sock[count_player], &fds))
@@ -274,11 +274,6 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						data[count_player]->Player.nNumShot = SEND_COUNTER;
 					}
 				}
-			}
-			else
-			{
-				//情報の上書き
-				data[count_player] = commu_data[count_player].GetCmmuData();
 			}
 
 			frame_lag[count_player].push_back(*data[count_player]);
