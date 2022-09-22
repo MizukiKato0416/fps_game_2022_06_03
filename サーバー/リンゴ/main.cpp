@@ -245,7 +245,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 				commu_data[count_player].SetCmmuData(*data[count_player]);
 
 				//‘—‚ç‚ê‚½ó‘Ô‚É‚·‚é
-				g_aRecv[count_player] = true;
+				//g_aRecv[count_player] = true;
 
 				if (data[count_player]->Player.nNumber > MAX_PLAYER + 1)
 				{
@@ -274,6 +274,11 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 						data[count_player]->Player.nNumShot = SEND_COUNTER;
 					}
 				}
+			}
+			else
+			{
+				//î•ñ‚Ìã‘‚«
+				data[count_player] = commu_data[count_player].GetCmmuData();
 			}
 
 			frame_lag[count_player].push_back(*data[count_player]);
@@ -431,7 +436,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 			for (int count_player = 0; count_player < MAX_PLAYER + 1; count_player++)
 			{
 				//‘—‚ç‚ê‚½ó‘Ô‚È‚ç
-				if(g_aRecv[count_player])
+				//if(g_aRecv[count_player])
 				{
 					// ƒvƒŒƒCƒ„[‚Ésendo‚·‚é
 					if (data[count_player]->SendType == CCommunicationData::COMMUNICATION_TYPE::SEND_TO_PLAYER)
@@ -504,7 +509,7 @@ void CreateRoom(vector<CCommunication*> communication, int room_num)
 					}
 
 					//‘—‚ç‚ê‚Ä‚¢‚È‚¢ó‘Ô‚É‚·‚é
-					g_aRecv[count_player] = false;
+					//g_aRecv[count_player] = false;
 				}
 			}
 
