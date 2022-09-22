@@ -91,6 +91,8 @@ private:
 	int m_nStartCounter;				//スタートするまでのカウンター
 	int m_nCountDownOld;				//1フレーム前のスタートまでのカウントダウン
 	CObject2D *m_pCountDownUi;			//カウントダウンUIのポインタ
+	CObject2D *m_pCursorUi;				//カーソルUIのポインタ
+
 };	
 
 #endif // !_GAME01_H_

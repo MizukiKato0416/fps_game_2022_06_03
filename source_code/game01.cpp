@@ -72,6 +72,7 @@ CGame01::CGame01(CObject::PRIORITY Priority):CObject(Priority)
 	m_bStart = false;
 	m_nStartCounter = 0;
 	m_pCountDownUi = nullptr;
+	m_pCursorUi = nullptr;
 	m_nCountDownOld = 0;
 }
 
@@ -106,6 +107,7 @@ HRESULT CGame01::Init(void)
 	m_nStartCounter = 0;
 	m_pCountDownUi = nullptr;
 	m_nCountDownOld = COUNTDOWN_INIT_NUM;
+	m_pCursorUi = nullptr;
 
 	FirstContact();
 
@@ -230,7 +232,23 @@ void CGame01::Update(void)
 		pos.x = SCREEN_WIDTH / 2;
 		pos.y = SCREEN_HEIGHT / 2;
 
-		//SetCursorPos(pos.x, pos.y);
+		SetCursorPos(pos.x, pos.y);
+	}
+	else
+	{//設定が開いていたら
+		//カーソルUIが生成されていたら
+		if (m_pCursorUi != nullptr)
+		{
+			//マウスカーソルの位置取得
+			POINT mouse_pos;
+			GetCursorPos(&mouse_pos);
+			HWND hWind = CManager::GetWindowHandle();
+			ScreenToClient(hWind, &mouse_pos);
+			D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
+
+			//位置を設定
+			m_pCursorUi->SetPos(D3DXVECTOR3(mousePos.x, mousePos.y, 0.0f), m_pCursorUi->GetSize());
+		}
 	}
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
@@ -665,6 +683,13 @@ void CGame01::Option(void)
 
 				//カーソルを見えるようにする
 				ShowCursor(TRUE);
+
+				//カーソルUIの生成
+				if (m_pCursorUi == nullptr)
+				{
+					m_pCursorUi = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 100.0f, 100.0f, 0.0f }, (int)CObject::PRIORITY::CURSOR);
+					m_pCursorUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+				}
 			}
 			else
 			{
@@ -675,6 +700,13 @@ void CGame01::Option(void)
 
 				//カーソルを見えないようにする
 				ShowCursor(FALSE);
+
+				//カーソルUIの削除
+				if (m_pCursorUi != nullptr)
+				{
+					m_pCursorUi->Uninit();
+					m_pCursorUi = nullptr;
+				}
 			}
 		}
 	}

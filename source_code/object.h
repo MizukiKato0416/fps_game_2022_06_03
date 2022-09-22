@@ -46,6 +46,7 @@ public:
 		BLOOD,				// 血
 		WIN_LOSE,			// 勝ち負け結果
 		OPTION,				// 設定
+		CURSOR,				// カーソル
 		FADE,				// フェード
 		MAX
 	};

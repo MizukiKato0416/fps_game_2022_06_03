@@ -196,7 +196,6 @@ void CTitle::Update(void)
 		if (m_nCounter == TITLE_BGM_PLAY_COUNT)
 		{
 			//‰¹‚ð–Â‚ç‚·
-			//CManager::GetInstance()->GetSound()->UpdateVoice(CSound::SOUND_LABEL::TITLE_BGM);
 			CManager::GetInstance()->GetSound()->Play(CSound::SOUND_LABEL::TITLE_BGM);
 		}
 	}
