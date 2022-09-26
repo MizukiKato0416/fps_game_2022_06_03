@@ -48,6 +48,8 @@
 #define GAME01_COUNT_DOWN_UI_1			(180)										//スタートまでのカウントダウンUIを出すタイミング
 #define GAME01_COUNT_DOWN_UI_SIZE		(D3DXVECTOR3(148.0f, 183.0f, 0.0f))			//スタートまでのカウントダウンUIのサイズ
 #define GAME01_RESPAWN_ENEMY_DIFFER		(600.0f)									//リスポーンいちから敵までの距離
+#define GAME01_CURSOR_UI_SIZE			(D3DXVECTOR3(40.0f, 40.0f, 0.0f))			//カーソルUIのサイズ
+
 //================================================
 //静的メンバ変数宣言
 //================================================
@@ -232,23 +234,12 @@ void CGame01::Update(void)
 		pos.x = LONG(SCREEN_WIDTH / 2.0f);
 		pos.y = LONG(SCREEN_HEIGHT / 2.0f);
 
-		//SetCursorPos(pos.x, pos.y);
+		SetCursorPos(pos.x, pos.y);
 	}
 	else
 	{//設定が開いていたら
-		//カーソルUIが生成されていたら
-		if (m_pCursorUi != nullptr)
-		{
-			//マウスカーソルの位置取得
-			POINT mouse_pos;
-			GetCursorPos(&mouse_pos);
-			HWND hWind = CManager::GetWindowHandle();
-			ScreenToClient(hWind, &mouse_pos);
-			D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
-
-			//位置を設定
-			m_pCursorUi->SetPos(D3DXVECTOR3(mousePos.x, mousePos.y, 0.0f), m_pCursorUi->GetSize());
-		}
+		//カーソルUIの処理
+		CursorUi();
 	}
 
 	if (CManager::GetInstance()->GetNetWorkmanager()->GetAllConnect() == true)
@@ -675,8 +666,8 @@ void CGame01::Option(void)
 				//カーソルUIの生成
 				if (m_pCursorUi == nullptr)
 				{
-					m_pCursorUi = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 50.0f, 50.0f, 0.0f }, (int)CObject::PRIORITY::CURSOR);
-					m_pCursorUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
+					m_pCursorUi = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, GAME01_CURSOR_UI_SIZE, (int)CObject::PRIORITY::CURSOR);
+					m_pCursorUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("cursor.png"));
 				}
 			}
 			else
@@ -852,4 +843,26 @@ void CGame01::Start(void)
 		m_nCountDownOld = pData->Player.nStartCountDown;
 	}
 	
+}
+
+//================================================
+//カーソルUIの処理
+//================================================
+void CGame01::CursorUi(void)
+{
+	//カーソルUIが生成されていたら
+	if (m_pCursorUi != nullptr)
+	{
+		//マウスカーソルの位置取得
+		POINT mouse_pos;
+		GetCursorPos(&mouse_pos);
+		//ウィンドウハンドル取得
+		HWND hWind = CManager::GetWindowHandle();
+		//スクリーン座標からクライアント座標に変換
+		ScreenToClient(hWind, &mouse_pos);
+		//マウスカーソルの位置を保存
+		D3DXVECTOR2 mousePos = D3DXVECTOR2((float)mouse_pos.x, (float)mouse_pos.y);
+		//位置を設定
+		m_pCursorUi->SetPos(D3DXVECTOR3(mousePos.x, mousePos.y + m_pCursorUi->GetSize().y / 2.0f, 0.0f), m_pCursorUi->GetSize());
+	}
 }

@@ -70,6 +70,7 @@ private:
 	void Option(void);								//設定画面処理
 	void GameOver(void);							//ゲーム終了処理
 	void Start(void);								//スタートまでの処理
+	void CursorUi(void);							//カーソルUIの処理
 		
 	//メンバ変数
 	CPlayer *m_pPlayer;					//プレイヤーのポインタ
