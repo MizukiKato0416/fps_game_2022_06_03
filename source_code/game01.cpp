@@ -142,16 +142,16 @@ HRESULT CGame01::Init(void)
 
 	switch (pData->Player.nNumber)
 	{
-	case 0:		//プレイヤー0なら
+	case 1:		//プレイヤー1なら
 		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_00));
 		break;
-	case 1:		//プレイヤー1なら
+	case 2:		//プレイヤー2なら
 		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_02));
 		break;
-	case 2:		//プレイヤー2なら
+	case 3:		//プレイヤー3なら
 		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_04));
 		break;
-	case 3:		//プレイヤー3なら
+	case 4:		//プレイヤー4なら
 		m_respawnPos = PlayerRespawnPos(rand() % int(2) + int(PlayerRespawnPos::POS_06));
 		break;
 	default:
@@ -229,10 +229,10 @@ void CGame01::Update(void)
 	{
 		POINT pos;
 
-		pos.x = SCREEN_WIDTH / 2;
-		pos.y = SCREEN_HEIGHT / 2;
+		pos.x = LONG(SCREEN_WIDTH / 2.0f);
+		pos.y = LONG(SCREEN_HEIGHT / 2.0f);
 
-		SetCursorPos(pos.x, pos.y);
+		//SetCursorPos(pos.x, pos.y);
 	}
 	else
 	{//設定が開いていたら
@@ -527,15 +527,6 @@ void CGame01::RespawnPlayer(void)
 					PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
 					nCntTrue++;
 				}
-
-				////敵の位置とかぶっていなかったら
-				//if (m_respawnPos != static_cast<PlayerRespawnPos>(data[nCntEnemy].GetCmmuData()->Player.nRespawnPos))
-				//{
-				//	//データ取得
-				//	CCommunicationData::COMMUNICATION_DATA *PlayerData = CManager::GetInstance()->GetNetWorkmanager()->GetPlayerData()->GetCmmuData();
-				//	PlayerData->Player.nRespawnPos = static_cast<int>(m_respawnPos);
-				//	nCntTrue++;
-				//}
 			}
 		}
 
@@ -681,13 +672,10 @@ void CGame01::Option(void)
 				//プレイヤーの動きを止める
 				m_pPlayer->SetStop(true);
 
-				//カーソルを見えるようにする
-				ShowCursor(TRUE);
-
 				//カーソルUIの生成
 				if (m_pCursorUi == nullptr)
 				{
-					m_pCursorUi = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 100.0f, 100.0f, 0.0f }, (int)CObject::PRIORITY::CURSOR);
+					m_pCursorUi = CObject2D::Create({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f }, { 50.0f, 50.0f, 0.0f }, (int)CObject::PRIORITY::CURSOR);
 					m_pCursorUi->BindTexture(CManager::GetInstance()->GetTexture()->GetTexture("pointer.png"));
 				}
 			}
@@ -697,9 +685,6 @@ void CGame01::Option(void)
 				m_pOption->Close();
 				//プレイヤーの動きを戻す
 				m_pPlayer->SetStop(false);
-
-				//カーソルを見えないようにする
-				ShowCursor(FALSE);
 
 				//カーソルUIの削除
 				if (m_pCursorUi != nullptr)
